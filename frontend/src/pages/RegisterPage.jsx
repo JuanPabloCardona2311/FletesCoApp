@@ -51,7 +51,7 @@ function RegisterPage() {
         <label>Nombre completo<input name="nombre" value={form.nombre} onChange={handleChange} required autoComplete="name" /></label>
         <label>Correo electrónico<input type="email" name="email" value={form.email} onChange={handleChange} required autoComplete="email" /></label>
         <label>Contraseña<input type="password" name="password" minLength="6" value={form.password} onChange={handleChange} required autoComplete="new-password" /></label>
-        <label>Teléfono<input type="tel" name="telefono" value={form.telefono} onChange={handleChange} autoComplete="tel" /></label
+        <label>Teléfono<input type="tel" name="telefono" value={form.telefono} onChange={handleChange} autoComplete="tel" /></label>
         <div className="two-columns">
           <label>Tipo de documento<select name="tipoDocumentoIdentidad" value={form.tipoDocumentoIdentidad} onChange={handleChange} required><option value="">Selecciona</option><option value="CC">Cédula de ciudadanía</option><option value="CE">Cédula de extranjería</option><option value="PASAPORTE">Pasaporte</option></select></label>
           <label>Número de documento<input name="numeroDocumentoIdentidad" value={form.numeroDocumentoIdentidad} onChange={handleChange} required /></label>
