@@ -1,6 +1,16 @@
 package com.example.demo.service.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.dto.request.AceptarSolicitudRequest;
+import org.springframework.security.access.AccessDeniedException;
 import com.example.demo.dto.request.PublicarSolicitudRequest;
 import com.example.demo.dto.response.SolicitudAceptadaResponse;
 import com.example.demo.dto.response.SolicitudPublicadaResponse;
@@ -19,15 +29,9 @@ import com.example.demo.repository.SolicitudRepository;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.repository.VehiculoRepository;
 import com.example.demo.service.SolicitudService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.example.demo.dto.response.SolicitudDetalleResponse;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SolicitudServiceImpl implements SolicitudService {
@@ -232,6 +236,74 @@ public class SolicitudServiceImpl implements SolicitudService {
                 "Solicitud aceptada correctamente"
         );
     }
+
+    @Override
+public SolicitudDetalleResponse obtenerSolicitudPorId(Long id) {
+
+    String email = SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getName();
+
+    Usuario usuario = usuarioRepository.findByEmail(email)
+            .orElseThrow(() ->
+                    new EntityNotFoundException(
+                            "Usuario autenticado no encontrado"
+                    )
+            );
+
+    Despachador despachador =
+            despachadorRepository.findByUsuarioId(usuario.getId())
+                    .orElseThrow(() ->
+                            new EntityNotFoundException(
+                                    "No existe un despachador asociado a este usuario"
+                            )
+                    );
+
+    Solicitud solicitud = solicitudRepository.findById(id)
+            .orElseThrow(() ->
+                    new EntityNotFoundException(
+                            "Solicitud no encontrada"
+                    )
+            );
+
+    if (!solicitud.getDespachador()
+            .getId()
+            .equals(despachador.getId())) {
+
+        throw new AccessDeniedException(
+                "No tienes permiso para consultar esta solicitud"
+        );
+    }
+
+    return new SolicitudDetalleResponse(
+            solicitud.getId(),
+
+            solicitud.getOrigen(),
+            solicitud.getDestino(),
+
+            solicitud.getOrigenLat(),
+            solicitud.getOrigenLng(),
+
+            solicitud.getDestinoLat(),
+            solicitud.getDestinoLng(),
+
+            solicitud.getTipoCarga(),
+            solicitud.getTipoVehiculoRequerido(),
+
+            solicitud.getPeso(),
+            solicitud.getPrecioOfrecido(),
+
+            solicitud.getFechaPublicacion(),
+            solicitud.getFechaRecogida(),
+            solicitud.getFechaEntregaEstimada(),
+
+            solicitud.getRequiereCitaPuerto(),
+            solicitud.getNumeroCita(),
+
+            solicitud.getEstado().name()
+    );
+}
 
     private boolean esVehiculoCompatible(String tipoVehiculo, String tipoRequerido) {
         if (tipoVehiculo == null || tipoRequerido == null) {

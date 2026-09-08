@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.dto.response.SolicitudDetalleResponse;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -33,8 +35,7 @@ public class SolicitudController {
     @PostMapping
     @PreAuthorize("hasRole('DESPACHADOR')")
     public ResponseEntity<SolicitudPublicadaResponse> publicarSolicitud(
-            @Valid @RequestBody PublicarSolicitudRequest request
-    ) {
+            @Valid @RequestBody PublicarSolicitudRequest request) {
         SolicitudPublicadaResponse response = solicitudService.publicarSolicitud(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -55,9 +56,17 @@ public class SolicitudController {
     @PostMapping("/aceptar")
     @PreAuthorize("hasRole('CONDUCTOR')")
     public ResponseEntity<SolicitudAceptadaResponse> aceptarSolicitud(
-            @Valid @RequestBody AceptarSolicitudRequest request
-    ) {
+            @Valid @RequestBody AceptarSolicitudRequest request) {
         SolicitudAceptadaResponse response = solicitudService.aceptarSolicitud(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('DESPACHADOR')")
+    public ResponseEntity<SolicitudDetalleResponse> obtenerSolicitudPorId(
+            @PathVariable Long id) {
+        SolicitudDetalleResponse response = solicitudService.obtenerSolicitudPorId(id);
+
         return ResponseEntity.ok(response);
     }
 }
