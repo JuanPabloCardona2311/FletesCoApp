@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
@@ -18,6 +19,7 @@ const demoProfile = {
 }
 
 function DespachadorProfilePage() {
+  const navigate = useNavigate()
   const [perfil, setPerfil] = useState(demoProfile)
   const [form, setForm] = useState(initialForm)
   const [mensaje, setMensaje] = useState('')
@@ -80,6 +82,13 @@ function DespachadorProfilePage() {
       setModoDemo(false)
       setMensaje('Perfil de despachador guardado correctamente.')
     } catch (requestError) {
+      if (requestError.response?.status === 401) {
+        localStorage.removeItem('fleteco_token')
+        localStorage.removeItem('fleteco_tipo_usuario')
+        navigate('/')
+        return
+      }
+
       if (requestError.response?.data?.error) {
         setError(requestError.response.data.error)
       } else {
