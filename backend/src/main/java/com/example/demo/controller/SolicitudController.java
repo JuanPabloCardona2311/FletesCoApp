@@ -62,7 +62,7 @@ public class SolicitudController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('DESPACHADOR')")
+    @PreAuthorize("hasRole('DESPACHADOR') or hasRole('CONDUCTOR')")
     public ResponseEntity<SolicitudDetalleResponse> obtenerSolicitudPorId(
             @PathVariable Long id) {
         SolicitudDetalleResponse response = solicitudService.obtenerSolicitudPorId(id);
