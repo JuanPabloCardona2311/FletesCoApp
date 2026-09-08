@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import AuthLayout from '../components/AuthLayout'
 import RequestMessage from '../components/RequestMessage'
@@ -7,6 +7,7 @@ import RequestMessage from '../components/RequestMessage'
 const initialForm = { email: '', password: '' }
 
 function LoginPage() {
+  const navigate = useNavigate()
   const [form, setForm] = useState(initialForm)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
@@ -24,6 +25,7 @@ function LoginPage() {
       localStorage.setItem('fleteco_tipo_usuario', response.data.tipoUsuario)
       setMensaje(`Bienvenido. Rol: ${response.data.tipoUsuario.toLowerCase()}.`)
       setForm(initialForm)
+      navigate(response.data.tipoUsuario === 'DESPACHADOR' ? '/perfil/despachador' : '/perfil/conductor')
     } catch (requestError) {
       if (requestError.response?.status === 401) {
         setError('El correo o la contraseña no son válidos.')
