@@ -4,6 +4,7 @@ import DespachadorProfilePage from './pages/DespachadorProfilePage'
 import LoginPage from './pages/LoginPage'
 import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
+import DetalleSolicitudPage from './pages/DetalleSolicitudPage'
 
 function ProtectedRoute({ children, allowedRole }) {
   const token = localStorage.getItem('fleteco_token')
@@ -32,6 +33,10 @@ function App() {
             <ProfileRedirect />
           </ProtectedRoute>
         )}
+      />
+      <Route
+        path="/solicitudes/:id"
+        element={<DetalleSolicitudPage />}
       />
       <Route
         path="/perfil/conductor"
