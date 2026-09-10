@@ -7,7 +7,13 @@ function ProfileRedirect() {
     return <Navigate to="/perfil/despachador" replace />
   }
 
-  return <Navigate to="/perfil/conductor" replace />
+  if (tipoUsuario === 'CONDUCTOR') {
+    return <Navigate to="/perfil/conductor" replace />
+  }
+
+  localStorage.removeItem('fleteco_token')
+  localStorage.removeItem('fleteco_tipo_usuario')
+  return <Navigate to="/" replace />
 }
 
 export default ProfileRedirect

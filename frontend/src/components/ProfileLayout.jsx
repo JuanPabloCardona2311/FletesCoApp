@@ -17,8 +17,8 @@ function ProfileLayout({ role, title, subtitle, children }) {
         <Logo />
         <img className="side-panel__image" src={heroImage} alt="" />
         <nav className="profile-nav" aria-label="Perfiles">
-          <Link to="/perfil/conductor">Conductor</Link>
-          <Link to="/perfil/despachador">Despachador</Link>
+          {role === 'Perfil de conductor' && <Link to="/perfil/conductor">Conductor</Link>}
+          {role === 'Perfil de despachador' && <Link to="/perfil/despachador">Despachador</Link>}
         </nav>
       </aside>
 

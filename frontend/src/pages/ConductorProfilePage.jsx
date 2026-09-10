@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import ProfileLayout from '../components/ProfileLayout'
@@ -12,10 +12,10 @@ const initialForm = {
   ubicacionLng: '',
 }
 
-const demoProfile = {
-  nombre: 'Conductor demo',
-  email: 'conductor@fleteco.test',
-  telefono: '3000000000',
+const emptyProfile = {
+  nombre: '',
+  email: '',
+  telefono: '',
   calificacionPromedio: 0,
   cancelacionesTotales: 0,
   ubicacionLat: '',
@@ -25,13 +25,11 @@ const demoProfile = {
 
 function ConductorProfilePage() {
   const navigate = useNavigate()
-  const [perfil, setPerfil] = useState(demoProfile)
+  const [perfil, setPerfil] = useState(emptyProfile)
   const [form, setForm] = useState(initialForm)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
-  const [modoDemo, setModoDemo] = useState(false)
-  const perfilEditadoRef = useRef(false)
 
   const vehiculoActivo = useMemo(
     () => perfil.vehiculos?.find((vehiculo) => vehiculo.activo) || perfil.vehiculos?.[0],
@@ -55,23 +53,22 @@ function ConductorProfilePage() {
     const cargarPerfil = async () => {
       try {
         const response = await client.get('/api/perfiles/conductor')
-        if (!perfilEditadoRef.current) {
-          aplicarPerfil(response.data)
-          setModoDemo(false)
-        }
-      } catch {
-        if (!perfilEditadoRef.current) {
-          aplicarPerfil(demoProfile)
-          setModoDemo(true)
+        aplicarPerfil(response.data)
+      } catch (requestError) {
+        if (requestError.response?.status === 401) {
+          localStorage.removeItem('fleteco_token')
+          localStorage.removeItem('fleteco_tipo_usuario')
+          navigate('/')
+        } else {
+          setError('No fue posible cargar el perfil de conductor.')
         }
       }
     }
 
     cargarPerfil()
-  }, [])
+  }, [navigate])
 
   const handleChange = (event) => {
-    perfilEditadoRef.current = true
     setForm({ ...form, [event.target.name]: event.target.value })
   }
 
@@ -83,33 +80,15 @@ function ConductorProfilePage() {
     ubicacionLng: form.ubicacionLng ? Number(form.ubicacionLng) : null,
   })
 
-  const construirPerfilDemo = () => ({
-    ...perfil,
-    ubicacionLat: form.ubicacionLat || null,
-    ubicacionLng: form.ubicacionLng || null,
-    vehiculos: [
-      {
-        id: vehiculoActivo?.id || 'demo',
-        tipoVehiculo: form.tipoVehiculo,
-        placa: form.placa.toUpperCase(),
-        capacidadCarga: form.capacidadCarga,
-        estadoVerificacion: vehiculoActivo?.estadoVerificacion || 'PENDIENTE',
-        activo: true,
-      },
-    ],
-  })
-
   const handleSubmit = async (event) => {
     event.preventDefault()
     setMensaje('')
     setError('')
     setCargando(true)
-    perfilEditadoRef.current = true
 
     try {
       const response = await client.put('/api/perfiles/conductor', construirPayload())
       aplicarPerfil(response.data)
-      setModoDemo(false)
       setMensaje('Perfil de conductor guardado correctamente.')
     } catch (requestError) {
       if (requestError.response?.status === 401) {
@@ -119,14 +98,7 @@ function ConductorProfilePage() {
         return
       }
 
-      if (requestError.response?.data?.error) {
-        setError(requestError.response.data.error)
-      } else {
-        const perfilLocal = construirPerfilDemo()
-        aplicarPerfil(perfilLocal)
-        setModoDemo(true)
-        setMensaje('Perfil guardado localmente mientras la API no está disponible.')
-      }
+      setError(requestError.response?.data?.error || 'No fue posible guardar el perfil de conductor.')
     } finally {
       setCargando(false)
     }
@@ -138,7 +110,6 @@ function ConductorProfilePage() {
         <section className="profile-panel">
           <div className="panel-heading">
             <h2>Datos del vehículo</h2>
-            {modoDemo && <span className="status-chip">Demo</span>}
           </div>
 
           <form onSubmit={handleSubmit}>

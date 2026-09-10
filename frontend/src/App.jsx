@@ -5,11 +5,16 @@ import LoginPage from './pages/LoginPage'
 import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, allowedRole }) {
   const token = localStorage.getItem('fleteco_token')
+  const userRole = localStorage.getItem('fleteco_tipo_usuario')
 
   if (!token) {
     return <Navigate to="/" replace />
+  }
+
+  if (allowedRole && userRole !== allowedRole) {
+    return <Navigate to="/perfil" replace />
   }
 
   return children
@@ -20,11 +25,18 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
-      <Route path="/perfil" element={<ProfileRedirect />} />
+      <Route
+        path="/perfil"
+        element={(
+          <ProtectedRoute>
+            <ProfileRedirect />
+          </ProtectedRoute>
+        )}
+      />
       <Route
         path="/perfil/conductor"
         element={(
-          <ProtectedRoute>
+          <ProtectedRoute allowedRole="CONDUCTOR">
             <ConductorProfilePage />
           </ProtectedRoute>
         )}
@@ -32,7 +44,7 @@ function App() {
       <Route
         path="/perfil/despachador"
         element={(
-          <ProtectedRoute>
+          <ProtectedRoute allowedRole="DESPACHADOR">
             <DespachadorProfilePage />
           </ProtectedRoute>
         )}
