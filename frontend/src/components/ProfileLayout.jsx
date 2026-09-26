@@ -19,6 +19,7 @@ function ProfileLayout({ role, title, subtitle, children }) {
         <nav className="profile-nav" aria-label="Perfiles">
           {role === 'Perfil de conductor' && <Link to="/perfil/conductor">Conductor</Link>}
           {role === 'Perfil de despachador' && <Link to="/perfil/despachador">Despachador</Link>}
+          {role === 'Panel de Administrador' && <Link to="/perfil/admin">Administrador</Link>}
         </nav>
       </aside>
 

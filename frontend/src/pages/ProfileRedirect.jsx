@@ -11,6 +11,10 @@ function ProfileRedirect() {
     return <Navigate to="/perfil/conductor" replace />
   }
 
+  if (tipoUsuario === 'ADMINISTRADOR') {
+    return <Navigate to="/perfil/admin" replace />
+  }
+
   localStorage.removeItem('fleteco_token')
   localStorage.removeItem('fleteco_tipo_usuario')
   return <Navigate to="/" replace />
