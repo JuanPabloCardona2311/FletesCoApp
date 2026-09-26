@@ -25,6 +25,7 @@ function DespachadorProfilePage() {
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
+  const [solicitudAceptada, setSolicitudAceptada] = useState(null)
 
   const aplicarPerfil = (perfilActual) => {
     setPerfil(perfilActual)
@@ -51,6 +52,23 @@ function DespachadorProfilePage() {
     }
 
     cargarPerfil()
+  }, [navigate])
+
+  useEffect(() => {
+    const cargarSolicitudAceptada = async () => {
+      try {
+        const response = await client.get('/api/solicitudes/aceptada')
+        setSolicitudAceptada(response.data)
+      } catch (requestError) {
+        if (requestError.response?.status === 401) {
+          localStorage.removeItem('fleteco_token')
+          localStorage.removeItem('fleteco_tipo_usuario')
+          navigate('/')
+        }
+      }
+    }
+
+    cargarSolicitudAceptada()
   }, [navigate])
 
   const handleChange = (event) => {
@@ -126,6 +144,12 @@ function DespachadorProfilePage() {
             <strong>{perfil.nombreEmpresa || 'Persona natural'}</strong>
             <small>{perfil.nit || 'NIT no registrado'}</small>
           </div>
+
+          {solicitudAceptada && (
+            <button type="button" onClick={() => navigate(`/solicitudes/${solicitudAceptada.id}`)}>
+              Ver ruta de la solicitud
+            </button>
+          )}
         </aside>
       </div>
     </ProfileLayout>

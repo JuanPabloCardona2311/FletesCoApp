@@ -13,4 +13,5 @@ public interface SolicitudService {
     List<SolicitudPublicadaResponse> listarSolicitudesDisponibles();
     SolicitudAceptadaResponse aceptarSolicitud(AceptarSolicitudRequest request);
     SolicitudDetalleResponse obtenerSolicitudPorId(Long id);
+    SolicitudDetalleResponse obtenerSolicitudAceptadaActual();
 }
