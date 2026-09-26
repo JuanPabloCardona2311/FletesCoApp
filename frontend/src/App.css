@@ -161,6 +161,14 @@ button:disabled {
   color: var(--error);
 }
 
+.field-error {
+  color: var(--error);
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+}
+
 .form-footer {
   display: flex;
   justify-content: center;
