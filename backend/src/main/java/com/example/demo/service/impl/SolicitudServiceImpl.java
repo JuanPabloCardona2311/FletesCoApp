@@ -77,6 +77,11 @@ public class SolicitudServiceImpl implements SolicitudService {
                                 .orElseThrow(() -> new EntityNotFoundException(
                                                 "No existe un despachador asociado a este usuario"));
 
+                if (!request.getFechaEntregaEstimada().isAfter(request.getFechaRecogida())) {
+                        throw new IllegalStateException(
+                                        "La fecha de entrega debe ser posterior a la fecha de recogida");
+                }
+
                 Solicitud solicitud = Solicitud.builder()
                                 .despachador(despachador)
                                 .origen(request.getOrigen())

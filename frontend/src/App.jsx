@@ -5,12 +5,20 @@ import LoginPage from './pages/LoginPage'
 import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
 import DetalleSolicitudPage from './pages/DetalleSolicitudPage'
+import PublicarSolicitudPage from './pages/PublicarSolicitudPage'
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, allowedRole }) {
   const token = localStorage.getItem('fleteco_token')
 
   if (!token) {
     return <Navigate to="/" replace />
+  }
+
+  if (allowedRole) {
+    const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
+    if (tipoUsuario !== allowedRole) {
+      return <Navigate to="/perfil" replace />
+    }
   }
 
   return children
@@ -22,9 +30,29 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
       <Route
+        path="/solicitudes/nueva"
+        element={(
+          <ProtectedRoute allowedRole="DESPACHADOR">
+            <PublicarSolicitudPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
         path="/solicitudes/:id"
-        element={<DetalleSolicitudPage />}
-      <Route path="/perfil" element={<ProfileRedirect />} />
+        element={(
+          <ProtectedRoute>
+            <DetalleSolicitudPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/perfil"
+        element={(
+          <ProtectedRoute>
+            <ProfileRedirect />
+          </ProtectedRoute>
+        )}
+      />
       <Route
         path="/perfil/conductor"
         element={(

@@ -155,7 +155,7 @@ function ConductorProfilePage() {
 
             <div className="two-columns">
               <label>
-                Capacidad de carga
+                Capacidad de carga (toneladas)
                 <input name="capacidadCarga" type="number" min="0.01" step="0.01" value={form.capacidadCarga} onChange={handleChange} placeholder="8.5" required />
               </label>
               <label>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
@@ -144,6 +144,8 @@ function DespachadorProfilePage() {
             <strong>{perfil.nombreEmpresa || 'Persona natural'}</strong>
             <small>{perfil.nit || 'NIT no registrado'}</small>
           </div>
+
+          <Link className="link-button" to="/solicitudes/nueva">Publicar nueva solicitud</Link>
         </aside>
       </div>
     </ProfileLayout>
