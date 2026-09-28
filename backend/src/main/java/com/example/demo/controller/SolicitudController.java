@@ -61,6 +61,12 @@ public class SolicitudController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/aceptada")
+    @PreAuthorize("hasRole('DESPACHADOR') or hasRole('CONDUCTOR')")
+    public ResponseEntity<SolicitudDetalleResponse> obtenerSolicitudAceptadaActual() {
+        return ResponseEntity.ok(solicitudService.obtenerSolicitudAceptadaActual());
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('DESPACHADOR') or hasRole('CONDUCTOR')")
     public ResponseEntity<SolicitudDetalleResponse> obtenerSolicitudPorId(
