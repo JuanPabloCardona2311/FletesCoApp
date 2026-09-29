@@ -86,7 +86,15 @@ public class AuthController {
             despachadorRepository.save(despachador);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Usuario registrado correctamente");
+        String token = jwtService.generateToken(new org.springframework.security.core.userdetails.User(
+                usuarioGuardado.getEmail(),
+                usuarioGuardado.getPasswordHash(),
+                java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuarioGuardado.getTipoUsuario().name()))
+        ));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new AuthResponse(token, usuarioGuardado.getTipoUsuario().name(), usuarioGuardado.getEmail(), usuarioGuardado.getNombre())
+        );
     }
 
     @PostMapping("/login")
@@ -105,7 +113,7 @@ public class AuthController {
                     java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuario.getTipoUsuario().name()))
             ));
 
-            return ResponseEntity.ok(new AuthResponse(token, usuario.getTipoUsuario().name(), usuario.getEmail()));
+            return ResponseEntity.ok(new AuthResponse(token, usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");

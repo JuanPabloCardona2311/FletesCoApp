@@ -23,9 +23,19 @@ function LoginPage() {
       const response = await client.post('/api/auth/login', form)
       localStorage.setItem('fleteco_token', response.data.token)
       localStorage.setItem('fleteco_tipo_usuario', response.data.tipoUsuario)
+      if (response.data.email) localStorage.setItem('fleteco_email', response.data.email)
+      if (response.data.nombre) localStorage.setItem('fleteco_nombre', response.data.nombre)
+
       setMensaje(`Bienvenido. Rol: ${response.data.tipoUsuario.toLowerCase()}.`)
       setForm(initialForm)
-      navigate(response.data.tipoUsuario === 'DESPACHADOR' ? '/perfil/despachador' : '/perfil/conductor')
+
+      if (response.data.tipoUsuario === 'ADMINISTRADOR') {
+        navigate('/perfil/admin')
+      } else if (response.data.tipoUsuario === 'DESPACHADOR') {
+        navigate('/perfil/despachador')
+      } else {
+        navigate('/perfil/conductor')
+      }
     } catch (requestError) {
       if (requestError.response?.status === 401) {
         setError('El correo o la contraseña no son válidos.')

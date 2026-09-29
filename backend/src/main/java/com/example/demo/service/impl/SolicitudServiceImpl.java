@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -323,6 +324,45 @@ public class SolicitudServiceImpl implements SolicitudService {
                                 solicitud.getNumeroCita(),
 
                                 solicitud.getEstado().name());
+        }
+
+        @Override
+        public SolicitudDetalleResponse obtenerSolicitudAceptadaActual() {
+                String email = SecurityContextHolder.getContext().getAuthentication().getName();
+                Usuario usuario = usuarioRepository.findByEmail(email)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                "Usuario autenticado no encontrado"));
+
+                List<Solicitud.EstadoSolicitud> estadosActivos = Arrays.asList(
+                                Solicitud.EstadoSolicitud.ACEPTADA,
+                                Solicitud.EstadoSolicitud.EN_CURSO,
+                                Solicitud.EstadoSolicitud.COMPLETADA);
+
+                Solicitud solicitud;
+                if (usuario.getTipoUsuario() == Usuario.TipoUsuario.DESPACHADOR) {
+                        Despachador despachador = despachadorRepository.findByUsuarioId(usuario.getId())
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                        "No existe un despachador asociado a este usuario"));
+                        solicitud = solicitudRepository
+                                        .findTopByDespachadorIdAndEstadoInOrderByFechaPublicacionDesc(
+                                                        despachador.getId(), estadosActivos)
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                        "No tienes solicitudes aceptadas"));
+                } else if (usuario.getTipoUsuario() == Usuario.TipoUsuario.CONDUCTOR) {
+                        Conductor conductor = conductorRepository.findByUsuarioId(usuario.getId())
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                        "No existe un conductor asociado a este usuario"));
+                        solicitud = solicitudRepository
+                                        .findTopByConductorIdAndEstadoInOrderByFechaPublicacionDesc(
+                                                        conductor.getId(), estadosActivos)
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                        "No tienes solicitudes aceptadas"));
+                } else {
+                        throw new AccessDeniedException(
+                                        "No tienes permiso para consultar solicitudes aceptadas");
+                }
+
+                return obtenerSolicitudPorId(solicitud.getId());
         }
 
         private boolean esVehiculoCompatible(String tipoVehiculo, String tipoRequerido) {

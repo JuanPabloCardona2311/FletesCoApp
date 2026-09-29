@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import ProfileLayout from '../components/ProfileLayout'
@@ -9,10 +9,10 @@ const initialForm = {
   nit: '',
 }
 
-const demoProfile = {
-  nombre: 'Despachador demo',
-  email: 'despachador@fleteco.test',
-  telefono: '3100000000',
+const emptyProfile = {
+  nombre: '',
+  email: '',
+  telefono: '',
   nombreEmpresa: '',
   nit: '',
   totalSolicitudesPublicadas: 0,
@@ -20,13 +20,12 @@ const demoProfile = {
 
 function DespachadorProfilePage() {
   const navigate = useNavigate()
-  const [perfil, setPerfil] = useState(demoProfile)
+  const [perfil, setPerfil] = useState(emptyProfile)
   const [form, setForm] = useState(initialForm)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
-  const [modoDemo, setModoDemo] = useState(false)
-  const perfilEditadoRef = useRef(false)
+  const [solicitudAceptada, setSolicitudAceptada] = useState(null)
 
   const aplicarPerfil = (perfilActual) => {
     setPerfil(perfilActual)
@@ -40,38 +39,47 @@ function DespachadorProfilePage() {
     const cargarPerfil = async () => {
       try {
         const response = await client.get('/api/perfiles/despachador')
-        if (!perfilEditadoRef.current) {
-          aplicarPerfil(response.data)
-          setModoDemo(false)
-        }
-      } catch {
-        if (!perfilEditadoRef.current) {
-          aplicarPerfil(demoProfile)
-          setModoDemo(true)
+        aplicarPerfil(response.data)
+      } catch (requestError) {
+        if (requestError.response?.status === 401) {
+          localStorage.removeItem('fleteco_token')
+          localStorage.removeItem('fleteco_tipo_usuario')
+          navigate('/')
+        } else {
+          setError('No fue posible cargar el perfil de despachador.')
         }
       }
     }
 
     cargarPerfil()
-  }, [])
+  }, [navigate])
+
+  useEffect(() => {
+    const cargarSolicitudAceptada = async () => {
+      try {
+        const response = await client.get('/api/solicitudes/aceptada')
+        setSolicitudAceptada(response.data)
+      } catch (requestError) {
+        if (requestError.response?.status === 401) {
+          localStorage.removeItem('fleteco_token')
+          localStorage.removeItem('fleteco_tipo_usuario')
+          navigate('/')
+        }
+      }
+    }
+
+    cargarSolicitudAceptada()
+  }, [navigate])
 
   const handleChange = (event) => {
-    perfilEditadoRef.current = true
     setForm({ ...form, [event.target.name]: event.target.value })
   }
-
-  const construirPerfilDemo = () => ({
-    ...perfil,
-    nombreEmpresa: form.nombreEmpresa.trim(),
-    nit: form.nit.trim(),
-  })
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     setMensaje('')
     setError('')
     setCargando(true)
-    perfilEditadoRef.current = true
 
     try {
       const response = await client.put('/api/perfiles/despachador', {
@@ -79,7 +87,6 @@ function DespachadorProfilePage() {
         nit: form.nit.trim() || null,
       })
       aplicarPerfil(response.data)
-      setModoDemo(false)
       setMensaje('Perfil de despachador guardado correctamente.')
     } catch (requestError) {
       if (requestError.response?.status === 401) {
@@ -89,13 +96,7 @@ function DespachadorProfilePage() {
         return
       }
 
-      if (requestError.response?.data?.error) {
-        setError(requestError.response.data.error)
-      } else {
-        aplicarPerfil(construirPerfilDemo())
-        setModoDemo(true)
-        setMensaje('Perfil guardado localmente mientras la API no está disponible.')
-      }
+      setError(requestError.response?.data?.error || 'No fue posible guardar el perfil de despachador.')
     } finally {
       setCargando(false)
     }
@@ -107,7 +108,6 @@ function DespachadorProfilePage() {
         <section className="profile-panel">
           <div className="panel-heading">
             <h2>Datos comerciales</h2>
-            {modoDemo && <span className="status-chip">Demo</span>}
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -146,6 +146,11 @@ function DespachadorProfilePage() {
           </div>
 
           <Link className="link-button" to="/solicitudes/nueva">Publicar nueva solicitud</Link>
+          {solicitudAceptada && (
+            <button type="button" onClick={() => navigate(`/solicitudes/${solicitudAceptada.id}`)}>
+              Ver ruta de la solicitud
+            </button>
+          )}
         </aside>
       </div>
     </ProfileLayout>
