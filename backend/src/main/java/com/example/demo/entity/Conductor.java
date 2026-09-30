@@ -18,6 +18,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,4 +69,7 @@ public class Conductor {
 
     @Column(name = "ubicacion_lng", precision = 10, scale = 7)
     private BigDecimal ubicacionLng;
+
+    @Column(name = "ubicacion_actualizada_en")
+    private LocalDateTime ubicacionActualizadaEn;
 }

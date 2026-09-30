@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.request.PerfilConductorRequest;
 import com.example.demo.dto.request.PerfilDespachadorRequest;
+import com.example.demo.dto.request.UbicacionConductorRequest;
 import com.example.demo.dto.response.PerfilConductorResponse;
 import com.example.demo.dto.response.PerfilDespachadorResponse;
 import com.example.demo.dto.response.VehiculoPerfilResponse;
@@ -20,8 +21,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.entity.Solicitud;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PerfilServiceImpl implements PerfilService {
@@ -78,11 +82,32 @@ public class PerfilServiceImpl implements PerfilService {
             conductor.setCancelacionesTotales(0);
         }
 
-        conductor.setUbicacionLat(request.getUbicacionLat());
-        conductor.setUbicacionLng(request.getUbicacionLng());
+        // La ubicación la actualiza el seguimiento del viaje; el formulario del vehículo ya no la envía.
+        if (request.getUbicacionLat() != null && request.getUbicacionLng() != null) {
+            conductor.setUbicacionLat(request.getUbicacionLat());
+            conductor.setUbicacionLng(request.getUbicacionLng());
+        }
         Conductor conductorGuardado = conductorRepository.save(conductor);
 
         List<Vehiculo> vehiculos = vehiculoRepository.findByConductorId(conductorGuardado.getId());
+
+        Optional<Vehiculo> vehiculoActualActivo = vehiculos.stream()
+                .filter(v -> Boolean.TRUE.equals(v.getActivo()))
+                .findFirst();
+
+        boolean cambiaVehiculo = vehiculoActualActivo.isPresent()
+                && !mismaPlaca(vehiculoActualActivo.get().getPlaca(), request.getPlaca());
+
+        if (cambiaVehiculo) {
+            boolean tieneViajeActivo = solicitudRepository.existsByConductorIdAndEstadoIn(
+                    conductorGuardado.getId(),
+                    List.of(Solicitud.EstadoSolicitud.ACEPTADA, Solicitud.EstadoSolicitud.EN_CURSO)
+            );
+            if (tieneViajeActivo) {
+                throw new IllegalStateException("No puedes cambiar de vehículo mientras tengas una solicitud aceptada o en curso.");
+            }
+        }
+
         vehiculos.forEach(vehiculo -> vehiculo.setActivo(false));
 
         Vehiculo vehiculoActivo = vehiculos.stream()
@@ -102,6 +127,67 @@ public class PerfilServiceImpl implements PerfilService {
         vehiculoRepository.save(vehiculoActivo);
 
         return construirPerfilConductor(usuario, conductorGuardado);
+    }
+
+    @Override
+    @Transactional
+    public PerfilConductorResponse activarVehiculo(Long vehiculoId) {
+        Usuario usuario = obtenerUsuarioAutenticado();
+        validarRol(usuario, Usuario.TipoUsuario.CONDUCTOR);
+
+        Conductor conductor = conductorRepository.findByUsuarioId(usuario.getId())
+                .orElseThrow(() -> new EntityNotFoundException("No existe un perfil de conductor asociado al usuario"));
+
+        List<Vehiculo> vehiculos = vehiculoRepository.findByConductorId(conductor.getId());
+        Vehiculo vehiculoAActivar = vehiculos.stream()
+                .filter(v -> v.getId().equals(vehiculoId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("El vehículo no existe o no pertenece a este conductor"));
+
+        if (Boolean.TRUE.equals(vehiculoAActivar.getActivo())) {
+            return construirPerfilConductor(usuario, conductor);
+        }
+
+        boolean tieneViajeActivo = solicitudRepository.existsByConductorIdAndEstadoIn(
+                conductor.getId(),
+                List.of(Solicitud.EstadoSolicitud.ACEPTADA, Solicitud.EstadoSolicitud.EN_CURSO)
+        );
+
+        if (tieneViajeActivo) {
+            throw new IllegalStateException("No puedes cambiar de vehículo mientras tengas una solicitud aceptada o en curso.");
+        }
+
+        vehiculos.forEach(v -> v.setActivo(false));
+        vehiculoAActivar.setActivo(true);
+
+        vehiculoRepository.saveAll(vehiculos);
+
+        return construirPerfilConductor(usuario, conductor);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarUbicacionConductor(UbicacionConductorRequest request) {
+        Usuario usuario = obtenerUsuarioAutenticado();
+        validarRol(usuario, Usuario.TipoUsuario.CONDUCTOR);
+
+        Conductor conductor = conductorRepository.findByUsuarioId(usuario.getId())
+                .orElseThrow(() -> new EntityNotFoundException("No existe un perfil de conductor asociado al usuario"));
+
+        // Solo se guarda la ubicación durante un viaje: fuera de un flete no hay motivo para rastrear al conductor.
+        boolean tieneViajeActivo = solicitudRepository.existsByConductorIdAndEstadoIn(
+                conductor.getId(),
+                List.of(Solicitud.EstadoSolicitud.ACEPTADA, Solicitud.EstadoSolicitud.EN_CURSO)
+        );
+
+        if (!tieneViajeActivo) {
+            throw new IllegalStateException("Solo se comparte la ubicación mientras tienes un viaje activo.");
+        }
+
+        conductor.setUbicacionLat(request.getLatitud());
+        conductor.setUbicacionLng(request.getLongitud());
+        conductor.setUbicacionActualizadaEn(LocalDateTime.now());
+        conductorRepository.save(conductor);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,5 +15,11 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Long> {
             Long despachadorId, Collection<Solicitud.EstadoSolicitud> estados);
 
     Optional<Solicitud> findTopByConductorIdAndEstadoInOrderByFechaPublicacionDesc(
+            Long conductorId, Collection<Solicitud.EstadoSolicitud> estados);
+
+    List<Solicitud> findByDespachadorIdAndEstadoInOrderByFechaPublicacionDesc(
+            Long despachadorId, Collection<Solicitud.EstadoSolicitud> estados);
+
+    boolean existsByConductorIdAndEstadoIn(
             Long conductorId, Collection<Solicitud.EstadoSolicitud> estados);
 }

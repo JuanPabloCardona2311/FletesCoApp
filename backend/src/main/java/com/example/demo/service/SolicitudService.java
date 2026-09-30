@@ -14,4 +14,8 @@ public interface SolicitudService {
     SolicitudAceptadaResponse aceptarSolicitud(AceptarSolicitudRequest request);
     SolicitudDetalleResponse obtenerSolicitudPorId(Long id);
     SolicitudDetalleResponse obtenerSolicitudAceptadaActual();
+    List<SolicitudDetalleResponse> listarFletesDespachador();
+    SolicitudDetalleResponse iniciarViaje(Long id);
+    SolicitudDetalleResponse marcarEntregada(Long id);
+    SolicitudDetalleResponse confirmarEntrega(Long id);
 }

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.request.PerfilConductorRequest;
 import com.example.demo.dto.request.PerfilDespachadorRequest;
+import com.example.demo.dto.request.UbicacionConductorRequest;
 import com.example.demo.dto.response.PerfilConductorResponse;
 import com.example.demo.dto.response.PerfilDespachadorResponse;
 import com.example.demo.service.PerfilService;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +39,35 @@ public class PerfilController {
             @Valid @RequestBody PerfilConductorRequest request
     ) {
         return ResponseEntity.ok(perfilService.guardarPerfilConductor(request));
+    }
+
+    @PatchMapping("/conductor/vehiculos/{vehiculoId}/activar")
+    @PreAuthorize("hasRole('CONDUCTOR')")
+    public ResponseEntity<PerfilConductorResponse> activarVehiculo(
+            @PathVariable Long vehiculoId
+    ) {
+        return ResponseEntity.ok(perfilService.activarVehiculo(vehiculoId));
+    }
+
+    @PutMapping("/conductor/vehiculos/{vehiculoId}/activar")
+    @PreAuthorize("hasRole('CONDUCTOR')")
+    public ResponseEntity<PerfilConductorResponse> activarVehiculoPut(
+            @PathVariable Long vehiculoId
+    ) {
+        return ResponseEntity.ok(perfilService.activarVehiculo(vehiculoId));
+    }
+
+    /**
+     * Seguimiento del viaje: el navegador del conductor envía su ubicación cada 15-20 s.
+     * Se sobrescribe la última ubicación conocida (sin historial).
+     */
+    @PutMapping("/conductor/ubicacion")
+    @PreAuthorize("hasRole('CONDUCTOR')")
+    public ResponseEntity<Void> actualizarUbicacionConductor(
+            @Valid @RequestBody UbicacionConductorRequest request
+    ) {
+        perfilService.actualizarUbicacionConductor(request);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/despachador")

@@ -1,0 +1,62 @@
+.seguimiento-aviso {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(31 52 38 / 18%);
+  font: 600 0.85rem var(--font-body);
+}
+
+.seguimiento-activo {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.seguimiento-espera {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.seguimiento-error {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  background: #fef3c7;
+  border: 1px solid #f6dea0;
+  color: #92400e;
+}
+
+.seguimiento-error span {
+  font-weight: 500;
+}
+
+.seguimiento-pulso {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #7ee2a0;
+  animation: seguimiento-pulso 1.6s ease-out infinite;
+}
+
+@keyframes seguimiento-pulso {
+  0% {
+    box-shadow: 0 0 0 0 rgb(126 226 160 / 70%);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgb(126 226 160 / 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seguimiento-pulso {
+    animation: none;
+  }
+}

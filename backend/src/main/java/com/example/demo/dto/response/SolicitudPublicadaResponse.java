@@ -13,7 +13,11 @@ public class SolicitudPublicadaResponse {
     private String destino;
     private String tipoCarga;
     private String tipoVehiculoRequerido;
+    private BigDecimal peso;
     private BigDecimal precioOfrecido;
+    private LocalDateTime fechaRecogida;
+    private LocalDateTime fechaEntregaEstimada;
+    private Boolean requiereCitaPuerto;
     private String estado;
     private LocalDateTime fechaPublicacion;
     private Long despachadorId;
