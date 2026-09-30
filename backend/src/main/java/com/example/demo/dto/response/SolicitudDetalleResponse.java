@@ -48,4 +48,8 @@ public class SolicitudDetalleResponse {
     private String estadoPago;
     private BigDecimal montoNetoConductor;
     private LocalDateTime fechaLimiteConfirmacion;
+
+    private BigDecimal conductorLat;
+    private BigDecimal conductorLng;
+    private LocalDateTime ubicacionActualizadaEn;
 }

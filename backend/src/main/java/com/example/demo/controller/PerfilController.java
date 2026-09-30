@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.request.PerfilConductorRequest;
 import com.example.demo.dto.request.PerfilDespachadorRequest;
+import com.example.demo.dto.request.UbicacionConductorRequest;
 import com.example.demo.dto.response.PerfilConductorResponse;
 import com.example.demo.dto.response.PerfilDespachadorResponse;
 import com.example.demo.service.PerfilService;
@@ -54,6 +55,19 @@ public class PerfilController {
             @PathVariable Long vehiculoId
     ) {
         return ResponseEntity.ok(perfilService.activarVehiculo(vehiculoId));
+    }
+
+    /**
+     * Seguimiento del viaje: el navegador del conductor envía su ubicación cada 15-20 s.
+     * Se sobrescribe la última ubicación conocida (sin historial).
+     */
+    @PutMapping("/conductor/ubicacion")
+    @PreAuthorize("hasRole('CONDUCTOR')")
+    public ResponseEntity<Void> actualizarUbicacionConductor(
+            @Valid @RequestBody UbicacionConductorRequest request
+    ) {
+        perfilService.actualizarUbicacionConductor(request);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/despachador")

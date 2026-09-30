@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.request.PerfilConductorRequest;
 import com.example.demo.dto.request.PerfilDespachadorRequest;
+import com.example.demo.dto.request.UbicacionConductorRequest;
 import com.example.demo.dto.response.PerfilConductorResponse;
 import com.example.demo.dto.response.PerfilDespachadorResponse;
 import com.example.demo.dto.response.VehiculoPerfilResponse;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.Solicitud;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,8 +82,11 @@ public class PerfilServiceImpl implements PerfilService {
             conductor.setCancelacionesTotales(0);
         }
 
-        conductor.setUbicacionLat(request.getUbicacionLat());
-        conductor.setUbicacionLng(request.getUbicacionLng());
+        // La ubicación la actualiza el seguimiento del viaje; el formulario del vehículo ya no la envía.
+        if (request.getUbicacionLat() != null && request.getUbicacionLng() != null) {
+            conductor.setUbicacionLat(request.getUbicacionLat());
+            conductor.setUbicacionLng(request.getUbicacionLng());
+        }
         Conductor conductorGuardado = conductorRepository.save(conductor);
 
         List<Vehiculo> vehiculos = vehiculoRepository.findByConductorId(conductorGuardado.getId());
@@ -158,6 +163,31 @@ public class PerfilServiceImpl implements PerfilService {
         vehiculoRepository.saveAll(vehiculos);
 
         return construirPerfilConductor(usuario, conductor);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarUbicacionConductor(UbicacionConductorRequest request) {
+        Usuario usuario = obtenerUsuarioAutenticado();
+        validarRol(usuario, Usuario.TipoUsuario.CONDUCTOR);
+
+        Conductor conductor = conductorRepository.findByUsuarioId(usuario.getId())
+                .orElseThrow(() -> new EntityNotFoundException("No existe un perfil de conductor asociado al usuario"));
+
+        // Solo se guarda la ubicación durante un viaje: fuera de un flete no hay motivo para rastrear al conductor.
+        boolean tieneViajeActivo = solicitudRepository.existsByConductorIdAndEstadoIn(
+                conductor.getId(),
+                List.of(Solicitud.EstadoSolicitud.ACEPTADA, Solicitud.EstadoSolicitud.EN_CURSO)
+        );
+
+        if (!tieneViajeActivo) {
+            throw new IllegalStateException("Solo se comparte la ubicación mientras tienes un viaje activo.");
+        }
+
+        conductor.setUbicacionLat(request.getLatitud());
+        conductor.setUbicacionLng(request.getLongitud());
+        conductor.setUbicacionActualizadaEn(LocalDateTime.now());
+        conductorRepository.save(conductor);
     }
 
     @Override

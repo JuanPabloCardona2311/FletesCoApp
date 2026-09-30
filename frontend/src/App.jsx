@@ -7,6 +7,7 @@ import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
 import DetalleSolicitudPage from './pages/DetalleSolicitudPage'
 import PublicarSolicitudPage from './pages/PublicarSolicitudPage'
+import SeguimientoUbicacion from './components/SeguimientoUbicacion'
 
 function ProtectedRoute({ children, allowedRole }) {
   const token = localStorage.getItem('fleteco_token')
@@ -25,6 +26,8 @@ function ProtectedRoute({ children, allowedRole }) {
 
 function App() {
   return (
+    <>
+    <SeguimientoUbicacion />
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
@@ -77,6 +80,7 @@ function App() {
         )}
       />
     </Routes>
+    </>
   )
 }
 

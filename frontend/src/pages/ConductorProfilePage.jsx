@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
+import { avisarViajeActualizado, obtenerUbicacionActual } from '../utils/geolocalizacion'
 
 const initialForm = {
   tipoVehiculo: '',
   placa: '',
   capacidadCarga: '',
-  ubicacionLat: '',
-  ubicacionLng: '',
 }
 
 const emptyProfile = {
@@ -50,6 +49,8 @@ function ConductorProfilePage() {
   const [solicitudesDisponibles, setSolicitudesDisponibles] = useState([])
   const [cargandoDisponibles, setCargandoDisponibles] = useState(false)
   const [aceptandoId, setAceptandoId] = useState(null)
+  const [etapaAceptar, setEtapaAceptar] = useState('')
+  const [errorAceptar, setErrorAceptar] = useState({ id: null, mensaje: '' })
 
   const vehiculoActivo = useMemo(
     () => perfil.vehiculos?.find((vehiculo) => vehiculo.activo) || perfil.vehiculos?.[0],
@@ -126,8 +127,6 @@ function ConductorProfilePage() {
       tipoVehiculo: base?.tipoVehiculo || '',
       placa: base?.placa || '',
       capacidadCarga: base?.capacidadCarga?.toString() || '',
-      ubicacionLat: perfil.ubicacionLat?.toString() || '',
-      ubicacionLng: perfil.ubicacionLng?.toString() || '',
     })
     setMensaje('')
     setError('')
@@ -142,8 +141,6 @@ function ConductorProfilePage() {
     tipoVehiculo: form.tipoVehiculo.trim(),
     placa: form.placa.trim(),
     capacidadCarga: Number(form.capacidadCarga),
-    ubicacionLat: form.ubicacionLat ? Number(form.ubicacionLat) : null,
-    ubicacionLng: form.ubicacionLng ? Number(form.ubicacionLng) : null,
   })
 
   const handleSubmit = async (event) => {
@@ -190,16 +187,37 @@ function ConductorProfilePage() {
     setAceptandoId(solicitudId)
     setMensaje('')
     setError('')
+    setErrorAceptar({ id: null, mensaje: '' })
+
     try {
-      await client.post('/api/solicitudes/aceptar', { solicitudId })
+      // Primero el permiso de ubicación: si no se concede, la solicitud sigue disponible para otros.
+      setEtapaAceptar('ubicacion')
+      let ubicacion
+      try {
+        ubicacion = await obtenerUbicacionActual()
+      } catch (errorUbicacion) {
+        setErrorAceptar({
+          id: solicitudId,
+          mensaje: `${errorUbicacion.mensaje} Sin tu ubicación no puedes aceptar; la solicitud sigue disponible.`,
+        })
+        return
+      }
+
+      setEtapaAceptar('aceptando')
+      await client.post('/api/solicitudes/aceptar', { solicitudId, ...ubicacion })
       const responseViaje = await client.get('/api/solicitudes/aceptada')
       setViajeActual(responseViaje.data)
+      avisarViajeActualizado()
       setMensaje('¡Solicitud aceptada! Este es ahora tu viaje actual.')
     } catch (requestError) {
       if (cerrarSesionSiExpiro(requestError)) return
-      setError(requestError.response?.data?.error || 'No fue posible aceptar la solicitud.')
+      setErrorAceptar({
+        id: solicitudId,
+        mensaje: requestError.response?.data?.error || 'No fue posible aceptar la solicitud.',
+      })
     } finally {
       setAceptandoId(null)
+      setEtapaAceptar('')
     }
   }
 
@@ -218,6 +236,7 @@ function ConductorProfilePage() {
     try {
       const accion = esEntrega ? 'entregar' : 'iniciar'
       const response = await client.patch(`/api/solicitudes/${viajeActual.id}/${accion}`)
+      avisarViajeActualizado()
 
       if (response.data.estado === 'COMPLETADA') {
         setViajeActual(null)
@@ -288,17 +307,6 @@ function ConductorProfilePage() {
                   <label>
                     Teléfono
                     <input value={perfil.telefono || ''} readOnly />
-                  </label>
-                </div>
-
-                <div className="two-columns">
-                  <label>
-                    Latitud actual
-                    <input name="ubicacionLat" type="number" step="0.0000001" value={form.ubicacionLat} onChange={handleChange} placeholder="4.7110" />
-                  </label>
-                  <label>
-                    Longitud actual
-                    <input name="ubicacionLng" type="number" step="0.0000001" value={form.ubicacionLng} onChange={handleChange} placeholder="-74.0721" />
                   </label>
                 </div>
 
@@ -404,6 +412,11 @@ function ConductorProfilePage() {
                 </button>
               </div>
 
+              <p className="aviso-ubicacion">
+                📍 Al aceptar una solicitud, tu navegador te pedirá permiso para usar tu ubicación.
+                El despachador la verá mientras el flete esté activo (desde 24 h antes de la recogida hasta la entrega).
+              </p>
+
               {cargandoDisponibles ? (
                 <p className="solicitudes-vacio">Buscando solicitudes compatibles...</p>
               ) : solicitudesDisponibles.length > 0 ? (
@@ -454,6 +467,10 @@ function ConductorProfilePage() {
                         )}
                       </div>
 
+                      {errorAceptar.id === s.id && (
+                        <p className="viaje-aviso" role="alert">{errorAceptar.mensaje}</p>
+                      )}
+
                       <div className="solicitud-actions">
                         <button
                           type="button"
@@ -465,10 +482,12 @@ function ConductorProfilePage() {
                         <button
                           type="button"
                           className="btn-aceptar-flete"
-                          disabled={aceptandoId === s.id}
+                          disabled={aceptandoId !== null}
                           onClick={() => handleAceptarSolicitud(s.id)}
                         >
-                          {aceptandoId === s.id ? 'Aceptando...' : 'Aceptar solicitud'}
+                          {aceptandoId === s.id
+                            ? etapaAceptar === 'ubicacion' ? '📍 Obteniendo ubicación...' : 'Aceptando...'
+                            : 'Aceptar solicitud'}
                         </button>
                       </div>
                     </article>

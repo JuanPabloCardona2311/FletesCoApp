@@ -1,4 +1,5 @@
 package com.example.demo.dto.request;
+
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -9,18 +10,18 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class AceptarSolicitudRequest {
-    @NotNull(message = "El id de la solicitud es obligatorio")
-    private Long solicitudId;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UbicacionConductorRequest {
 
-    // El conductor debe compartir su ubicación para aceptar: el seguimiento empieza desde ACEPTADA.
-    @NotNull(message = "Debes compartir tu ubicación para aceptar la solicitud")
+    @NotNull(message = "La latitud es obligatoria")
     @DecimalMin(value = "-90.0", message = "La latitud debe estar entre -90 y 90")
     @DecimalMax(value = "90.0", message = "La latitud debe estar entre -90 y 90")
     private BigDecimal latitud;
 
-    @NotNull(message = "Debes compartir tu ubicación para aceptar la solicitud")
+    @NotNull(message = "La longitud es obligatoria")
     @DecimalMin(value = "-180.0", message = "La longitud debe estar entre -180 y 180")
     @DecimalMax(value = "180.0", message = "La longitud debe estar entre -180 y 180")
     private BigDecimal longitud;

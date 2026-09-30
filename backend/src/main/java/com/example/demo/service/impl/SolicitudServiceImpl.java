@@ -223,6 +223,12 @@ public class SolicitudServiceImpl implements SolicitudService {
                                         "El conductor no cuenta con un vehículo compatible para aceptar esta solicitud");
                 }
 
+                // Ubicación inicial: el despachador ve al conductor desde el momento en que acepta.
+                conductor.setUbicacionLat(request.getLatitud());
+                conductor.setUbicacionLng(request.getLongitud());
+                conductor.setUbicacionActualizadaEn(LocalDateTime.now());
+                conductorRepository.save(conductor);
+
                 solicitud.setConductor(conductor);
                 solicitud.setEstado(Solicitud.EstadoSolicitud.ACEPTADA);
                 Solicitud solicitudAceptada = solicitudRepository.save(solicitud);
@@ -481,10 +487,13 @@ public class SolicitudServiceImpl implements SolicitudService {
 
         private SolicitudDetalleResponse construirDetalle(Solicitud solicitud) {
                 Usuario usuarioDespachador = solicitud.getDespachador().getUsuario();
-                Usuario usuarioConductor = solicitud.getConductor() != null
-                                ? solicitud.getConductor().getUsuario()
-                                : null;
+                Conductor conductorAsignado = solicitud.getConductor();
+                Usuario usuarioConductor = conductorAsignado != null ? conductorAsignado.getUsuario() : null;
                 Pago pago = pagoRepository.findBySolicitudId(solicitud.getId()).orElse(null);
+
+                // La ubicación del conductor solo se expone mientras el viaje está activo.
+                boolean compartirUbicacion = conductorAsignado != null
+                                && ESTADOS_VIAJE_ACTIVO.contains(solicitud.getEstado());
 
                 return new SolicitudDetalleResponse(
                                 solicitud.getId(),
@@ -521,7 +530,11 @@ public class SolicitudServiceImpl implements SolicitudService {
 
                                 pago != null ? pago.getEstado().name() : null,
                                 pago != null ? pago.getMontoNetoConductor() : null,
-                                pago != null ? pago.getFechaLimiteConfirmacion() : null);
+                                pago != null ? pago.getFechaLimiteConfirmacion() : null,
+
+                                compartirUbicacion ? conductorAsignado.getUbicacionLat() : null,
+                                compartirUbicacion ? conductorAsignado.getUbicacionLng() : null,
+                                compartirUbicacion ? conductorAsignado.getUbicacionActualizadaEn() : null);
         }
 
         private boolean esVehiculoCompatible(String tipoVehiculo, String tipoRequerido) {

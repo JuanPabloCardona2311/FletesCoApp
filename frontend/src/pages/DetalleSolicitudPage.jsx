@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import client from '../api/client'
 import RouteMap from '../components/RouteMap'
+import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
+import {
+  INTERVALO_ENVIO_MS,
+  avisarViajeActualizado,
+  obtenerUbicacionActual,
+} from '../utils/geolocalizacion'
+
+const ESTADOS_CON_SEGUIMIENTO = ['ACEPTADA', 'EN_CURSO']
 
 function DetalleSolicitudPage() {
   const { id } = useParams()
@@ -12,8 +20,26 @@ function DetalleSolicitudPage() {
   const [error, setError] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [aceptando, setAceptando] = useState(false)
+  const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false)
 
   const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
+  const viajeActivo = ESTADOS_CON_SEGUIMIENTO.includes(solicitud?.estado)
+
+  // Mientras el viaje está activo, se refresca la ubicación del conductor al mismo ritmo en que la envía.
+  useEffect(() => {
+    if (!viajeActivo) return undefined
+
+    const intervalo = setInterval(async () => {
+      try {
+        const response = await client.get(`/api/solicitudes/${id}`)
+        setSolicitud(response.data)
+      } catch {
+        // Se conserva la última información; el siguiente intento vuelve a consultar.
+      }
+    }, INTERVALO_ENVIO_MS)
+
+    return () => clearInterval(intervalo)
+  }, [id, viajeActivo])
 
   useEffect(() => {
     async function cargarSolicitud() {
@@ -46,8 +72,21 @@ function DetalleSolicitudPage() {
     setMensaje('')
 
     try {
-      await client.post('/api/solicitudes/aceptar', { solicitudId: Number(id) })
+      // Primero el permiso de ubicación: si no se concede, la solicitud sigue disponible para otros.
+      setObteniendoUbicacion(true)
+      let ubicacion
+      try {
+        ubicacion = await obtenerUbicacionActual()
+      } catch (errorUbicacion) {
+        setError(`${errorUbicacion.mensaje} Sin tu ubicación no puedes aceptar; la solicitud sigue disponible.`)
+        return
+      } finally {
+        setObteniendoUbicacion(false)
+      }
+
+      await client.post('/api/solicitudes/aceptar', { solicitudId: Number(id), ...ubicacion })
       setMensaje('¡Flete aceptado con éxito!')
+      avisarViajeActualizado()
       // Recargar la solicitud para ver el nuevo estado
       const response = await client.get(`/api/solicitudes/${id}`)
       setSolicitud(response.data)
@@ -120,8 +159,15 @@ function DetalleSolicitudPage() {
               onClick={handleAceptar}
               disabled={aceptando}
             >
-              {aceptando ? 'Aceptando flete...' : '✓ Aceptar este flete'}
+              {obteniendoUbicacion
+                ? '📍 Obteniendo ubicación...'
+                : aceptando ? 'Aceptando flete...' : '✓ Aceptar este flete'}
             </button>
+          )}
+          {puedeAceptar && (
+            <small className="detalle-pago-nota">
+              📍 Te pediremos permiso para usar tu ubicación durante el viaje.
+            </small>
           )}
         </div>
       </header>
@@ -190,12 +236,18 @@ function DetalleSolicitudPage() {
       </div>
 
       <section className="detalle-panel">
-        <h2 className="detalle-panel-titulo">🗺️ Ruta sugerida en el mapa</h2>
+        <h2 className="detalle-panel-titulo">
+          {viajeActivo ? '🗺️ Ruta y ubicación del conductor' : '🗺️ Ruta sugerida en el mapa'}
+        </h2>
+        <EstadoUbicacionConductor flete={solicitud} />
         <RouteMap
           origenLat={Number(solicitud.origenLat)}
           origenLng={Number(solicitud.origenLng)}
           destinoLat={Number(solicitud.destinoLat)}
           destinoLng={Number(solicitud.destinoLng)}
+          ubicacionConductor={viajeActivo && solicitud.conductorLat != null
+            ? { lat: Number(solicitud.conductorLat), lng: Number(solicitud.conductorLng) }
+            : null}
         />
       </section>
     </main>

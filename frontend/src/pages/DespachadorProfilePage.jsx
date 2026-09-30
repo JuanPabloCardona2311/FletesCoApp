@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
+import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
+import { INTERVALO_ENVIO_MS } from '../utils/geolocalizacion'
 
 const initialForm = {
   nombreEmpresa: '',
@@ -93,6 +95,23 @@ function DespachadorProfilePage() {
   useEffect(() => {
     cargarFletes()
   }, [cargarFletes])
+
+  // Refresco silencioso para seguir la ubicación y el estado de los fletes activos.
+  const hayViajesActivos = fletes.some((f) => ['ACEPTADA', 'EN_CURSO'].includes(f.estado))
+  useEffect(() => {
+    if (!hayViajesActivos) return undefined
+
+    const intervalo = setInterval(async () => {
+      try {
+        const response = await client.get('/api/solicitudes/mis-fletes')
+        setFletes(response.data || [])
+      } catch {
+        // Se conserva la última información; el siguiente intento vuelve a consultar.
+      }
+    }, INTERVALO_ENVIO_MS)
+
+    return () => clearInterval(intervalo)
+  }, [hayViajesActivos])
 
   const abrirEdicionEmpresa = () => {
     setForm({
@@ -253,6 +272,8 @@ function DespachadorProfilePage() {
                         </li>
                       </ol>
 
+                      <EstadoUbicacionConductor flete={flete} />
+
                       {flete.telefonoConductor && (
                         <div className="viaje-contacto">
                           <span>Conductor asignado</span>
@@ -273,7 +294,9 @@ function DespachadorProfilePage() {
                           className="btn-ver-detalle"
                           onClick={() => navigate(`/solicitudes/${flete.id}`)}
                         >
-                          Ver detalles y mapa
+                          {['ACEPTADA', 'EN_CURSO'].includes(flete.estado)
+                            ? '🗺️ Ver ubicación en el mapa'
+                            : 'Ver detalles y mapa'}
                         </button>
                         {puedeConfirmar && (
                           <button

@@ -56,6 +56,7 @@ function RouteMap({
     origenLng,
     destinoLat,
     destinoLng,
+    ubicacionConductor = null,
 }) {
     const [ruta, setRuta] = useState([])
     const [cargando, setCargando] = useState(false)
@@ -135,11 +136,24 @@ function RouteMap({
                 >
                     <Popup>Destino</Popup>
                 </CircleMarker>
+
+                {ubicacionConductor && (
+                    <CircleMarker
+                        center={[ubicacionConductor.lat, ubicacionConductor.lng]}
+                        radius={11}
+                        pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#d9a441', fillOpacity: 1 }}
+                    >
+                        <Popup>🚚 Conductor</Popup>
+                    </CircleMarker>
+                )}
             </MapContainer>
 
             <div className="route-map-leyenda">
                 <span><i className="route-map-punto route-map-punto-origen" /> Origen</span>
                 <span><i className="route-map-punto route-map-punto-destino" /> Destino</span>
+                {ubicacionConductor && (
+                    <span><i className="route-map-punto route-map-punto-conductor" /> Conductor</span>
+                )}
             </div>
 
             {infoRuta && (

@@ -1019,6 +1019,63 @@ button:disabled {
   text-decoration: none;
 }
 
+/* ── Ubicación del conductor ── */
+
+.aviso-ubicacion {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: #eef4fa;
+  border: 1px solid #d6e3ef;
+  border-radius: 8px;
+  color: var(--accent-blue);
+  font: 500 0.82rem var(--font-body);
+}
+
+.detalle-pago-nota {
+  max-width: 240px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.ubicacion-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font: 600 0.85rem var(--font-body);
+}
+
+.solicitud-card-disponible .ubicacion-estado {
+  margin: 0;
+}
+
+.ubicacion-en-vivo {
+  background: #dceee0;
+  color: #215b30;
+}
+
+.ubicacion-sin-senal {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ubicacion-espera {
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+
+.ubicacion-punto {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #2e7d32;
+  box-shadow: 0 0 0 3px #b8dcc0;
+}
+
 .viaje-aviso {
   margin: 0;
   padding: 12px 14px;
