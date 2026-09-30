@@ -74,7 +74,7 @@ function SelectorRutaMap({ origen, destino, modo, onModoChange, onSeleccionar, o
           <CircleMarker
             center={[origen.lat, origen.lng]}
             radius={9}
-            pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.9 }}
+            pathOptions={{ color: '#15803d', fillColor: '#16a34a', fillOpacity: 0.9 }}
           >
             <Popup>Origen</Popup>
           </CircleMarker>

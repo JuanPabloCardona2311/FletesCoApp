@@ -1,8 +1,9 @@
+import logoFletesCo from '../assets/logo-fletesco.png'
+
 function Logo() {
   return (
     <div className="logo">
-      <span className="logo__flete">Flete</span>
-      <span className="logo__co">CO</span>
+      <img className="logo__img" src={logoFletesCo} alt="FletesCo · Tu carga en buenas manos" />
     </div>
   )
 }
