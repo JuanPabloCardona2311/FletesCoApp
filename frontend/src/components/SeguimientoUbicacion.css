@@ -9,7 +9,7 @@
   max-width: min(420px, calc(100vw - 32px));
   padding: 10px 14px;
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgb(31 52 38 / 18%);
+  box-shadow: 0 8px 24px rgb(0 47 91 / 18%);
   font: 600 0.85rem var(--font-body);
 }
 
@@ -42,16 +42,16 @@
   height: 10px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #7ee2a0;
+  background: var(--success);
   animation: seguimiento-pulso 1.6s ease-out infinite;
 }
 
 @keyframes seguimiento-pulso {
   0% {
-    box-shadow: 0 0 0 0 rgb(126 226 160 / 70%);
+    box-shadow: 0 0 0 0 rgb(46 158 91 / 70%);
   }
   100% {
-    box-shadow: 0 0 0 10px rgb(126 226 160 / 0%);
+    box-shadow: 0 0 0 10px rgb(46 158 91 / 0%);
   }
 }
 

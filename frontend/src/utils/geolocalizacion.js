@@ -32,7 +32,7 @@ export function traducirErrorGeolocalizacion(error) {
 // Detecta los casos en que el navegador ni siquiera puede mostrar el mensaje de permiso.
 export function verificarSoporteGeolocalizacion() {
   if (!window.isSecureContext) {
-    return crearError('INSEGURO', 'Tu navegador solo permite compartir la ubicación en conexiones seguras (HTTPS). Abre FleteCo desde una dirección https:// o desde localhost.')
+    return crearError('INSEGURO', 'Tu navegador solo permite compartir la ubicación en conexiones seguras (HTTPS). Abre FletesCo desde una dirección https:// o desde localhost.')
   }
   if (!('geolocation' in navigator)) {
     return crearError('NO_SOPORTADO', 'Tu navegador no permite compartir la ubicación. Usa una versión actualizada de Chrome, Edge, Firefox o Safari.')
@@ -56,7 +56,7 @@ export async function obtenerUbicacionActual() {
 
   // Si el permiso ya fue bloqueado, el navegador no vuelve a preguntar: explicamos cómo reactivarlo.
   if (await consultarEstadoPermiso() === 'denied') {
-    throw crearError('DENEGADO', `Tienes bloqueado el acceso a tu ubicación para FleteCo. ${INSTRUCCIONES_REACTIVAR}`)
+    throw crearError('DENEGADO', `Tienes bloqueado el acceso a tu ubicación para FletesCo. ${INSTRUCCIONES_REACTIVAR}`)
   }
 
   return new Promise((resolve, reject) => {

@@ -1,15 +1,16 @@
 :root {
-  --ink: #17261f;
-  --paper: #faf8f2;
+  --ink: #1a1f26;
+  --paper: #f5f7f9;
   --surface: #ffffff;
-  --surface-soft: #f2f6f4;
-  --primary: #2b5b3e;
-  --primary-hover: #234a32;
-  --accent-gold: #d9a441;
-  --accent-blue: #315f8c;
-  --border: #cbd5ca;
-  --error: #8b2929;
-  --muted: #5b675e;
+  --surface-soft: #eef2f5;
+  --primary: #002f5b;
+  --primary-hover: #001f3d;
+  --accent: #fc850d;
+  --success: #2e9e5b;
+  --warning: #d6a419;
+  --error: #c0392b;
+  --border: #d8dee4;
+  --muted: #5c6670;
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Inter", Arial, sans-serif;
 }
@@ -20,7 +21,7 @@
   place-items: center;
   padding: 32px 16px;
   background:
-    linear-gradient(120deg, rgb(250 248 242 / 92%), rgb(233 238 232 / 88%)),
+    linear-gradient(120deg, rgb(245 247 249 / 92%), rgb(232 237 242 / 88%)),
     url("./assets/hero.png") center / cover;
 }
 
@@ -29,7 +30,7 @@
   padding: 40px;
   background: var(--paper);
   border: 1px solid var(--border);
-  box-shadow: 0 20px 50px rgb(31 52 38 / 14%);
+  box-shadow: 0 20px 50px rgb(0 47 91 / 14%);
 }
 
 h1 {
@@ -69,7 +70,7 @@ select {
   width: 100%;
   margin-top: 7px;
   padding: 12px;
-  border: 1px solid #aebcaf;
+  border: 1px solid #aeb8c2;
   background: white;
   color: var(--ink);
   font: 1rem var(--font-body);
@@ -83,7 +84,7 @@ input:read-only {
 
 input:focus,
 select:focus {
-  outline: 2px solid var(--accent-gold);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -135,12 +136,12 @@ button:disabled {
 
 .secondary-button {
   align-self: start;
-  background: #e8eef4;
-  color: var(--accent-blue);
+  background: color-mix(in srgb, var(--primary) 8%, white);
+  color: var(--primary);
 }
 
 .secondary-button:hover:not(:disabled) {
-  background: #d9e4ee;
+  background: color-mix(in srgb, var(--primary) 14%, white);
 }
 
 .success,
@@ -152,12 +153,12 @@ button:disabled {
 }
 
 .success {
-  background: #dceee0;
-  color: #215b30;
+  background: color-mix(in srgb, var(--success) 20%, white);
+  color: var(--success);
 }
 
 .error {
-  background: #f7dddd;
+  background: color-mix(in srgb, var(--error) 14%, white);
   color: var(--error);
 }
 
@@ -193,30 +194,19 @@ button:disabled {
 }
 
 .logo {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2px;
+  display: block;
   margin-bottom: 20px;
-  font-family: var(--font-display);
 }
 
-.logo__flete,
-.logo__co {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0;
-}
-
-.logo__flete {
-  color: var(--ink);
-}
-
-.logo__co {
-  color: var(--accent-gold);
+.logo__img {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
 }
 
 .role-option:has(input:checked) {
-  color: var(--accent-gold);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -257,8 +247,8 @@ button:disabled {
 }
 
 .profile-nav a:hover {
-  background: #e8eef4;
-  color: var(--accent-blue);
+  background: color-mix(in srgb, var(--primary) 8%, white);
+  color: var(--primary);
 }
 
 .workspace {
@@ -275,7 +265,7 @@ button:disabled {
 
 .eyebrow {
   margin: 0 0 8px;
-  color: var(--accent-blue);
+  color: var(--primary);
   font: 800 0.75rem var(--font-body);
   letter-spacing: 0;
   text-transform: uppercase;
@@ -294,7 +284,7 @@ button:disabled {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 12px 32px rgb(31 52 38 / 8%);
+  box-shadow: 0 12px 32px rgb(0 47 91 / 8%);
 }
 
 .panel-heading {
@@ -311,8 +301,8 @@ button:disabled {
   align-items: center;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #fff3d6;
-  color: #825f10;
+  background: color-mix(in srgb, var(--warning) 20%, white);
+  color: color-mix(in srgb, var(--warning) 55%, black);
   font: 800 0.75rem var(--font-body);
 }
 
@@ -340,7 +330,7 @@ button:disabled {
   gap: 6px;
   padding: 14px;
   background: var(--surface-soft);
-  border: 1px solid #d9e1db;
+  border: 1px solid var(--border);
   border-radius: 8px;
 }
 
@@ -420,14 +410,14 @@ button:disabled {
   justify-content: space-between;
   padding: 10px 12px;
   background: var(--surface-soft);
-  border: 1px solid #d9e1db;
+  border: 1px solid var(--border);
   border-radius: 8px;
   gap: 8px;
 }
 
 .vehiculo-item.activo {
-  border-color: #2e7d32;
-  background: #f1f8f3;
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 8%, white);
 }
 
 .vehiculo-item-info {
@@ -439,8 +429,8 @@ button:disabled {
 .badge-activo {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #1b5e20;
-  background: #c8e6c9;
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 20%, white);
   padding: 4px 8px;
   border-radius: 4px;
 }
@@ -449,15 +439,15 @@ button:disabled {
   padding: 6px 12px;
   font-size: 0.8rem;
   border-radius: 6px;
-  background: #1976d2;
+  background: var(--primary);
   color: #ffffff;
   border: none;
   cursor: pointer;
   white-space: nowrap;
 }
 
-.btn-activar-vehiculo:hover {
-  background: #1565c0;
+.btn-activar-vehiculo:hover:not(:disabled) {
+  background: var(--primary-hover);
 }
 
 .btn-activar-vehiculo:disabled {
@@ -506,7 +496,7 @@ button:disabled {
 }
 
 .solicitud-card-disponible:hover {
-  box-shadow: 0 8px 24px rgb(31 52 38 / 10%);
+  box-shadow: 0 8px 24px rgb(0 47 91 / 10%);
   transform: translateY(-1px);
 }
 
@@ -516,7 +506,7 @@ button:disabled {
   align-items: flex-start;
   gap: 16px;
   padding-bottom: 14px;
-  border-bottom: 1px solid #e3e9e4;
+  border-bottom: 1px solid var(--border);
 }
 
 .solicitud-titulo {
@@ -538,7 +528,7 @@ button:disabled {
   align-items: flex-end;
   gap: 2px;
   padding: 8px 14px;
-  background: #e8f3ea;
+  background: color-mix(in srgb, var(--primary) 8%, white);
   border-radius: 8px;
   text-align: right;
 }
@@ -569,7 +559,7 @@ button:disabled {
   gap: 3px;
   padding: 10px 12px;
   background: var(--surface-soft);
-  border: 1px solid #e3e9e4;
+  border: 1px solid var(--border);
   border-radius: 6px;
 }
 
@@ -593,9 +583,9 @@ button:disabled {
 
 .solicitud-tag {
   padding: 4px 10px;
-  background: #eef2ef;
-  color: #334139;
-  border: 1px solid #dde5df;
+  background: var(--surface-soft);
+  color: var(--ink);
+  border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -613,7 +603,7 @@ button:disabled {
   flex-wrap: wrap;
   gap: 10px;
   padding-top: 14px;
-  border-top: 1px solid #e3e9e4;
+  border-top: 1px solid var(--border);
 }
 
 /* ── Línea de recorrido (tarjeta y detalle) ── */
@@ -635,7 +625,7 @@ button:disabled {
   top: 10px;
   bottom: 10px;
   left: 6px;
-  border-left: 2px dashed #b9c6bc;
+  border-left: 2px dashed #aeb8c2;
 }
 
 .ruta-punto {
@@ -658,12 +648,13 @@ button:disabled {
   box-shadow: 0 0 0 1px var(--border);
 }
 
+/* Colores geográficos (origen/destino), independientes de los estados de negocio. */
 .ruta-punto-origen::before {
-  background: var(--primary);
+  background: #16a34a;
 }
 
 .ruta-punto-destino::before {
-  background: #b3261e;
+  background: #ef4444;
 }
 
 .ruta-etiqueta {
@@ -702,8 +693,8 @@ button:disabled {
 
 .btn-ver-detalle {
   background: #ffffff;
-  color: var(--accent-blue);
-  border: 1px solid var(--accent-blue);
+  color: var(--primary);
+  border: 1px solid var(--primary);
   padding: 10px 18px;
   border-radius: 6px;
   font-weight: 700;
@@ -711,7 +702,7 @@ button:disabled {
 }
 
 .btn-ver-detalle:hover:not(:disabled) {
-  background: #eef4fa;
+  background: color-mix(in srgb, var(--primary) 6%, white);
 }
 
 .btn-actualizar {
@@ -742,7 +733,7 @@ button:disabled {
   align-self: flex-start;
   padding: 0;
   background: none;
-  color: var(--accent-blue);
+  color: var(--primary);
   font-size: 0.9rem;
 }
 
@@ -765,7 +756,7 @@ button:disabled {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 12px 32px rgb(31 52 38 / 8%);
+  box-shadow: 0 12px 32px rgb(0 47 91 / 8%);
 }
 
 .detalle-hero-meta {
@@ -781,15 +772,15 @@ button:disabled {
 .detalle-estado {
   padding: 4px 10px;
   border-radius: 999px;
-  background: #e8eef4;
-  color: var(--accent-blue);
+  background: color-mix(in srgb, var(--primary) 8%, white);
+  color: var(--primary);
   font-size: 0.75rem;
   font-weight: 800;
 }
 
 .detalle-estado-publicada {
-  background: #dceee0;
-  color: #215b30;
+  background: color-mix(in srgb, var(--success) 20%, white);
+  color: var(--success);
 }
 
 .detalle-pago {
@@ -800,7 +791,7 @@ button:disabled {
   gap: 4px;
   min-width: 240px;
   padding: 16px 20px;
-  background: #e8f3ea;
+  background: color-mix(in srgb, var(--primary) 8%, white);
   border-radius: 8px;
 }
 
@@ -831,13 +822,13 @@ button:disabled {
 }
 
 .detalle-alerta-ok {
-  background: #dcfce7;
-  color: #166534;
+  background: color-mix(in srgb, var(--success) 20%, white);
+  color: var(--success);
 }
 
 .detalle-alerta-error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--error) 14%, white);
+  color: var(--error);
 }
 
 .detalle-panel {
@@ -845,13 +836,13 @@ button:disabled {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgb(31 52 38 / 6%);
+  box-shadow: 0 6px 18px rgb(0 47 91 / 6%);
 }
 
 .detalle-panel-titulo {
   margin: 0 0 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e3e9e4;
+  border-bottom: 1px solid var(--border);
   font-size: 1.05rem;
 }
 
@@ -873,7 +864,7 @@ button:disabled {
   align-items: baseline;
   gap: 16px;
   padding: 10px 0;
-  border-bottom: 1px solid #eef2ef;
+  border-bottom: 1px solid var(--surface-soft);
 }
 
 .detalle-datos div:last-child {
@@ -930,7 +921,7 @@ button:disabled {
 }
 
 .flete-por-confirmar {
-  border-left-color: var(--accent-gold);
+  border-left-color: var(--accent);
 }
 
 .viaje-paso {
@@ -951,7 +942,7 @@ button:disabled {
   top: 15px;
   left: -50%;
   width: 100%;
-  border-top: 3px solid #dde5df;
+  border-top: 3px solid var(--border);
   z-index: 0;
 }
 
@@ -971,7 +962,7 @@ button:disabled {
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 2px solid #dde5df;
+  border: 2px solid var(--border);
   border-radius: 50%;
   background: #ffffff;
   font-weight: 800;
@@ -990,7 +981,7 @@ button:disabled {
 .viaje-paso.actual .viaje-paso-marca {
   border-color: var(--primary);
   color: var(--primary);
-  box-shadow: 0 0 0 4px #dceee0;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 15%, white);
 }
 
 .viaje-contacto {
@@ -999,8 +990,8 @@ button:disabled {
   align-items: baseline;
   gap: 4px 12px;
   padding: 12px 14px;
-  background: #eef4fa;
-  border: 1px solid #d6e3ef;
+  background: color-mix(in srgb, var(--primary) 6%, white);
+  border: 1px solid color-mix(in srgb, var(--primary) 15%, white);
   border-radius: 8px;
   font-size: 0.9rem;
 }
@@ -1014,7 +1005,7 @@ button:disabled {
 }
 
 .viaje-contacto a {
-  color: var(--accent-blue);
+  color: var(--primary);
   font-weight: 700;
   text-decoration: none;
 }
@@ -1024,10 +1015,10 @@ button:disabled {
 .aviso-ubicacion {
   margin: 12px 0 0;
   padding: 10px 12px;
-  background: #eef4fa;
-  border: 1px solid #d6e3ef;
+  background: color-mix(in srgb, var(--primary) 6%, white);
+  border: 1px solid color-mix(in srgb, var(--primary) 15%, white);
   border-radius: 8px;
-  color: var(--accent-blue);
+  color: var(--primary);
   font: 500 0.82rem var(--font-body);
 }
 
@@ -1053,8 +1044,8 @@ button:disabled {
 }
 
 .ubicacion-en-vivo {
-  background: #dceee0;
-  color: #215b30;
+  background: color-mix(in srgb, var(--success) 20%, white);
+  color: var(--success);
 }
 
 .ubicacion-sin-senal {
@@ -1072,8 +1063,8 @@ button:disabled {
   height: 10px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #2e7d32;
-  box-shadow: 0 0 0 3px #b8dcc0;
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 35%, white);
 }
 
 .viaje-aviso {
@@ -1094,7 +1085,7 @@ button:disabled {
   margin-top: 4px;
   padding: 0;
   background: none;
-  color: var(--accent-blue);
+  color: var(--primary);
   font-size: 0.8rem;
 }
 

@@ -1,11 +1,11 @@
-# Frontend de FleteCo
+# Frontend de FletesCo
 
-Aplicación web desarrollada con React y Vite para conectar despachadores y conductores de la plataforma FleteCo.
+Aplicación web desarrollada con React y Vite para conectar despachadores y conductores de la plataforma FletesCo.
 
 ## Requisitos
 
 - Node.js instalado.
-- Backend de FleteCo ejecutándose en `http://localhost:8080`.
+- Backend de FletesCo ejecutándose en `http://localhost:8080`.
 
 ## Instalación
 

@@ -14,7 +14,7 @@ function AdminProfilePage() {
     const token = localStorage.getItem('fleteco_token')
     const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
     const email = localStorage.getItem('fleteco_email') || 'admin@fleteco.com'
-    const nombre = localStorage.getItem('fleteco_nombre') || 'Administrador FleteCo'
+    const nombre = localStorage.getItem('fleteco_nombre') || 'Administrador FletesCo'
 
     if (!token || tipoUsuario !== 'ADMINISTRADOR') {
       navigate('/')
@@ -38,7 +38,7 @@ function AdminProfilePage() {
         <section className="profile-panel">
           <div className="panel-heading">
             <h2>Acceso de Administrador Confirmado</h2>
-            <span className="status-chip" style={{ background: '#dceee0', color: '#215b30' }}>
+            <span className="status-chip" style={{ background: 'color-mix(in srgb, var(--success) 20%, white)', color: 'var(--success)' }}>
               ● SESIÓN ACTIVA
             </span>
           </div>
@@ -58,14 +58,14 @@ function AdminProfilePage() {
 
             <div style={{ padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--paper)' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>ESTADO EN BD</span>
-              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: '#215b30' }}>
+              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>
                 ACTIVO
               </p>
             </div>
 
             <div style={{ padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--paper)' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>PROTECCIÓN DE RUTA</span>
-              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent-blue)' }}>
+              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--primary)' }}>
                 HABILITADA
               </p>
             </div>
@@ -99,7 +99,7 @@ function AdminProfilePage() {
           <div className="vehicle-card" style={{ borderColor: 'var(--primary)' }}>
             <span>Tipo de Cuenta</span>
             <strong>{adminInfo.tipoUsuario}</strong>
-            <small style={{ color: '#215b30' }}>AUTORIZADO</small>
+            <small style={{ color: 'var(--success)' }}>AUTORIZADO</small>
           </div>
         </aside>
       </div>

@@ -50,7 +50,7 @@ function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Iniciar sesión" subtitle="Accede a tu espacio de trabajo en FleteCo.">
+    <AuthLayout title="Iniciar sesión" subtitle="Accede a tu espacio de trabajo en FletesCo.">
       <form onSubmit={handleSubmit}>
         <label>
           Correo electrónico

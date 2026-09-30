@@ -118,13 +118,13 @@ function RouteMap({
                 />
 
                 {ruta.length > 0 && (
-                    <Polyline positions={ruta} pathOptions={{ color: '#315f8c', weight: 4, opacity: 0.85 }} />
+                    <Polyline positions={ruta} pathOptions={{ color: '#002f5b', weight: 4, opacity: 0.85 }} />
                 )}
 
                 <CircleMarker
                     center={[origenLat, origenLng]}
                     radius={9}
-                    pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#2b5b3e', fillOpacity: 1 }}
+                    pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#16a34a', fillOpacity: 1 }}
                 >
                     <Popup>Origen</Popup>
                 </CircleMarker>
@@ -132,7 +132,7 @@ function RouteMap({
                 <CircleMarker
                     center={[destinoLat, destinoLng]}
                     radius={9}
-                    pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#b3261e', fillOpacity: 1 }}
+                    pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#ef4444', fillOpacity: 1 }}
                 >
                     <Popup>Destino</Popup>
                 </CircleMarker>
@@ -141,7 +141,7 @@ function RouteMap({
                     <CircleMarker
                         center={[ubicacionConductor.lat, ubicacionConductor.lng]}
                         radius={11}
-                        pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#d9a441', fillOpacity: 1 }}
+                        pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#fc850d', fillOpacity: 1 }}
                     >
                         <Popup>🚚 Conductor</Popup>
                     </CircleMarker>

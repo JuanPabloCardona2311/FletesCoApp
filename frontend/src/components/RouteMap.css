@@ -28,16 +28,17 @@
   box-shadow: 0 0 0 1px var(--border);
 }
 
+/* Colores geográficos (origen/destino), independientes de los estados de negocio. */
 .route-map-punto-origen {
-  background: #2b5b3e;
+  background: #16a34a;
 }
 
 .route-map-punto-destino {
-  background: #b3261e;
+  background: #ef4444;
 }
 
 .route-map-punto-conductor {
-  background: #d9a441;
+  background: var(--accent);
 }
 
 .route-map-stats {
