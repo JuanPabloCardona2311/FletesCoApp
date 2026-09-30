@@ -8,6 +8,7 @@ import com.example.demo.dto.response.PerfilDespachadorResponse;
 public interface PerfilService {
     PerfilConductorResponse obtenerPerfilConductor();
     PerfilConductorResponse guardarPerfilConductor(PerfilConductorRequest request);
+    PerfilConductorResponse activarVehiculo(Long vehiculoId);
     PerfilDespachadorResponse obtenerPerfilDespachador();
     PerfilDespachadorResponse guardarPerfilDespachador(PerfilDespachadorRequest request);
 }

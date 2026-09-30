@@ -116,45 +116,51 @@ function RouteMap({
                     destinoLng={destinoLng}
                 />
 
+                {ruta.length > 0 && (
+                    <Polyline positions={ruta} pathOptions={{ color: '#315f8c', weight: 4, opacity: 0.85 }} />
+                )}
+
                 <CircleMarker
                     center={[origenLat, origenLng]}
-                    radius={8}
+                    radius={9}
+                    pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#2b5b3e', fillOpacity: 1 }}
                 >
                     <Popup>Origen</Popup>
                 </CircleMarker>
 
                 <CircleMarker
                     center={[destinoLat, destinoLng]}
-                    radius={8}
+                    radius={9}
+                    pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#b3261e', fillOpacity: 1 }}
                 >
                     <Popup>Destino</Popup>
                 </CircleMarker>
-
-                {ruta.length > 0 && (
-                    <Polyline positions={ruta} />
-                )}
             </MapContainer>
 
-            {infoRuta && (
-                <div>
-                    <p>
-                        <strong>Distancia aproximada:</strong>{' '}
-                        {infoRuta.distanciaKm.toFixed(1)} km
-                    </p>
+            <div className="route-map-leyenda">
+                <span><i className="route-map-punto route-map-punto-origen" /> Origen</span>
+                <span><i className="route-map-punto route-map-punto-destino" /> Destino</span>
+            </div>
 
-                    <p>
-                        <strong>Duración estimada:</strong>{' '}
-                        {formatearDuracion(infoRuta.duracionMinutos)}
-                    </p>
+            {infoRuta && (
+                <div className="route-map-stats">
+                    <div>
+                        <span>Distancia aproximada</span>
+                        <strong>{infoRuta.distanciaKm.toFixed(1)} km</strong>
+                    </div>
+                    <div>
+                        <span>Duración estimada</span>
+                        <strong>{formatearDuracion(infoRuta.duracionMinutos)}</strong>
+                    </div>
                 </div>
             )}
 
             {cargando && (
-                <p>Calculando ruta sugerida...</p>
+                <p className="route-map-mensaje">Calculando ruta sugerida...</p>
             )}
 
             {error && (
-                <p>{error}</p>
+                <p className="route-map-mensaje route-map-error">{error}</p>
             )}
         </>
     )

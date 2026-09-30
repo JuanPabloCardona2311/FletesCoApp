@@ -406,3 +406,697 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+.vehiculos-registrados-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.vehiculo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--surface-soft);
+  border: 1px solid #d9e1db;
+  border-radius: 8px;
+  gap: 8px;
+}
+
+.vehiculo-item.activo {
+  border-color: #2e7d32;
+  background: #f1f8f3;
+}
+
+.vehiculo-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badge-activo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1b5e20;
+  background: #c8e6c9;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.btn-activar-vehiculo {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  background: #1976d2;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-activar-vehiculo:hover {
+  background: #1565c0;
+}
+
+.btn-activar-vehiculo:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Solicitudes disponibles (perfil conductor) ── */
+
+.solicitudes-heading {
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.solicitudes-subtitulo {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font: 0.85rem var(--font-body);
+}
+
+.solicitudes-vacio {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font: 0.9rem var(--font-body);
+}
+
+.solicitudes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.solicitud-card-disponible {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.solicitud-card-disponible:hover {
+  box-shadow: 0 8px 24px rgb(31 52 38 / 10%);
+  transform: translateY(-1px);
+}
+
+.solicitud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e3e9e4;
+}
+
+.solicitud-titulo {
+  display: block;
+  color: var(--ink);
+  font: 700 1.2rem var(--font-display);
+}
+
+.solicitud-publicada {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.solicitud-precio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 8px 14px;
+  background: #e8f3ea;
+  border-radius: 8px;
+  text-align: right;
+}
+
+.solicitud-precio span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.solicitud-precio strong {
+  color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.solicitud-fechas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.solicitud-fechas div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  background: var(--surface-soft);
+  border: 1px solid #e3e9e4;
+  border-radius: 6px;
+}
+
+.solicitud-fechas span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.solicitud-fechas strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.solicitud-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.solicitud-tag {
+  padding: 4px 10px;
+  background: #eef2ef;
+  color: #334139;
+  border: 1px solid #dde5df;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.solicitud-tag-alerta {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f6dea0;
+}
+
+.solicitud-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #e3e9e4;
+}
+
+/* ── Línea de recorrido (tarjeta y detalle) ── */
+
+.ruta-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-body);
+}
+
+.ruta-timeline::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 6px;
+  border-left: 2px dashed #b9c6bc;
+}
+
+.ruta-punto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 26px;
+}
+
+.ruta-punto::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.ruta-punto-origen::before {
+  background: var(--primary);
+}
+
+.ruta-punto-destino::before {
+  background: #b3261e;
+}
+
+.ruta-etiqueta {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ruta-lugar {
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* ── Botones de solicitudes ── */
+
+.btn-aceptar-flete {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-aceptar-flete:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-aceptar-flete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ver-detalle {
+  background: #ffffff;
+  color: var(--accent-blue);
+  border: 1px solid var(--accent-blue);
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-ver-detalle:hover:not(:disabled) {
+  background: #eef4fa;
+}
+
+.btn-actualizar {
+  background: #ffffff;
+  color: var(--primary);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.btn-actualizar:hover:not(:disabled) {
+  background: var(--surface-soft);
+}
+
+/* ── Página de detalle de solicitud ── */
+
+.detalle-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+  font-family: var(--font-body);
+}
+
+.detalle-volver {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  color: var(--accent-blue);
+  font-size: 0.9rem;
+}
+
+.detalle-volver:hover:not(:disabled) {
+  background: none;
+  text-decoration: underline;
+}
+
+.detalle-estado-carga {
+  color: var(--muted);
+}
+
+.detalle-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgb(31 52 38 / 8%);
+}
+
+.detalle-hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.detalle-estado {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e8eef4;
+  color: var(--accent-blue);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.detalle-estado-publicada {
+  background: #dceee0;
+  color: #215b30;
+}
+
+.detalle-pago {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 240px;
+  padding: 16px 20px;
+  background: #e8f3ea;
+  border-radius: 8px;
+}
+
+.detalle-pago span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.detalle-pago strong {
+  color: var(--primary);
+  font: 700 1.8rem var(--font-display);
+  white-space: nowrap;
+}
+
+.detalle-btn-aceptar {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 20px;
+  font-size: 1rem;
+}
+
+.detalle-alerta {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.detalle-alerta-ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.detalle-alerta-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.detalle-panel {
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgb(31 52 38 / 6%);
+}
+
+.detalle-panel-titulo {
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e3e9e4;
+  font-size: 1.05rem;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.detalle-datos {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.detalle-datos div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef2ef;
+}
+
+.detalle-datos div:last-child {
+  border-bottom: 0;
+}
+
+.detalle-datos dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.detalle-datos dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 700;
+  text-align: right;
+}
+
+.detalle-datos dd.detalle-dato-alerta {
+  color: #92400e;
+}
+
+/* ── Viaje actual del conductor ── */
+
+.conductor-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.viaje-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-top: 4px solid var(--primary);
+  font-family: var(--font-body);
+}
+
+.viaje-panel .eyebrow {
+  margin-bottom: 4px;
+}
+
+.viaje-pasos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.viaje-pasos-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.flete-por-confirmar {
+  border-left-color: var(--accent-gold);
+}
+
+.viaje-paso {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.viaje-paso::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -50%;
+  width: 100%;
+  border-top: 3px solid #dde5df;
+  z-index: 0;
+}
+
+.viaje-paso:first-child::before {
+  display: none;
+}
+
+.viaje-paso.hecho::before,
+.viaje-paso.actual::before {
+  border-color: var(--primary);
+}
+
+.viaje-paso-marca {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #dde5df;
+  border-radius: 50%;
+  background: #ffffff;
+  font-weight: 800;
+}
+
+.viaje-paso.hecho .viaje-paso-marca {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.viaje-paso.actual {
+  color: var(--primary);
+}
+
+.viaje-paso.actual .viaje-paso-marca {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 0 4px #dceee0;
+}
+
+.viaje-contacto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 12px 14px;
+  background: #eef4fa;
+  border: 1px solid #d6e3ef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.viaje-contacto span {
+  width: 100%;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.viaje-contacto a {
+  color: var(--accent-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.viaje-aviso {
+  margin: 0;
+  padding: 12px 14px;
+  background: #fef3c7;
+  border: 1px solid #f6dea0;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* ── Vehículos en el panel lateral ── */
+
+.btn-link {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+}
+
+.btn-link:hover:not(:disabled) {
+  background: none;
+  text-decoration: underline;
+}
+
+.vehiculos-seccion {
+  margin-top: 16px;
+}
+
+.vehiculos-seccion-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vehiculos-seccion-heading h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.btn-agregar-vehiculo {
+  padding: 6px 12px;
+  background: var(--primary);
+  font-size: 0.8rem;
+}
+
+.btn-agregar-vehiculo:disabled {
+  cursor: not-allowed;
+}
+
+.summary-panel .vehiculos-nota {
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  background: #fef3c7;
+  border-radius: 6px;
+  color: #92400e;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 560px) {
+  .solicitud-header {
+    flex-direction: column;
+  }
+
+  .solicitud-precio,
+  .detalle-pago {
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .solicitud-actions button {
+    flex: 1;
+  }
+}
