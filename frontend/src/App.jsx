@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import ConductorProfilePage from './pages/ConductorProfilePage'
 import DespachadorProfilePage from './pages/DespachadorProfilePage'
 import AdminProfilePage from './pages/AdminProfilePage'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
@@ -14,7 +15,7 @@ function ProtectedRoute({ children, allowedRole }) {
   const userRole = localStorage.getItem('fleteco_tipo_usuario')
 
   if (!token) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/login" replace />
   }
 
   if (allowedRole && userRole !== allowedRole) {
@@ -29,7 +30,8 @@ function App() {
     <>
     <SeguimientoUbicacion />
     <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
       <Route
         path="/solicitudes/nueva"
