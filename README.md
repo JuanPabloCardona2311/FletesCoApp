@@ -17,20 +17,22 @@ Plataforma web que conecta despachadores de carga con conductores independientes
    cd FleteCoApp
    ```
 
-2. **Crear el archivo de entorno `.env`:**
-   Copia la plantilla de ejemplo `backend/.env.example` a un nuevo archivo llamado `backend/.env` (o en la raíz del proyecto `.env`):
+2. **Crear el archivo de entorno `.env` en la raíz del proyecto:**
+   Desde la raíz del repositorio (la carpeta `FleteCoApp/`, no `backend/`), copia la plantilla `.env.example` a un nuevo archivo llamado `.env`:
    ```bash
-   cp backend/.env.example backend/.env
+   cp .env.example .env
    ```
-   *(En Windows PowerShell puedes copiar y pegar el archivo directamente o usar `Copy-Item backend/.env.example backend/.env`)*.
+   *(En Windows PowerShell: `Copy-Item .env.example .env`)*.
 
-3. **Configurar las credenciales de Supabase:**
-   Abre el archivo `backend/.env` recién creado y solicita a tu equipo la contraseña real de la base de datos para asignar el valor de `SUPABASE_DB_PASSWORD`:
+3. **Configurar las credenciales:**
+   Abre el archivo `.env` de la raíz y solicita a tu equipo la contraseña real de la base de datos (`SUPABASE_DB_PASSWORD`) y el secreto compartido (`JWT_SECRET`):
    ```env
    SUPABASE_DB_URL=jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require
    SUPABASE_DB_USERNAME=postgres.mjowsnxbjeqnpyormvko
    SUPABASE_DB_PASSWORD=AQUI_VA_LA_CONTRASEÑA_DEL_EQUIPO
+   JWT_SECRET=AQUI_VA_EL_SECRETO_COMPARTIDO_DEL_EQUIPO
    ```
+   > **`JWT_SECRET`** debe ser el **mismo valor para todo el equipo** (no inventes el tuyo: si cada quien usa uno distinto, los tokens no son válidos entre servicios). Pídelo por el canal privado del equipo y **nunca lo subas a GitHub**.
 
 4. **Correr el proyecto desde VS Code:**
    * Abre la carpeta del proyecto en **VS Code**.
