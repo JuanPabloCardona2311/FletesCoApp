@@ -15,7 +15,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret:my-super-secret-key-for-fleteco-project-1234567890}")
+    @Value("${jwt.secret}")
     private String secretKey;
 
     @Value("${jwt.expiration:86400000}")
