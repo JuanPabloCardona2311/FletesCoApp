@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import client from '../api/client'
+import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
 import RouteMap from '../components/RouteMap'
@@ -212,7 +212,7 @@ function PublicarSolicitudPage() {
         numeroCita: form.requiereCitaPuerto ? form.numeroCita.trim() || null : null,
       }
 
-      const response = await client.post('/api/solicitudes', payload)
+      const response = await solicitudesClient.post('/api/solicitudes', payload)
       navigate(`/solicitudes/${response.data.id}`)
     } catch (requestError) {
       const status = requestError.response?.status
