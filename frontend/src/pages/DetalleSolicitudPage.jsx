@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import client from '../api/client'
+import solicitudesClient from '../api/solicitudesClient'
 import RouteMap from '../components/RouteMap'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
 import {
@@ -31,7 +31,7 @@ function DetalleSolicitudPage() {
 
     const intervalo = setInterval(async () => {
       try {
-        const response = await client.get(`/api/solicitudes/${id}`)
+        const response = await solicitudesClient.get(`/api/solicitudes/${id}`)
         setSolicitud(response.data)
       } catch {
         // Se conserva la última información; el siguiente intento vuelve a consultar.
@@ -47,7 +47,7 @@ function DetalleSolicitudPage() {
       setError('')
 
       try {
-        const response = await client.get(`/api/solicitudes/${id}`)
+        const response = await solicitudesClient.get(`/api/solicitudes/${id}`)
         setSolicitud(response.data)
       } catch (err) {
         if (err.response?.status === 403) {
@@ -84,11 +84,11 @@ function DetalleSolicitudPage() {
         setObteniendoUbicacion(false)
       }
 
-      await client.post('/api/solicitudes/aceptar', { solicitudId: Number(id), ...ubicacion })
+      await solicitudesClient.post('/api/solicitudes/aceptar', { solicitudId: Number(id), ...ubicacion })
       setMensaje('¡Flete aceptado con éxito!')
       avisarViajeActualizado()
       // Recargar la solicitud para ver el nuevo estado
-      const response = await client.get(`/api/solicitudes/${id}`)
+      const response = await solicitudesClient.get(`/api/solicitudes/${id}`)
       setSolicitud(response.data)
     } catch (err) {
       setError(err.response?.data?.error || 'No fue posible aceptar la solicitud.')

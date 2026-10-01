@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DemoApplication<demo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.demo.DemoApplication",
+            "projectName": "demo",
+            "args": "--spring.datasource.hikari.maximum-pool-size=2",
+            "env": {
+                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
+            },
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsSolicitudesApplication<ms-solicitudes>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.mssolicitudes.MsSolicitudesApplication",
+            "projectName": "ms-solicitudes",
+            "args": "--spring.datasource.hikari.maximum-pool-size=2",
+            "env": {
+                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
+            },
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
