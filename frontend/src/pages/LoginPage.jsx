@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import client from '../api/client'
+import authClient from '../api/authClient'
 import AuthLayout from '../components/AuthLayout'
 import RequestMessage from '../components/RequestMessage'
 
@@ -20,7 +20,7 @@ function LoginPage() {
     setCargando(true)
 
     try {
-      const response = await client.post('/api/auth/login', form)
+      const response = await authClient.post('/api/auth/login', form)
       localStorage.setItem('fleteco_token', response.data.token)
       localStorage.setItem('fleteco_tipo_usuario', response.data.tipoUsuario)
       if (response.data.email) localStorage.setItem('fleteco_email', response.data.email)
