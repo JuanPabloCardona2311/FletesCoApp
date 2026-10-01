@@ -16,6 +16,7 @@ _recover/
 
 # Java build output
 backend/target/
+ms-auth/target/
 backend/.classpath
 backend/.project
 backend/.settings/
