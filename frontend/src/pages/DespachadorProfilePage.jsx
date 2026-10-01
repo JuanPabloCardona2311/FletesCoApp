@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import client from '../api/client'
+import perfilClient from '../api/perfilClient'
+import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
@@ -66,7 +67,7 @@ function DespachadorProfilePage() {
   useEffect(() => {
     const cargarPerfil = async () => {
       try {
-        const response = await client.get('/api/perfiles/despachador')
+        const response = await perfilClient.get('/api/perfiles/despachador')
         setPerfil(response.data)
       } catch (requestError) {
         if (!cerrarSesionSiExpiro(requestError)) {
@@ -81,7 +82,7 @@ function DespachadorProfilePage() {
   const cargarFletes = useCallback(async () => {
     setCargandoFletes(true)
     try {
-      const response = await client.get('/api/solicitudes/mis-fletes')
+      const response = await solicitudesClient.get('/api/solicitudes/mis-fletes')
       setFletes(response.data || [])
     } catch (requestError) {
       if (!cerrarSesionSiExpiro(requestError)) {
@@ -103,7 +104,7 @@ function DespachadorProfilePage() {
 
     const intervalo = setInterval(async () => {
       try {
-        const response = await client.get('/api/solicitudes/mis-fletes')
+        const response = await solicitudesClient.get('/api/solicitudes/mis-fletes')
         setFletes(response.data || [])
       } catch {
         // Se conserva la última información; el siguiente intento vuelve a consultar.
@@ -134,7 +135,7 @@ function DespachadorProfilePage() {
     setCargando(true)
 
     try {
-      const response = await client.put('/api/perfiles/despachador', {
+      const response = await perfilClient.put('/api/perfiles/despachador', {
         nombreEmpresa: form.nombreEmpresa.trim() || null,
         nit: form.nit.trim() || null,
       })
@@ -159,7 +160,7 @@ function DespachadorProfilePage() {
     setError('')
 
     try {
-      await client.patch(`/api/solicitudes/${fleteId}/confirmar-entrega`)
+      await solicitudesClient.patch(`/api/solicitudes/${fleteId}/confirmar-entrega`)
       setMensaje(`Recepción del flete #${fleteId} confirmada. El pago fue liberado al conductor.`)
       cargarFletes()
     } catch (requestError) {

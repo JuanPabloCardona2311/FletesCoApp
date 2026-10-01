@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import client from '../api/client'
+import perfilClient from '../api/perfilClient'
+import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
-import { avisarViajeActualizado, obtenerUbicacionActual } from '../utils/geolocalizacion'
+import { avisarViajeActualizado } from '../utils/geolocalizacion'
 
 const initialForm = {
   tipoVehiculo: '',
@@ -46,11 +47,6 @@ function ConductorProfilePage() {
   const [viajeActual, setViajeActual] = useState(null)
   const [avanzandoViaje, setAvanzandoViaje] = useState(false)
   const [modoVehiculo, setModoVehiculo] = useState(null)
-  const [solicitudesDisponibles, setSolicitudesDisponibles] = useState([])
-  const [cargandoDisponibles, setCargandoDisponibles] = useState(false)
-  const [aceptandoId, setAceptandoId] = useState(null)
-  const [etapaAceptar, setEtapaAceptar] = useState('')
-  const [errorAceptar, setErrorAceptar] = useState({ id: null, mensaje: '' })
 
   const vehiculoActivo = useMemo(
     () => perfil.vehiculos?.find((vehiculo) => vehiculo.activo) || perfil.vehiculos?.[0],
@@ -70,7 +66,7 @@ function ConductorProfilePage() {
   useEffect(() => {
     const cargarPerfil = async () => {
       try {
-        const response = await client.get('/api/perfiles/conductor')
+        const response = await perfilClient.get('/api/perfiles/conductor')
         setPerfil(response.data)
       } catch (requestError) {
         if (requestError.response?.status === 401) {
@@ -86,26 +82,10 @@ function ConductorProfilePage() {
     cargarPerfil()
   }, [navigate])
 
-  const cargarSolicitudesDisponibles = useCallback(async () => {
-    setCargandoDisponibles(true)
-    try {
-      const response = await client.get('/api/solicitudes/disponibles')
-      setSolicitudesDisponibles(response.data || [])
-    } catch {
-      setSolicitudesDisponibles([])
-    } finally {
-      setCargandoDisponibles(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    cargarSolicitudesDisponibles()
-  }, [cargarSolicitudesDisponibles])
-
   useEffect(() => {
     const cargarViajeActual = async () => {
       try {
-        const response = await client.get('/api/solicitudes/aceptada')
+        const response = await solicitudesClient.get('/api/solicitudes/aceptada')
         setViajeActual(response.data)
       } catch (requestError) {
         if (requestError.response?.status === 401) {
@@ -150,9 +130,8 @@ function ConductorProfilePage() {
     setCargando(true)
 
     try {
-      const response = await client.put('/api/perfiles/conductor', construirPayload())
+      const response = await perfilClient.put('/api/perfiles/conductor', construirPayload())
       setPerfil(response.data)
-      cargarSolicitudesDisponibles()
       setMensaje(modoVehiculo === 'agregar'
         ? 'Vehículo agregado y activado para la jornada.'
         : 'Vehículo actualizado correctamente.')
@@ -171,53 +150,14 @@ function ConductorProfilePage() {
     setCargandoActivacion(vehiculoId)
 
     try {
-      const response = await client.put(`/api/perfiles/conductor/vehiculos/${vehiculoId}/activar`)
+      const response = await perfilClient.put(`/api/perfiles/conductor/vehiculos/${vehiculoId}/activar`)
       setPerfil(response.data)
-      cargarSolicitudesDisponibles()
       setMensaje('Vehículo activado correctamente para la jornada.')
     } catch (requestError) {
       if (cerrarSesionSiExpiro(requestError)) return
       setError(requestError.response?.data?.error || 'No fue posible activar el vehículo.')
     } finally {
       setCargandoActivacion(null)
-    }
-  }
-
-  const handleAceptarSolicitud = async (solicitudId) => {
-    setAceptandoId(solicitudId)
-    setMensaje('')
-    setError('')
-    setErrorAceptar({ id: null, mensaje: '' })
-
-    try {
-      // Primero el permiso de ubicación: si no se concede, la solicitud sigue disponible para otros.
-      setEtapaAceptar('ubicacion')
-      let ubicacion
-      try {
-        ubicacion = await obtenerUbicacionActual()
-      } catch (errorUbicacion) {
-        setErrorAceptar({
-          id: solicitudId,
-          mensaje: `${errorUbicacion.mensaje} Sin tu ubicación no puedes aceptar; la solicitud sigue disponible.`,
-        })
-        return
-      }
-
-      setEtapaAceptar('aceptando')
-      await client.post('/api/solicitudes/aceptar', { solicitudId, ...ubicacion })
-      const responseViaje = await client.get('/api/solicitudes/aceptada')
-      setViajeActual(responseViaje.data)
-      avisarViajeActualizado()
-      setMensaje('¡Solicitud aceptada! Este es ahora tu viaje actual.')
-    } catch (requestError) {
-      if (cerrarSesionSiExpiro(requestError)) return
-      setErrorAceptar({
-        id: solicitudId,
-        mensaje: requestError.response?.data?.error || 'No fue posible aceptar la solicitud.',
-      })
-    } finally {
-      setAceptandoId(null)
-      setEtapaAceptar('')
     }
   }
 
@@ -235,12 +175,11 @@ function ConductorProfilePage() {
 
     try {
       const accion = esEntrega ? 'entregar' : 'iniciar'
-      const response = await client.patch(`/api/solicitudes/${viajeActual.id}/${accion}`)
+      const response = await solicitudesClient.patch(`/api/solicitudes/${viajeActual.id}/${accion}`)
       avisarViajeActualizado()
 
       if (response.data.estado === 'COMPLETADA') {
         setViajeActual(null)
-        cargarSolicitudesDisponibles()
         setMensaje('Entrega registrada. Tu pago se liberará cuando el despachador confirme la recepción.')
       } else {
         setViajeActual(response.data)
@@ -261,10 +200,10 @@ function ConductorProfilePage() {
   return (
     <ProfileLayout
       role="Perfil de conductor"
-      title={viajeActual ? 'Tu viaje actual' : 'Fletes disponibles'}
+      title={viajeActual ? 'Tu viaje actual' : 'Perfil de conductor'}
       subtitle={viajeActual
         ? 'Sigue los pasos para completar la entrega y recibir tu pago.'
-        : 'Encuentra solicitudes compatibles con tu vehículo activo.'}
+        : 'Gestiona tu vehículo y consulta nuevas solicitudes de flete.'}
     >
       <div className="profile-grid">
         <div className="conductor-main">
@@ -395,111 +334,21 @@ function ConductorProfilePage() {
             </section>
           ) : (
             <section className="profile-panel">
-              <div className="panel-heading solicitudes-heading">
+              <div className="panel-heading">
                 <div>
-                  <h2>Solicitudes disponibles para ti</h2>
-                  <small className="solicitudes-subtitulo">
-                    Compatibles con tu vehículo {vehiculoActivo ? `(${vehiculoActivo.tipoVehiculo} - ${vehiculoActivo.placa})` : ''}
-                  </small>
+                  <h2>Sin viaje actual</h2>
+                  <p className="solicitudes-subtitulo">
+                    Consulta las solicitudes compatibles con tu vehículo.
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  className="btn-actualizar"
-                  onClick={cargarSolicitudesDisponibles}
-                  disabled={cargandoDisponibles}
-                >
-                  {cargandoDisponibles ? 'Buscando...' : '↻ Actualizar'}
-                </button>
               </div>
-
-              <p className="aviso-ubicacion">
-                📍 Al aceptar una solicitud, tu navegador te pedirá permiso para usar tu ubicación.
-                El despachador la verá mientras el flete esté activo (desde 24 h antes de la recogida hasta la entrega).
-              </p>
-
-              {cargandoDisponibles ? (
-                <p className="solicitudes-vacio">Buscando solicitudes compatibles...</p>
-              ) : solicitudesDisponibles.length > 0 ? (
-                <div className="solicitudes-list">
-                  {solicitudesDisponibles.map((s) => (
-                    <article key={s.id} className="solicitud-card-disponible">
-                      <div className="solicitud-header">
-                        <div>
-                          <strong className="solicitud-titulo">Solicitud #{s.id}</strong>
-                          <span className="solicitud-publicada">
-                            Publicada el {new Date(s.fechaPublicacion).toLocaleDateString('es-CO')}
-                          </span>
-                        </div>
-                        <div className="solicitud-precio">
-                          <span>Pago ofrecido</span>
-                          <strong>{formatearPesos(s.precioOfrecido)}</strong>
-                        </div>
-                      </div>
-
-                      <ol className="ruta-timeline">
-                        <li className="ruta-punto ruta-punto-origen">
-                          <span className="ruta-etiqueta">Origen</span>
-                          <span className="ruta-lugar">{s.origen}</span>
-                        </li>
-                        <li className="ruta-punto ruta-punto-destino">
-                          <span className="ruta-etiqueta">Destino</span>
-                          <span className="ruta-lugar">{s.destino}</span>
-                        </li>
-                      </ol>
-
-                      <div className="solicitud-fechas">
-                        <div>
-                          <span>📅 Recogida</span>
-                          <strong>{formatearFecha(s.fechaRecogida)}</strong>
-                        </div>
-                        <div>
-                          <span>🏁 Entrega estimada</span>
-                          <strong>{formatearFecha(s.fechaEntregaEstimada)}</strong>
-                        </div>
-                      </div>
-
-                      <div className="solicitud-tags">
-                        <span className="solicitud-tag">📦 Carga: {s.tipoCarga}</span>
-                        <span className="solicitud-tag">⚖️ Peso: {Number(s.peso).toLocaleString('es-CO')} t</span>
-                        <span className="solicitud-tag">🚛 Requiere: {s.tipoVehiculoRequerido}</span>
-                        {s.requiereCitaPuerto && (
-                          <span className="solicitud-tag solicitud-tag-alerta">⚓ Requiere cita en puerto</span>
-                        )}
-                      </div>
-
-                      {errorAceptar.id === s.id && (
-                        <p className="viaje-aviso" role="alert">{errorAceptar.mensaje}</p>
-                      )}
-
-                      <div className="solicitud-actions">
-                        <button
-                          type="button"
-                          className="btn-ver-detalle"
-                          onClick={() => navigate(`/solicitudes/${s.id}`)}
-                        >
-                          Ver detalles
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-aceptar-flete"
-                          disabled={aceptandoId !== null}
-                          onClick={() => handleAceptarSolicitud(s.id)}
-                        >
-                          {aceptandoId === s.id
-                            ? etapaAceptar === 'ubicacion' ? '📍 Obteniendo ubicación...' : 'Aceptando...'
-                            : 'Aceptar solicitud'}
-                        </button>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <p className="solicitudes-vacio">
-                  {vehiculoActivo
-                    ? 'No hay solicitudes disponibles compatibles con tu vehículo activo en este momento.'
-                    : 'Agrega un vehículo para empezar a ver solicitudes compatibles.'}
-                </p>
-              )}
+              <button
+                type="button"
+                className="btn-aceptar-flete"
+                onClick={() => navigate('/solicitudes/disponibles')}
+              >
+                Ver solicitudes disponibles
+              </button>
             </section>
           )}
         </div>

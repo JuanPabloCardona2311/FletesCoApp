@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ConductorProfilePage from './pages/ConductorProfilePage'
+import SolicitudesDisponiblesPage from './pages/SolicitudesDisponiblesPage'
 import DespachadorProfilePage from './pages/DespachadorProfilePage'
 import AdminProfilePage from './pages/AdminProfilePage'
 import LoginPage from './pages/LoginPage'
@@ -44,6 +45,14 @@ function App() {
         element={(
           <ProtectedRoute>
             <DetalleSolicitudPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/solicitudes/disponibles"
+        element={(
+          <ProtectedRoute allowedRole="CONDUCTOR">
+            <SolicitudesDisponiblesPage />
           </ProtectedRoute>
         )}
       />
