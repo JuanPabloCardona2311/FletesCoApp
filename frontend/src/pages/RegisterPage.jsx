@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import client from '../api/client'
+import authClient from '../api/authClient'
 import AuthLayout from '../components/AuthLayout'
 import RequestMessage from '../components/RequestMessage'
 
@@ -98,7 +98,7 @@ function RegisterPage() {
     setCargando(true)
 
     try {
-      const response = await client.post('/api/auth/register', form)
+      const response = await authClient.post('/api/auth/register', form)
       const data = response.data
 
       // E1-13: Autenticación automática y redirección
@@ -249,7 +249,7 @@ function RegisterPage() {
 
       <div className="form-footer">
         <span>¿Ya tienes una cuenta?</span>
-        <Link className="link-button" to="/">
+        <Link className="link-button" to="/login">
           Iniciar sesión
         </Link>
       </div>
