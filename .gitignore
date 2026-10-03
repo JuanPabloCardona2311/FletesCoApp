@@ -1,1 +1,32 @@
-**/target/
+# Editor / IDE
+.vscode/
+.idea/
+*.iml
+
+# Environment & Secrets
+.env
+.env.*
+*.env
+**/.env
+!.env.example
+!**/.env.example
+
+# Recovery / backups
+_recover/
+
+# Java build output
+backend/target/
+ms-auth/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.factorypath
+
+# Frontend dependencies / build output
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# OS files
+.DS_Store
+Thumbs.db
