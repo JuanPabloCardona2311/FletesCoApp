@@ -1,0 +1,17 @@
+package com.example.mssolicitudes.dto.response;
+
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+public class SolicitudDetalleResponse {
+    private Long id; private String origen; private String destino;
+    private BigDecimal origenLat; private BigDecimal origenLng; private BigDecimal destinoLat; private BigDecimal destinoLng;
+    private String tipoCarga; private String tipoVehiculoRequerido; private BigDecimal peso; private BigDecimal precioOfrecido;
+    private LocalDateTime fechaPublicacion; private LocalDateTime fechaRecogida; private LocalDateTime fechaEntregaEstimada;
+    private Boolean requiereCitaPuerto; private String numeroCita; private String estado;
+    private String nombreDespachador; private String telefonoDespachador; private String nombreConductor; private String telefonoConductor;
+    private String estadoPago; private BigDecimal montoNetoConductor; private LocalDateTime fechaLimiteConfirmacion;
+    private BigDecimal conductorLat; private BigDecimal conductorLng; private LocalDateTime ubicacionActualizadaEn;
+}
