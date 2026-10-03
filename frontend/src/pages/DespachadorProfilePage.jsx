@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import client from '../api/client'
+import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
@@ -67,7 +67,7 @@ function DespachadorProfilePage() {
   useEffect(() => {
     const cargarPerfil = async () => {
       try {
-        const response = await client.get('/api/perfiles/despachador')
+        const response = await perfilClient.get('/api/perfiles/despachador')
         setPerfil(response.data)
       } catch (requestError) {
         if (!cerrarSesionSiExpiro(requestError)) {
@@ -135,7 +135,7 @@ function DespachadorProfilePage() {
     setCargando(true)
 
     try {
-      const response = await client.put('/api/perfiles/despachador', {
+      const response = await perfilClient.put('/api/perfiles/despachador', {
         nombreEmpresa: form.nombreEmpresa.trim() || null,
         nit: form.nit.trim() || null,
       })
