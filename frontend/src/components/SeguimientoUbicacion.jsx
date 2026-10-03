@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import client from '../api/client'
+import perfilClient from '../api/perfilClient'
+import solicitudesClient from '../api/solicitudesClient'
 import {
   EVENTO_VIAJE_ACTUALIZADO,
   INTERVALO_ENVIO_MS,
@@ -36,7 +37,7 @@ function SeguimientoUbicacion() {
     let cancelado = false
     const cargarViaje = async () => {
       try {
-        const response = await client.get('/api/solicitudes/aceptada')
+        const response = await solicitudesClient.get('/api/solicitudes/aceptada')
         if (!cancelado) setViaje(response.data)
       } catch {
         if (!cancelado) setViaje(null)
@@ -75,7 +76,7 @@ function SeguimientoUbicacion() {
     const enviarUbicacion = async () => {
       if (!ultimaPosicion.current) return
       try {
-        await client.put('/api/perfiles/conductor/ubicacion', ultimaPosicion.current)
+        await perfilClient.put('/api/perfiles/conductor/ubicacion', ultimaPosicion.current)
         yaEnvio.current = true
         setErrorEnvio('')
       } catch {

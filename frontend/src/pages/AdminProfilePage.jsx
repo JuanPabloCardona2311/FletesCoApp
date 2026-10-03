@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
 
 function AdminProfilePage() {
@@ -71,13 +71,11 @@ function AdminProfilePage() {
             </div>
           </div>
 
-          <div style={{ marginTop: '28px' }}>
-            <h3 style={{ margin: '0 0 12px', fontSize: '1.1rem' }}>Módulos del Sistema</h3>
-            <ul style={{ paddingLeft: '20px', lineHeight: '2', color: 'var(--ink)' }}>
-              <li><strong>Monitoreo de Fletes:</strong> Visualización de solicitudes y trazabilidad en tiempo real.</li>
-              <li><strong>Gestión de Usuarios:</strong> Verificación de documentos de conductores y despachadores.</li>
-              <li><strong>Gestión de Disputas:</strong> Atención de incidencias reportadas en la plataforma.</li>
-            </ul>
+          <div style={{ marginTop: '28px', display: 'grid', gap: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Módulos del Sistema</h3>
+            <Link className="vehicle-card" to="/admin/usuarios">Gestionar usuarios</Link>
+            <Link className="vehicle-card" to="/admin/disputas">Gestionar disputas</Link>
+            <Link className="vehicle-card" to="/admin/reportes">Ver reportes</Link>
           </div>
         </section>
 
@@ -87,12 +85,12 @@ function AdminProfilePage() {
 
           <div className="metric-list">
             <div>
-              <span>Nivel</span>
-              <strong>Superadmin</strong>
+              <span>Panel</span>
+              <strong>Administración</strong>
             </div>
             <div>
-              <span>Permisos</span>
-              <strong>Totales</strong>
+              <span>Accesos</span>
+              <strong>3 módulos</strong>
             </div>
           </div>
 

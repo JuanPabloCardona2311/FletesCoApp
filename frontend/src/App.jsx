@@ -9,6 +9,9 @@ import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
 import DetalleSolicitudPage from './pages/DetalleSolicitudPage'
 import PublicarSolicitudPage from './pages/PublicarSolicitudPage'
+import AdminUsuariosPage from './pages/AdminUsuariosPage'
+import AdminDisputasPage from './pages/AdminDisputasPage'
+import AdminReportesPage from './pages/AdminReportesPage'
 import SeguimientoUbicacion from './components/SeguimientoUbicacion'
 
 function ProtectedRoute({ children, allowedRole }) {
@@ -87,6 +90,30 @@ function App() {
         element={(
           <ProtectedRoute allowedRole="ADMINISTRADOR">
             <AdminProfilePage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/admin/usuarios"
+        element={(
+          <ProtectedRoute allowedRole="ADMINISTRADOR">
+            <AdminUsuariosPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/admin/disputas"
+        element={(
+          <ProtectedRoute allowedRole="ADMINISTRADOR">
+            <AdminDisputasPage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/admin/reportes"
+        element={(
+          <ProtectedRoute allowedRole="ADMINISTRADOR">
+            <AdminReportesPage />
           </ProtectedRoute>
         )}
       />
