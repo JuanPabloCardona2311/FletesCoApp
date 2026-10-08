@@ -176,6 +176,22 @@ public class PerfilServiceImpl implements PerfilService {
         return construirPerfilDespachador(usuario, despachadorGuardado);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public DatosPersonalesResponse obtenerDatosPersonales() {
+        return construirDatosPersonales(obtenerUsuarioAutenticado());
+    }
+
+    @Override
+    @Transactional
+    public DatosPersonalesResponse actualizarDatosPersonales(DatosPersonalesRequest request) {
+        Usuario usuario = obtenerUsuarioAutenticado();
+        usuario.setNombre(request.getNombre().trim());
+        usuario.setTelefono(request.getTelefono().trim());
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        return construirDatosPersonales(usuarioGuardado);
+    }
+
     private Usuario obtenerUsuarioAutenticado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioRepository.findByEmail(email)
@@ -206,6 +222,12 @@ public class PerfilServiceImpl implements PerfilService {
                 despachador.getId(), usuario.getNombre(), usuario.getEmail(), usuario.getTelefono(),
                 despachador.getNombreEmpresa(), despachador.getNit(),
                 solicitudRepository.countByDespachadorId(despachador.getId()));
+    }
+
+    private DatosPersonalesResponse construirDatosPersonales(Usuario usuario) {
+        return new DatosPersonalesResponse(
+                usuario.getId(), usuario.getNombre(), usuario.getEmail(),
+                usuario.getTelefono(), usuario.getTipoUsuario());
     }
 
     private VehiculoPerfilResponse construirVehiculoResponse(Vehiculo vehiculo) {

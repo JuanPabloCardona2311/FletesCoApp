@@ -13,6 +13,7 @@ import AdminUsuariosPage from './pages/AdminUsuariosPage'
 import AdminDisputasPage from './pages/AdminDisputasPage'
 import AdminReportesPage from './pages/AdminReportesPage'
 import SeguimientoUbicacion from './components/SeguimientoUbicacion'
+import DatosPersonalesPage from './pages/DatosPersonalesPage'
 
 function ProtectedRoute({ children, allowedRole }) {
   const token = localStorage.getItem('fleteco_token')
@@ -22,7 +23,8 @@ function ProtectedRoute({ children, allowedRole }) {
     return <Navigate to="/login" replace />
   }
 
-  if (allowedRole && userRole !== allowedRole) {
+  const rolesPermitidos = Array.isArray(allowedRole) ? allowedRole : [allowedRole]
+  if (allowedRole && !rolesPermitidos.includes(userRole)) {
     return <Navigate to="/perfil" replace />
   }
 
@@ -82,6 +84,14 @@ function App() {
         element={(
           <ProtectedRoute allowedRole="DESPACHADOR">
             <DespachadorProfilePage />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/perfil/datos"
+        element={(
+          <ProtectedRoute allowedRole={['CONDUCTOR', 'DESPACHADOR']}>
+            <DatosPersonalesPage />
           </ProtectedRoute>
         )}
       />

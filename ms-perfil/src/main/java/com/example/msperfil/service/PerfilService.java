@@ -10,4 +10,6 @@ public interface PerfilService {
     void actualizarUbicacionConductor(UbicacionConductorRequest request);
     PerfilDespachadorResponse obtenerPerfilDespachador();
     PerfilDespachadorResponse guardarPerfilDespachador(PerfilDespachadorRequest request);
+    DatosPersonalesResponse obtenerDatosPersonales();
+    DatosPersonalesResponse actualizarDatosPersonales(DatosPersonalesRequest request);
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
@@ -356,6 +356,7 @@ function ConductorProfilePage() {
         <aside className="summary-panel">
           <h2>{perfil.nombre}</h2>
           <p>{perfil.email}</p>
+          <Link className="btn-link" to="/perfil/datos">Editar mis datos</Link>
 
           <div className="metric-list">
             <div>
