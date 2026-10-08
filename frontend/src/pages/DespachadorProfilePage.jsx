@@ -325,6 +325,7 @@ function DespachadorProfilePage() {
         <aside className="summary-panel">
           <h2>{perfil.nombre}</h2>
           <p>{perfil.email}</p>
+          <Link className="link-button" to="/perfil/datos">Editar mis datos</Link>
 
           <div className="metric-list">
             <div>

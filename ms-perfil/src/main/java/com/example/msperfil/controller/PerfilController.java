@@ -62,4 +62,17 @@ public class PerfilController {
             @Valid @RequestBody PerfilDespachadorRequest request) {
         return ResponseEntity.ok(perfilService.guardarPerfilDespachador(request));
     }
+
+    @GetMapping("/datos")
+    @PreAuthorize("hasAnyRole('CONDUCTOR','DESPACHADOR')")
+    public ResponseEntity<DatosPersonalesResponse> obtenerDatosPersonales() {
+        return ResponseEntity.ok(perfilService.obtenerDatosPersonales());
+    }
+
+    @PutMapping("/datos")
+    @PreAuthorize("hasAnyRole('CONDUCTOR','DESPACHADOR')")
+    public ResponseEntity<DatosPersonalesResponse> actualizarDatosPersonales(
+            @Valid @RequestBody DatosPersonalesRequest request) {
+        return ResponseEntity.ok(perfilService.actualizarDatosPersonales(request));
+    }
 }
