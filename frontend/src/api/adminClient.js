@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+// Cliente dedicado al microservicio ms-admin-reportes (puerto 8084).
+// En despliegue, VITE_ADMIN_URL debe contener la URL pública del microservicio.
 const adminClient = axios.create({
-  baseURL: 'http://localhost:8084',
+  baseURL: import.meta.env.VITE_ADMIN_URL || 'http://localhost:8084',
 })
 
 adminClient.interceptors.request.use((config) => {
