@@ -1,0 +1,65 @@
+# FletesCo: los 4 microservicios + el frontend.
+# Las variables de los microservicios (Supabase y JWT_SECRET) vienen del .env
+# de la raíz del repo, que no se sube a git. La base de datos es Supabase en
+# la nube, por eso no hay contenedor de BD ni volúmenes.
+
+services:
+  ms-auth:
+    build: ./ms-auth
+    container_name: ms-auth
+    ports:
+      - "8081:8081"
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "2"
+    restart: unless-stopped
+
+  ms-perfil:
+    build: ./ms-perfil
+    container_name: ms-perfil
+    ports:
+      - "8082:8082"
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "2"
+    restart: unless-stopped
+
+  ms-solicitudes:
+    build: ./ms-solicitudes
+    container_name: ms-solicitudes
+    ports:
+      - "8083:8083"
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "2"
+    restart: unless-stopped
+
+  ms-admin-reportes:
+    build: ./ms-admin-reportes
+    container_name: ms-admin-reportes
+    ports:
+      - "8084:8084"
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "2"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      # El navegador es quien llama a los microservicios, por eso se usa
+      # localhost y no los nombres internos de la red de Docker.
+      args:
+        VITE_AUTH_URL: http://localhost:8081
+        VITE_PERFIL_URL: http://localhost:8082
+        VITE_SOLICITUDES_URL: http://localhost:8083
+        VITE_ADMIN_URL: http://localhost:8084
+    container_name: frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - ms-auth
+      - ms-perfil
+      - ms-solicitudes
+      - ms-admin-reportes
+    restart: unless-stopped
