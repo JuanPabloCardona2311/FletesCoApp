@@ -105,7 +105,7 @@ function RegisterPage() {
       localStorage.setItem('fleteco_token', data.token)
       localStorage.setItem('fleteco_tipo_usuario', data.tipoUsuario)
 
-      setMensaje(`Registro exitoso. Bienvenido, ${data.nombre || form.nombre}.`)
+      setMensaje('Registro exitoso. Bienvenido a FletesCo.')
       setForm(initialForm)
 
       navigate(data.tipoUsuario === 'DESPACHADOR' ? '/perfil/despachador' : '/perfil/conductor')
@@ -258,4 +258,3 @@ function RegisterPage() {
 }
 
 export default RegisterPage
-

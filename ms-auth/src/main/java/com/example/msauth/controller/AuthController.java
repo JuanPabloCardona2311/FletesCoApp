@@ -98,7 +98,7 @@ public class AuthController {
         ));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new AuthResponse(token, usuarioGuardado.getTipoUsuario().name(), usuarioGuardado.getEmail(), usuarioGuardado.getNombre())
+                new AuthResponse(true, token, usuarioGuardado.getTipoUsuario().name())
         );
     }
 
@@ -118,7 +118,7 @@ public class AuthController {
                     java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuario.getTipoUsuario().name()))
             ));
 
-            return ResponseEntity.ok(new AuthResponse(token, usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
+            return ResponseEntity.ok(new AuthResponse(true, token, usuario.getTipoUsuario().name()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");

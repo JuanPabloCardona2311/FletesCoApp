@@ -23,8 +23,6 @@ function LoginPage() {
       const response = await authClient.post('/api/auth/login', form)
       localStorage.setItem('fleteco_token', response.data.token)
       localStorage.setItem('fleteco_tipo_usuario', response.data.tipoUsuario)
-      if (response.data.email) localStorage.setItem('fleteco_email', response.data.email)
-      if (response.data.nombre) localStorage.setItem('fleteco_nombre', response.data.nombre)
 
       setMensaje(`Bienvenido. Rol: ${response.data.tipoUsuario.toLowerCase()}.`)
       setForm(initialForm)
