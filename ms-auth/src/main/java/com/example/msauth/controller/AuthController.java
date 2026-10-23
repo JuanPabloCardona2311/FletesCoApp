@@ -1,7 +1,9 @@
 package com.example.msauth.controller;
 
 import com.example.msauth.dto.request.LoginRequest;
+import com.example.msauth.dto.request.RecuperarPasswordRequest;
 import com.example.msauth.dto.request.RegisterRequest;
+import com.example.msauth.dto.request.RestablecerPasswordRequest;
 import com.example.msauth.dto.response.AuthResponse;
 import com.example.msauth.entity.Conductor;
 import com.example.msauth.entity.Despachador;
@@ -10,6 +12,7 @@ import com.example.msauth.repository.ConductorRepository;
 import com.example.msauth.repository.DespachadorRepository;
 import com.example.msauth.repository.UsuarioRepository;
 import com.example.msauth.security.JwtService;
+import com.example.msauth.service.RecuperacionPasswordService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +26,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private static final String MENSAJE_RECUPERACION =
+            "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.";
 
     private final UsuarioRepository usuarioRepository;
     private final ConductorRepository conductorRepository;
@@ -34,6 +41,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RecuperacionPasswordService recuperacionPasswordService;
 
     public AuthController(
             UsuarioRepository usuarioRepository,
@@ -41,7 +49,8 @@ public class AuthController {
             DespachadorRepository despachadorRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService
+            JwtService jwtService,
+            RecuperacionPasswordService recuperacionPasswordService
     ) {
         this.usuarioRepository = usuarioRepository;
         this.conductorRepository = conductorRepository;
@@ -49,6 +58,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.recuperacionPasswordService = recuperacionPasswordService;
     }
 
     @PostMapping("/register")
@@ -122,5 +132,25 @@ public class AuthController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+    }
+
+    /**
+     * E1-05: solicitar el enlace de recuperación. Responde siempre lo mismo,
+     * exista o no el correo, para no revelar qué cuentas están registradas.
+     */
+    @PostMapping("/recuperar")
+    public ResponseEntity<Map<String, String>> recuperar(@Valid @RequestBody RecuperarPasswordRequest request) {
+        recuperacionPasswordService.solicitarRecuperacion(request.getEmail());
+        return ResponseEntity.ok(Map.of("mensaje", MENSAJE_RECUPERACION));
+    }
+
+    /**
+     * E1-05: cambiar la contraseña con el enlace recibido. Errores de enlace
+     * inválido, usado o vencido llegan como 400 desde GlobalExceptionHandler.
+     */
+    @PostMapping("/restablecer")
+    public ResponseEntity<Map<String, String>> restablecer(@Valid @RequestBody RestablecerPasswordRequest request) {
+        recuperacionPasswordService.restablecerPassword(request.getToken(), request.getNuevaPassword());
+        return ResponseEntity.ok(Map.of("mensaje", "Tu contraseña se actualizó. Ya puedes iniciar sesión."));
     }
 }
