@@ -4,6 +4,7 @@ import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
+import DocumentosConductor from '../components/DocumentosConductor'
 import { avisarViajeActualizado } from '../utils/geolocalizacion'
 
 const initialForm = {
@@ -351,6 +352,8 @@ function ConductorProfilePage() {
               </button>
             </section>
           )}
+
+          <DocumentosConductor vehiculoActivo={vehiculoActivo} />
         </div>
 
         <aside className="summary-panel">
