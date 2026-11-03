@@ -9,7 +9,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,6 +47,41 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> denied(AccessDeniedException ex) {
         return body(HttpStatus.FORBIDDEN, "No tienes permisos para realizar esta acción");
+    }
+
+    // ── Documentos (E2-02 / E2-03) ──────────────────────────────────────────
+
+    @ExceptionHandler(DocumentoInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> documentoInvalido(DocumentoInvalidoException ex) {
+        return body(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> archivoMuyGrande(MaxUploadSizeExceededException ex) {
+        return body(HttpStatus.CONTENT_TOO_LARGE, "El archivo supera el máximo permitido de 5 MB.");
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<Map<String, Object>> faltaArchivo(MissingServletRequestPartException ex) {
+        return body(HttpStatus.BAD_REQUEST, "Debes adjuntar un archivo (PDF, JPG o PNG).");
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, Object>> faltaParametro(MissingServletRequestParameterException ex) {
+        return body(HttpStatus.BAD_REQUEST, "Falta el dato obligatorio '" + ex.getParameterName() + "'.");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> tipoInvalido(MethodArgumentTypeMismatchException ex) {
+        String mensaje = "fechaVencimiento".equals(ex.getName())
+                ? "La fecha de vencimiento no es válida. Usa el formato AAAA-MM-DD."
+                : "El valor de '" + ex.getName() + "' no es válido.";
+        return body(HttpStatus.BAD_REQUEST, mensaje);
+    }
+
+    @ExceptionHandler(AlmacenamientoException.class)
+    public ResponseEntity<Map<String, Object>> almacenamiento(AlmacenamientoException ex) {
+        return body(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
