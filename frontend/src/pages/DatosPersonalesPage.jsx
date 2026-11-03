@@ -153,7 +153,7 @@ function DatosPersonalesPage() {
                 <input type="email" value={email} readOnly />
                 <small>El correo es tu usuario de acceso y no se puede cambiar</small>
               </label>
-              <button type="submit" disabled={cargando}>
+              <button type="submit" className="btn-accion-principal" disabled={cargando}>
                 {cargando ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </form>

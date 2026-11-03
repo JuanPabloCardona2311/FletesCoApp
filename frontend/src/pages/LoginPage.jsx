@@ -63,7 +63,7 @@ function LoginPage() {
           <input type="password" name="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required autoComplete="current-password" />
         </label>
         <Link className="link-olvido-password" to="/recuperar">¿Olvidaste tu contraseña?</Link>
-        <button type="submit" disabled={cargando}>{cargando ? 'Ingresando...' : 'Iniciar sesión'}</button>
+        <button type="submit" className="btn-accion-principal" disabled={cargando}>{cargando ? 'Ingresando...' : 'Iniciar sesión'}</button>
         <RequestMessage mensaje={mensaje} error={error} />
       </form>
       <div className="form-footer">

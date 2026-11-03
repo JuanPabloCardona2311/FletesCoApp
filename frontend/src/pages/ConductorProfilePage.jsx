@@ -403,7 +403,7 @@ function ConductorProfilePage() {
                   <div key={v.id} className={`vehiculo-item ${v.activo ? 'activo' : ''}`}>
                     <div className="vehiculo-item-info">
                       <strong style={{ fontSize: '0.9rem' }}>{v.placa}</strong>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+                      <span style={{ fontSize: '0.78rem' }}>
                         {v.tipoVehiculo} • {v.capacidadCarga} t
                       </span>
                     </div>
@@ -423,7 +423,7 @@ function ConductorProfilePage() {
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>No tienes vehículos registrados.</p>
+              <p className="vehiculos-vacio">No tienes vehículos registrados.</p>
             )}
 
             {viajeActual && (

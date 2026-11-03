@@ -60,7 +60,7 @@ function AdminDisputasPage() {
         <div className="profile-grid">
           {disputas.map((disputa) => (
             <section className="profile-panel" key={disputa.id}>
-              <div className="panel-heading"><h2>Disputa #{disputa.id}</h2><span className="status-chip">{disputa.estado}</span></div>
+              <div className="panel-heading"><h2>Disputa #{disputa.id}</h2><span className={`status-chip status-chip--${disputa.estado?.toLowerCase()}`}>{disputa.estado}</span></div>
               <p><strong>Solicitud:</strong> {disputa.solicitudId}</p>
               <p><strong>Reporta:</strong> {disputa.usuarioReportaNombre}</p>
               <p><strong>Motivo:</strong> {disputa.motivo}</p>

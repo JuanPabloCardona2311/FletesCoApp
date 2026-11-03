@@ -1,3 +1,5 @@
+/* Los badges .documento-estado-* (pill con borde y fondo al 15 %) están en App.css. */
+
 .documentos-panel {
   font-family: var(--font-body);
 }
@@ -5,17 +7,24 @@
 .documentos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .documento-card {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 18px;
+  background: var(--surface-obsidian);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-featurecards);
+  transition: border-color var(--duracion) var(--ease), box-shadow var(--duracion) var(--ease);
+}
+
+.documento-card:hover,
+.documento-card:focus-within {
+  border-color: var(--color-electric-blue);
+  box-shadow: var(--shadow-glow);
 }
 
 .documento-card-heading {
@@ -27,69 +36,41 @@
 
 .documento-card-heading h3 {
   margin: 0;
-  color: var(--ink);
+  color: var(--texto);
   font-size: 1rem;
 }
 
 .documento-card-heading small {
-  color: var(--muted);
+  color: var(--texto-secundario);
   font-size: 0.8rem;
-}
-
-.documento-estado {
-  flex-shrink: 0;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.documento-estado-sin-subir {
-  background: var(--surface-soft);
-  color: var(--muted);
-}
-
-.documento-estado-pendiente {
-  background: color-mix(in srgb, var(--warning) 20%, white);
-  color: color-mix(in srgb, var(--warning) 55%, black);
-}
-
-.documento-estado-verificado {
-  background: color-mix(in srgb, var(--success) 20%, white);
-  color: var(--success);
-}
-
-.documento-estado-rechazado {
-  background: color-mix(in srgb, var(--error) 14%, white);
-  color: var(--error);
 }
 
 .documento-detalle {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  color: var(--muted);
+  color: var(--texto-secundario);
   font-size: 0.85rem;
 }
 
 .documento-detalle strong {
-  color: var(--ink);
+  color: var(--texto);
 }
 
 .documento-detalle a {
-  color: var(--primary);
-  font-weight: 700;
+  color: var(--color-electric-blue);
+  font-weight: 600;
 }
 
 .documento-vencido {
-  color: var(--error);
-  font-weight: 700;
+  color: var(--estado-rojo-texto);
+  font-weight: 600;
 }
 
 .documento-sin-enlace,
 .documento-nota {
   margin: 0;
-  color: var(--muted);
+  color: var(--texto-secundario);
   font-size: 0.85rem;
 }
 
