@@ -1,8 +1,8 @@
 spring.application.name=demo
 
 # Supabase PostgreSQL connection
-spring.datasource.url=jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require
-spring.datasource.username=postgres.mjowsnxbjeqnpyormvko
+spring.datasource.url=jdbc:postgresql://<TU_HOST_SUPABASE>:5432/postgres?sslmode=require
+spring.datasource.username=<TU_USUARIO>
 spring.datasource.password=REPLACE_WITH_YOUR_SUPABASE_PASSWORD
 spring.datasource.driver-class-name=org.postgresql.Driver
 
