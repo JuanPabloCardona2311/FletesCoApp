@@ -7,6 +7,8 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import ProfileRedirect from './pages/ProfileRedirect'
 import RegisterPage from './pages/RegisterPage'
+import RecuperarPasswordPage from './pages/RecuperarPasswordPage'
+import RestablecerPasswordPage from './pages/RestablecerPasswordPage'
 import DetalleSolicitudPage from './pages/DetalleSolicitudPage'
 import PublicarSolicitudPage from './pages/PublicarSolicitudPage'
 import AdminUsuariosPage from './pages/AdminUsuariosPage'
@@ -39,6 +41,8 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
+      <Route path="/recuperar" element={<RecuperarPasswordPage />} />
+      <Route path="/restablecer" element={<RestablecerPasswordPage />} />
       <Route
         path="/solicitudes/nueva"
         element={(

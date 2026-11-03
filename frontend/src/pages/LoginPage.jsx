@@ -39,6 +39,8 @@ function LoginPage() {
     } catch (requestError) {
       if (requestError.response?.status === 401) {
         setError('El correo o la contraseña no son válidos.')
+      } else if (requestError.response?.status === 403) {
+        setError(requestError.response?.data?.error || 'Tu cuenta está inactiva. Contacta al administrador.')
       } else if (requestError.response?.data) {
         setError(typeof requestError.response.data === 'string' ? requestError.response.data : 'Revisa los datos ingresados.')
       } else {
@@ -60,6 +62,7 @@ function LoginPage() {
           Contraseña
           <input type="password" name="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required autoComplete="current-password" />
         </label>
+        <Link className="link-olvido-password" to="/recuperar">¿Olvidaste tu contraseña?</Link>
         <button type="submit" disabled={cargando}>{cargando ? 'Ingresando...' : 'Iniciar sesión'}</button>
         <RequestMessage mensaje={mensaje} error={error} />
       </form>

@@ -1,6 +1,7 @@
 {
-    // Todos los servicios usan el pooler de Supabase en modo transacción (puerto 6543)
-    // con un pool de 2 conexiones, para no superar el límite de clientes al correrlos a la vez.
+    // La URL de la base (SUPABASE_DB_URL) sale del .env de la raíz (envFile). Para correr
+    // todo a la vez, usa en el .env el pooler en modo transacción (puerto 6543 con
+    // prepareThreshold=0, ver .env.example). Cada servicio usa un pool de 2 conexiones.
     "configurations": [
         {
             "type": "java",
@@ -10,9 +11,6 @@
             "mainClass": "com.example.demo.DemoApplication",
             "projectName": "demo",
             "args": "--spring.datasource.hikari.maximum-pool-size=2",
-            "env": {
-                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
-            },
             "envFile": "${workspaceFolder}/.env"
         },
         {
@@ -23,9 +21,6 @@
             "mainClass": "com.example.msauth.MsAuthApplication",
             "projectName": "ms-auth",
             "args": "--spring.datasource.hikari.maximum-pool-size=2",
-            "env": {
-                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
-            },
             "envFile": "${workspaceFolder}/.env"
         },
         {
@@ -36,9 +31,6 @@
             "mainClass": "com.example.msperfil.MsPerfilApplication",
             "projectName": "ms-perfil",
             "args": "--spring.datasource.hikari.maximum-pool-size=2",
-            "env": {
-                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
-            },
             "envFile": "${workspaceFolder}/.env"
         },
         {
@@ -49,9 +41,6 @@
             "mainClass": "com.example.mssolicitudes.MsSolicitudesApplication",
             "projectName": "ms-solicitudes",
             "args": "--spring.datasource.hikari.maximum-pool-size=2",
-            "env": {
-                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
-            },
             "envFile": "${workspaceFolder}/.env"
         },
         {
@@ -62,9 +51,6 @@
             "mainClass": "com.example.msadmin.MsAdminReportesApplication",
             "projectName": "ms-admin-reportes",
             "args": "--spring.datasource.hikari.maximum-pool-size=2",
-            "env": {
-                "SUPABASE_DB_URL": "jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0"
-            },
             "envFile": "${workspaceFolder}/.env"
         }
     ],
