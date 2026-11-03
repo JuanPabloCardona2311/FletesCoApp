@@ -198,6 +198,28 @@ button:disabled {
   color: var(--primary-hover);
 }
 
+/* Acción principal de una pantalla en naranja. Texto oscuro: el blanco sobre
+   el naranja de marca no alcanza el contraste mínimo de lectura. */
+.btn-accion-principal {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.btn-accion-principal:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 85%, black);
+}
+
+.link-olvido-password {
+  justify-self: end;
+  margin-top: -8px;
+  color: var(--primary);
+  font: 600 0.85rem var(--font-body);
+}
+
+.link-olvido-password:hover {
+  color: var(--primary-hover);
+}
+
 .logo {
   display: block;
   margin-bottom: 20px;
