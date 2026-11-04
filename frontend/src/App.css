@@ -1362,20 +1362,81 @@ td button {
 
 /* ── Panel lateral del conductor ──────────────────────────────── */
 
-.btn-link {
-  justify-self: start;
-  margin-top: 4px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--color-electric-blue);
-  font: 500 0.82rem var(--font-body);
+/* Botones del panel lateral y de navegación ("Editar mis datos",
+   "Publicar nueva solicitud", "Volver…"). Ghost por defecto; la variante
+   principal es el naranja de la pantalla. */
+.boton-panel,
+.boton-volver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-inputs);
+  background: var(--ghost);
+  color: var(--texto);
+  font: 600 0.9rem var(--font-body);
+  letter-spacing: -0.01em;
   text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duracion) var(--ease),
+    border-color var(--duracion) var(--ease),
+    color var(--duracion) var(--ease);
 }
 
-.btn-link:hover:not(:disabled) {
-  background: none;
+.boton-panel {
+  width: 100%;
+}
+
+.boton-panel:hover,
+.boton-panel:hover:not(:disabled),
+.boton-volver:hover,
+.boton-volver:hover:not(:disabled) {
+  background: var(--ghost-hover);
+  border-color: transparent;
   color: var(--texto);
+}
+
+.boton-panel svg,
+.boton-volver svg {
+  flex-shrink: 0;
+}
+
+.boton-panel--principal {
+  padding: 12px 18px;
+  border-radius: var(--radius-buttons);
+  background: var(--color-cta);
+  color: var(--color-cta-text);
+}
+
+.boton-panel--principal:hover,
+.boton-panel--principal:hover:not(:disabled) {
+  background: var(--color-cta-hover);
+  color: var(--color-cta-text);
+}
+
+/* Dentro de una tarjeta (empresa, vehículo): pequeño y con borde azul. */
+.boton-panel--compacto {
+  justify-self: start;
+  width: auto;
+  margin-top: 6px;
+  padding: 6px 12px;
+  border-color: color-mix(in srgb, var(--color-electric-blue) 55%, transparent);
+  background: color-mix(in srgb, var(--color-electric-blue) 10%, transparent);
+  font-size: 0.8rem;
+}
+
+.boton-panel--compacto:hover,
+.boton-panel--compacto:hover:not(:disabled) {
+  border-color: var(--color-electric-blue);
+  background: color-mix(in srgb, var(--color-electric-blue) 20%, transparent);
+}
+
+.boton-volver {
+  padding: 8px 14px;
+  font-size: 0.85rem;
 }
 
 .vehiculos-seccion {

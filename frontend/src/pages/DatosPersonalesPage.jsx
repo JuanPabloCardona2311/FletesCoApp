@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 
 const initialForm = {
@@ -158,7 +159,7 @@ function DatosPersonalesPage() {
               </button>
             </form>
           </section>
-          <Link className="link-button" to="/perfil">Volver a mi perfil</Link>
+          <Link className="boton-volver" to="/perfil"><IconoVolver />Volver a mi perfil</Link>
         </div>
       </div>
     </ProfileLayout>

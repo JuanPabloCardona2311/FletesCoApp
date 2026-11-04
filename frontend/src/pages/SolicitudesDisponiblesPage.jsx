@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import { obtenerUbicacionActual } from '../utils/geolocalizacion'
 
@@ -256,10 +257,10 @@ function SolicitudesDisponiblesPage() {
           </div>
           <button
             type="button"
-            className="link-button"
+            className="boton-panel"
             onClick={() => navigate('/perfil/conductor')}
           >
-            Volver a mi perfil
+            <IconoVolver />Volver a mi perfil
           </button>
         </aside>
       </div>

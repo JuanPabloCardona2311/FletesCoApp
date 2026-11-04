@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import adminClient from '../api/adminClient'
 
@@ -61,7 +62,7 @@ function AdminUsuariosPage() {
 
   return (
     <ProfileLayout role="Panel de Administrador" title="Gestión de usuarios" subtitle="Administra el acceso de las cuentas registradas.">
-      <p><Link to="/perfil/admin">Volver al panel</Link></p>
+      <p><Link className="boton-volver" to="/perfil/admin"><IconoVolver />Volver al panel</Link></p>
       <RequestMessage mensaje={mensaje} error={error} />
       <section className="profile-panel">
         <div className="two-columns">
