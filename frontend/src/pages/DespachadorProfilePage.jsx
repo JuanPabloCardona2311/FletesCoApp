@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
-import { IconoEditar, IconoMas } from '../components/Iconos'
+import { IconoEditar, IconoMapa, IconoMas, IconoTelefono } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
 import { INTERVALO_ENVIO_MS } from '../utils/geolocalizacion'
@@ -280,7 +280,7 @@ function DespachadorProfilePage() {
                         <div className="viaje-contacto">
                           <span>Conductor asignado</span>
                           <strong>{flete.nombreConductor}</strong>
-                          <a href={`tel:${flete.telefonoConductor}`}>📞 {flete.telefonoConductor}</a>
+                          <a href={`tel:${flete.telefonoConductor}`}><IconoTelefono />{flete.telefonoConductor}</a>
                         </div>
                       )}
 
@@ -297,7 +297,7 @@ function DespachadorProfilePage() {
                           onClick={() => navigate(`/solicitudes/${flete.id}`)}
                         >
                           {['ACEPTADA', 'EN_CURSO'].includes(flete.estado)
-                            ? '🗺️ Ver ubicación en el mapa'
+                            ? <><IconoMapa />Ver ubicación en el mapa</>
                             : 'Ver detalles y mapa'}
                         </button>
                         {puedeConfirmar && (

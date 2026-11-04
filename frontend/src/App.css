@@ -175,6 +175,27 @@ fieldset {
   font-weight: 600;
 }
 
+/* ── Íconos SVG de línea (components/Iconos.jsx) ──────────────── */
+
+.icono {
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 0.4em;
+  vertical-align: -0.15em;
+}
+
+/* En contenedores flex con gap, el espacio lo pone el gap. */
+.boton-panel .icono,
+.boton-volver .icono,
+.ubicacion-estado .icono,
+.seguimiento-aviso > .icono {
+  margin-right: 0;
+}
+
+.detalle-panel-titulo .icono {
+  color: var(--color-electric-blue);
+}
+
 /* ── Botones ──────────────────────────────────────────────────────
    Terciario por defecto (#171717). Secundario ghost translúcido.
    Primario naranja tipo pill: solo uno por pantalla. */
@@ -667,6 +688,12 @@ td button {
 
   .workspace-header {
     flex-direction: column;
+  }
+
+  /* Despachador en una columna: la tarjeta con "Publicar nueva solicitud"
+     va antes de la lista de fletes para que el CTA no quede al final. */
+  .profile-grid > .summary-panel:has(.boton-panel--principal) {
+    order: -1;
   }
 }
 
@@ -1498,8 +1525,8 @@ td button {
     flex: 1;
   }
 
-  .viaje-pasos-4 {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 16px;
+  /* Los 4 pasos siempre en una fila: texto más pequeño para que quepan en 375 px. */
+  .viaje-paso {
+    font-size: 0.7rem;
   }
 }

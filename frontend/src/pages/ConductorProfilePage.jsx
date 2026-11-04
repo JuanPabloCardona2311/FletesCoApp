@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
-import { IconoEditar } from '../components/Iconos'
+import { IconoAncla, IconoCaja, IconoCamion, IconoEditar, IconoPeso, IconoTelefono } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import DocumentosConductor from '../components/DocumentosConductor'
 import { avisarViajeActualizado } from '../utils/geolocalizacion'
@@ -297,11 +297,11 @@ function ConductorProfilePage() {
               </ol>
 
               <div className="solicitud-tags">
-                <span className="solicitud-tag">📦 Carga: {viajeActual.tipoCarga}</span>
-                <span className="solicitud-tag">⚖️ Peso: {Number(viajeActual.peso).toLocaleString('es-CO')} t</span>
+                <span className="solicitud-tag"><IconoCaja />Carga: {viajeActual.tipoCarga}</span>
+                <span className="solicitud-tag"><IconoPeso />Peso: {Number(viajeActual.peso).toLocaleString('es-CO')} t</span>
                 {viajeActual.requiereCitaPuerto && (
                   <span className="solicitud-tag solicitud-tag-alerta">
-                    ⚓ Cita en puerto{viajeActual.numeroCita ? ` #${viajeActual.numeroCita}` : ''}
+                    <IconoAncla />Cita en puerto{viajeActual.numeroCita ? ` #${viajeActual.numeroCita}` : ''}
                   </span>
                 )}
               </div>
@@ -310,7 +310,7 @@ function ConductorProfilePage() {
                 <div className="viaje-contacto">
                   <span>Contacto del despachador</span>
                   <strong>{viajeActual.nombreDespachador}</strong>
-                  <a href={`tel:${viajeActual.telefonoDespachador}`}>📞 {viajeActual.telefonoDespachador}</a>
+                  <a href={`tel:${viajeActual.telefonoDespachador}`}><IconoTelefono />{viajeActual.telefonoDespachador}</a>
                 </div>
               )}
 
@@ -330,7 +330,7 @@ function ConductorProfilePage() {
                 >
                   {avanzandoViaje
                     ? 'Actualizando...'
-                    : viajeActual.estado === 'ACEPTADA' ? '🚚 Iniciar viaje' : '✓ Marcar como entregado'}
+                    : viajeActual.estado === 'ACEPTADA' ? <><IconoCamion />Iniciar viaje</> : '✓ Marcar como entregado'}
                 </button>
               </div>
             </section>

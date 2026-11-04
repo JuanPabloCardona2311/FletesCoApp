@@ -11,6 +11,7 @@ import {
   traducirErrorGeolocalizacion,
   verificarSoporteGeolocalizacion,
 } from '../utils/geolocalizacion'
+import { IconoAlerta, IconoReloj } from './Iconos'
 import './SeguimientoUbicacion.css'
 
 const INTERVALO_REVISAR_VIAJE_MS = 60000
@@ -117,7 +118,7 @@ function SeguimientoUbicacion() {
     const inicio = inicioSeguimiento(viaje)
     return (
       <div className="seguimiento-aviso seguimiento-espera" role="status">
-        🕒 Compartirás tu ubicación con el despachador desde el{' '}
+        <IconoReloj />Compartirás tu ubicación con el despachador desde el{' '}
         {inicio?.toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })} (24 h antes de la recogida).
       </div>
     )
@@ -127,7 +128,7 @@ function SeguimientoUbicacion() {
   if (mensajeError) {
     return (
       <div className="seguimiento-aviso seguimiento-error" role="alert">
-        <strong>⚠️ El despachador no está recibiendo tu ubicación</strong>
+        <strong><IconoAlerta />El despachador no está recibiendo tu ubicación</strong>
         <span>{mensajeError}</span>
       </div>
     )

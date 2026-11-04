@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Popup, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
+import { IconoBandera, IconoUbicacion } from './Iconos'
 import './SelectorRutaMap.css'
 
 // Captura clics en el mapa y delega al padre según el modo activo.
@@ -43,14 +44,14 @@ function SelectorRutaMap({ origen, destino, modo, onModoChange, onSeleccionar, o
           className={`selector-ruta-map__btn-modo${modo === 'ORIGEN' ? ' selector-ruta-map__btn-modo--activo' : ''}`}
           onClick={() => onModoChange('ORIGEN')}
         >
-          📍 Fijar origen
+          <IconoUbicacion />Fijar origen
         </button>
         <button
           type="button"
           className={`selector-ruta-map__btn-modo${modo === 'DESTINO' ? ' selector-ruta-map__btn-modo--activo' : ''}`}
           onClick={() => onModoChange('DESTINO')}
         >
-          🏁 Fijar destino
+          <IconoBandera />Fijar destino
         </button>
         <span className="selector-ruta-map__indicador">
           Clic en el mapa para marcar: <strong>{modo === 'ORIGEN' ? 'Origen' : 'Destino'}</strong>
