@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom'
-import heroImage from '../assets/hero.png'
 import Logo from './Logo'
 
 function ProfileLayout({ role, title, subtitle, children }) {
@@ -15,7 +14,6 @@ function ProfileLayout({ role, title, subtitle, children }) {
     <main className="app-shell">
       <aside className="side-panel">
         <Logo />
-        <img className="side-panel__image" src={heroImage} alt="" />
         <nav className="profile-nav" aria-label="Perfiles">
           {role === 'Perfil de conductor' && <Link to="/perfil/conductor">Conductor</Link>}
           {role === 'Perfil de despachador' && <Link to="/perfil/despachador">Despachador</Link>}
