@@ -360,11 +360,6 @@ button:disabled {
   border-right: 1px solid var(--hairline);
 }
 
-/* La ilustración de plantilla (hero.png) no es de la marca: se oculta. */
-.side-panel__image {
-  display: none;
-}
-
 .profile-nav {
   display: grid;
   gap: 6px;
