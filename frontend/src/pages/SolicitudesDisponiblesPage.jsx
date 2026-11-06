@@ -3,6 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
+import {
+  IconoAncla,
+  IconoBandera,
+  IconoCaja,
+  IconoCalendario,
+  IconoCamion,
+  IconoPeso,
+  IconoUbicacion,
+  IconoVolver,
+} from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import { obtenerUbicacionActual } from '../utils/geolocalizacion'
 
@@ -146,7 +156,7 @@ function SolicitudesDisponiblesPage() {
             </div>
 
             <p className="aviso-ubicacion">
-              📍 Al aceptar una solicitud, tu navegador te pedirá permiso para usar tu ubicación.
+              <IconoUbicacion />Al aceptar una solicitud, tu navegador te pedirá permiso para usar tu ubicación.
               El despachador la verá mientras el flete esté activo.
             </p>
 
@@ -182,24 +192,24 @@ function SolicitudesDisponiblesPage() {
 
                     <div className="solicitud-fechas">
                       <div>
-                        <span>📅 Recogida</span>
+                        <span><IconoCalendario />Recogida</span>
                         <strong>{formatearFecha(solicitud.fechaRecogida)}</strong>
                       </div>
                       <div>
-                        <span>🏁 Entrega estimada</span>
+                        <span><IconoBandera />Entrega estimada</span>
                         <strong>{formatearFecha(solicitud.fechaEntregaEstimada)}</strong>
                       </div>
                     </div>
 
                     <div className="solicitud-tags">
-                      <span className="solicitud-tag">📦 Carga: {solicitud.tipoCarga}</span>
+                      <span className="solicitud-tag"><IconoCaja />Carga: {solicitud.tipoCarga}</span>
                       <span className="solicitud-tag">
-                        ⚖️ Peso: {Number(solicitud.peso).toLocaleString('es-CO')} t
+                        <IconoPeso />Peso: {Number(solicitud.peso).toLocaleString('es-CO')} t
                       </span>
-                      <span className="solicitud-tag">🚛 Requiere: {solicitud.tipoVehiculoRequerido}</span>
+                      <span className="solicitud-tag"><IconoCamion />Requiere: {solicitud.tipoVehiculoRequerido}</span>
                       {solicitud.requiereCitaPuerto && (
                         <span className="solicitud-tag solicitud-tag-alerta">
-                          ⚓ Requiere cita en puerto
+                          <IconoAncla />Requiere cita en puerto
                         </span>
                       )}
                     </div>
@@ -224,7 +234,7 @@ function SolicitudesDisponiblesPage() {
                       >
                         {aceptandoId === solicitud.id
                           ? etapaAceptar === 'ubicacion'
-                            ? '📍 Obteniendo ubicación...'
+                            ? <><IconoUbicacion />Obteniendo ubicación...</>
                             : 'Aceptando...'
                           : 'Aceptar solicitud'}
                       </button>
@@ -256,10 +266,10 @@ function SolicitudesDisponiblesPage() {
           </div>
           <button
             type="button"
-            className="link-button"
+            className="boton-panel"
             onClick={() => navigate('/perfil/conductor')}
           >
-            Volver a mi perfil
+            <IconoVolver />Volver a mi perfil
           </button>
         </aside>
       </div>

@@ -240,7 +240,7 @@ function RegisterPage() {
           {errors.tipoUsuario && <span className="field-error">{errors.tipoUsuario}</span>}
         </fieldset>
 
-        <button type="submit" disabled={cargando}>
+        <button type="submit" className="btn-accion-principal" disabled={cargando}>
           {cargando ? 'Registrando...' : 'Crear cuenta'}
         </button>
 

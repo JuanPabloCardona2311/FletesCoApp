@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoEditar, IconoMapa, IconoMas, IconoTelefono } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
 import { INTERVALO_ENVIO_MS } from '../utils/geolocalizacion'
@@ -279,7 +280,7 @@ function DespachadorProfilePage() {
                         <div className="viaje-contacto">
                           <span>Conductor asignado</span>
                           <strong>{flete.nombreConductor}</strong>
-                          <a href={`tel:${flete.telefonoConductor}`}>📞 {flete.telefonoConductor}</a>
+                          <a href={`tel:${flete.telefonoConductor}`}><IconoTelefono />{flete.telefonoConductor}</a>
                         </div>
                       )}
 
@@ -296,7 +297,7 @@ function DespachadorProfilePage() {
                           onClick={() => navigate(`/solicitudes/${flete.id}`)}
                         >
                           {['ACEPTADA', 'EN_CURSO'].includes(flete.estado)
-                            ? '🗺️ Ver ubicación en el mapa'
+                            ? <><IconoMapa />Ver ubicación en el mapa</>
                             : 'Ver detalles y mapa'}
                         </button>
                         {puedeConfirmar && (
@@ -325,7 +326,7 @@ function DespachadorProfilePage() {
         <aside className="summary-panel">
           <h2>{perfil.nombre}</h2>
           <p>{perfil.email}</p>
-          <Link className="link-button" to="/perfil/datos">Editar mis datos</Link>
+          <Link className="boton-panel" to="/perfil/datos"><IconoEditar />Editar mis datos</Link>
 
           <div className="metric-list">
             <div>
@@ -342,12 +343,12 @@ function DespachadorProfilePage() {
             <span>Empresa</span>
             <strong>{perfil.nombreEmpresa || 'Persona natural'}</strong>
             <small>{perfil.nit || 'NIT no registrado'}</small>
-            <button type="button" className="btn-link" onClick={abrirEdicionEmpresa}>
-              Editar empresa
+            <button type="button" className="boton-panel boton-panel--compacto" onClick={abrirEdicionEmpresa}>
+              <IconoEditar />Editar empresa
             </button>
           </div>
 
-          <Link className="link-button" to="/solicitudes/nueva">+ Publicar nueva solicitud</Link>
+          <Link className="boton-panel boton-panel--principal" to="/solicitudes/nueva"><IconoMas />Publicar nueva solicitud</Link>
         </aside>
       </div>
     </ProfileLayout>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import adminClient from '../api/adminClient'
 
@@ -68,7 +69,7 @@ function AdminReportesPage() {
 
   return (
     <ProfileLayout role="Panel de Administrador" title="Reportes" subtitle="Consulta indicadores consolidados de la plataforma.">
-      <p><Link to="/perfil/admin">Volver al panel</Link></p>
+      <p><Link className="boton-volver" to="/perfil/admin"><IconoVolver />Volver al panel</Link></p>
       <RequestMessage error={error} />
       {cargando ? <p>Cargando reportes...</p> : resumen && (
         <>

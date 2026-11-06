@@ -38,41 +38,41 @@ function AdminProfilePage() {
         <section className="profile-panel">
           <div className="panel-heading">
             <h2>Acceso de Administrador Confirmado</h2>
-            <span className="status-chip" style={{ background: 'color-mix(in srgb, var(--success) 20%, white)', color: 'var(--success)' }}>
+            <span className="status-chip status-chip--activo">
               ● SESIÓN ACTIVA
             </span>
           </div>
 
-          <p style={{ marginTop: 0, color: 'var(--muted)', lineHeight: '1.6' }}>
+          <p className="admin-intro">
             ¡La redirección y autenticación para el usuario <strong>ADMINISTRADOR</strong> funcionan correctamente!
             Desde este panel podrás supervisar las operaciones de conductores, despachadores y solicitudes en la plataforma.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginTop: '24px' }}>
-            <div style={{ padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--paper)' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>ROL DE USUARIO</span>
-              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--primary)' }}>
+          <div className="admin-metricas">
+            <div className="admin-metrica">
+              <span className="admin-metrica__etiqueta">ROL DE USUARIO</span>
+              <p className="admin-metrica__valor admin-metrica__valor--azul">
                 {adminInfo.tipoUsuario}
               </p>
             </div>
 
-            <div style={{ padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--paper)' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>ESTADO EN BD</span>
-              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>
+            <div className="admin-metrica">
+              <span className="admin-metrica__etiqueta">ESTADO EN BD</span>
+              <p className="admin-metrica__valor admin-metrica__valor--verde">
                 ACTIVO
               </p>
             </div>
 
-            <div style={{ padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--paper)' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>PROTECCIÓN DE RUTA</span>
-              <p style={{ margin: '8px 0 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--primary)' }}>
+            <div className="admin-metrica">
+              <span className="admin-metrica__etiqueta">PROTECCIÓN DE RUTA</span>
+              <p className="admin-metrica__valor admin-metrica__valor--azul">
                 HABILITADA
               </p>
             </div>
           </div>
 
-          <div style={{ marginTop: '28px', display: 'grid', gap: '12px' }}>
-            <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Módulos del Sistema</h3>
+          <div className="admin-modulos">
+            <h3>Módulos del Sistema</h3>
             <Link className="vehicle-card" to="/admin/usuarios">Gestionar usuarios</Link>
             <Link className="vehicle-card" to="/admin/disputas">Gestionar disputas</Link>
             <Link className="vehicle-card" to="/admin/reportes">Ver reportes</Link>
@@ -94,10 +94,10 @@ function AdminProfilePage() {
             </div>
           </div>
 
-          <div className="vehicle-card" style={{ borderColor: 'var(--primary)' }}>
+          <div className="vehicle-card admin-cuenta">
             <span>Tipo de Cuenta</span>
             <strong>{adminInfo.tipoUsuario}</strong>
-            <small style={{ color: 'var(--success)' }}>AUTORIZADO</small>
+            <small>AUTORIZADO</small>
           </div>
         </aside>
       </div>

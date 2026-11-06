@@ -5,6 +5,7 @@ import {
   minutosDesde,
   tiempoRelativo,
 } from '../utils/geolocalizacion'
+import { IconoAlerta, IconoReloj } from './Iconos'
 
 // Resume para el despachador qué tan reciente es la ubicación del conductor en un viaje activo.
 function EstadoUbicacionConductor({ flete }) {
@@ -20,7 +21,7 @@ function EstadoUbicacionConductor({ flete }) {
     const inicio = inicioSeguimiento(flete)
     return (
       <p className="ubicacion-estado ubicacion-espera">
-        🕒 El seguimiento en vivo empieza el{' '}
+        <IconoReloj />El seguimiento en vivo empieza el{' '}
         {inicio?.toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })} (24 h antes de la recogida).
         {tieneUbicacion && ` Ubicación al aceptar: ${tiempoRelativo(flete.ubicacionActualizadaEn)}.`}
       </p>
@@ -30,7 +31,7 @@ function EstadoUbicacionConductor({ flete }) {
   if (!tieneUbicacion) {
     return (
       <p className="ubicacion-estado ubicacion-sin-senal">
-        ⚠️ Aún no recibimos la ubicación del conductor.
+        <IconoAlerta />Aún no recibimos la ubicación del conductor.
       </p>
     )
   }
@@ -38,7 +39,7 @@ function EstadoUbicacionConductor({ flete }) {
   if (minutos !== null && minutos >= MINUTOS_UBICACION_RECIENTE) {
     return (
       <p className="ubicacion-estado ubicacion-sin-senal">
-        ⚠️ Sin señal reciente del conductor · última ubicación {tiempoRelativo(flete.ubicacionActualizadaEn)}.
+        <IconoAlerta />Sin señal reciente del conductor · última ubicación {tiempoRelativo(flete.ubicacionActualizadaEn)}.
         Puede estar en una zona sin cobertura o con la app cerrada.
       </p>
     )

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import adminClient from '../api/adminClient'
 
@@ -61,7 +62,7 @@ function AdminUsuariosPage() {
 
   return (
     <ProfileLayout role="Panel de Administrador" title="Gestión de usuarios" subtitle="Administra el acceso de las cuentas registradas.">
-      <p><Link to="/perfil/admin">Volver al panel</Link></p>
+      <p><Link className="boton-volver" to="/perfil/admin"><IconoVolver />Volver al panel</Link></p>
       <RequestMessage mensaje={mensaje} error={error} />
       <section className="profile-panel">
         <div className="two-columns">
@@ -82,7 +83,7 @@ function AdminUsuariosPage() {
           </label>
         </div>
         {cargando ? <p>Cargando usuarios...</p> : (
-          <div style={{ overflowX: 'auto', marginTop: '24px' }}>
+          <div className="tabla-contenedor">
             <table>
               <thead><tr><th>Nombre</th><th>Email</th><th>Tipo</th><th>Estado</th><th>Acción</th></tr></thead>
               <tbody>
@@ -91,7 +92,9 @@ function AdminUsuariosPage() {
                     <td>{usuario.nombre}</td>
                     <td>{usuario.email}</td>
                     <td>{usuario.tipoUsuario}</td>
-                    <td>{usuario.estado}</td>
+                    <td>
+                      <span className={`status-chip status-chip--${usuario.estado?.toLowerCase()}`}>{usuario.estado}</span>
+                    </td>
                     <td>
                       <button type="button" disabled={usuario.email === emailAdministrador} onClick={() => cambiarEstado(usuario)}>
                         {usuario.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}

@@ -1,4 +1,4 @@
-import logoFletesCo from '../assets/logo-fletesco.png'
+import logoFletesCo from '../assets/logo-fletesco-dark.png'
 
 function Logo() {
   return (

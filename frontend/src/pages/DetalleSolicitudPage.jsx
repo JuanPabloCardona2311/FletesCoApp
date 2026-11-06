@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import solicitudesClient from '../api/solicitudesClient'
 import RouteMap from '../components/RouteMap'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
+import { IconoAncla, IconoCaja, IconoCalendario, IconoMapa, IconoUbicacion } from '../components/Iconos'
 import {
   INTERVALO_ENVIO_MS,
   avisarViajeActualizado,
@@ -160,13 +161,13 @@ function DetalleSolicitudPage() {
               disabled={aceptando}
             >
               {obteniendoUbicacion
-                ? '📍 Obteniendo ubicación...'
+                ? <><IconoUbicacion />Obteniendo ubicación...</>
                 : aceptando ? 'Aceptando flete...' : '✓ Aceptar este flete'}
             </button>
           )}
           {puedeAceptar && (
             <small className="detalle-pago-nota">
-              📍 Te pediremos permiso para usar tu ubicación durante el viaje.
+              <IconoUbicacion />Te pediremos permiso para usar tu ubicación durante el viaje.
             </small>
           )}
         </div>
@@ -176,7 +177,7 @@ function DetalleSolicitudPage() {
       {error && <div className="detalle-alerta detalle-alerta-error">{error}</div>}
 
       <section className="detalle-panel">
-        <h2 className="detalle-panel-titulo">📍 Recorrido</h2>
+        <h2 className="detalle-panel-titulo"><IconoUbicacion />Recorrido</h2>
         <ol className="ruta-timeline">
           <li className="ruta-punto ruta-punto-origen">
             <span className="ruta-etiqueta">Origen · Recogida {formatearFecha(solicitud.fechaRecogida)}</span>
@@ -191,7 +192,7 @@ function DetalleSolicitudPage() {
 
       <div className="detalle-grid">
         <section className="detalle-panel">
-          <h2 className="detalle-panel-titulo">📦 Especificaciones de la carga</h2>
+          <h2 className="detalle-panel-titulo"><IconoCaja />Especificaciones de la carga</h2>
           <dl className="detalle-datos">
             <div>
               <dt>Tipo de carga</dt>
@@ -209,7 +210,7 @@ function DetalleSolicitudPage() {
               <dt>Cita en puerto</dt>
               <dd className={solicitud.requiereCitaPuerto ? 'detalle-dato-alerta' : ''}>
                 {solicitud.requiereCitaPuerto
-                  ? `⚓ ${solicitud.numeroCita ? `Cita #${solicitud.numeroCita}` : 'Requerida'}`
+                  ? <><IconoAncla />{solicitud.numeroCita ? `Cita #${solicitud.numeroCita}` : 'Requerida'}</>
                   : 'No requiere'}
               </dd>
             </div>
@@ -217,7 +218,7 @@ function DetalleSolicitudPage() {
         </section>
 
         <section className="detalle-panel">
-          <h2 className="detalle-panel-titulo">📅 Cronograma</h2>
+          <h2 className="detalle-panel-titulo"><IconoCalendario />Cronograma</h2>
           <dl className="detalle-datos">
             <div>
               <dt>Fecha de recogida</dt>
@@ -237,7 +238,7 @@ function DetalleSolicitudPage() {
 
       <section className="detalle-panel">
         <h2 className="detalle-panel-titulo">
-          {viajeActivo ? '🗺️ Ruta y ubicación del conductor' : '🗺️ Ruta sugerida en el mapa'}
+          <IconoMapa />{viajeActivo ? 'Ruta y ubicación del conductor' : 'Ruta sugerida en el mapa'}
         </h2>
         <EstadoUbicacionConductor flete={solicitud} />
         <RouteMap

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 
 const initialForm = {
@@ -153,12 +154,12 @@ function DatosPersonalesPage() {
                 <input type="email" value={email} readOnly />
                 <small>El correo es tu usuario de acceso y no se puede cambiar</small>
               </label>
-              <button type="submit" disabled={cargando}>
+              <button type="submit" className="btn-accion-principal" disabled={cargando}>
                 {cargando ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </form>
           </section>
-          <Link className="link-button" to="/perfil">Volver a mi perfil</Link>
+          <Link className="boton-volver" to="/perfil"><IconoVolver />Volver a mi perfil</Link>
         </div>
       </div>
     </ProfileLayout>

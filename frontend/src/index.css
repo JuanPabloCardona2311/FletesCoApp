@@ -1,4 +1,187 @@
-:root { font-family: Georgia, serif; color: #1a1f26; background: #eef2f5; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
-* { box-sizing: border-box; }
-body { margin: 0; }
-#root { min-height: 100vh; }
+/* ================================================================
+   FletesCo · Tokens de diseño
+   Base: frontend/DESIGN.md ("neon gallery in the void"), adaptado a la
+   identidad de FletesCo: CTA naranja, azul marino atmosférico y estados
+   de solicitud con color.
+   ================================================================ */
+:root {
+  /* ── Neutros (DESIGN.md) ── */
+  --color-void: #000000;
+  --color-graphite: #111111;
+  --color-obsidian: #171717;
+  --color-slate: #242424;
+  --color-ash: #333333;
+  --color-smoke: #666666;
+  --color-fog: #888888;
+  --color-mist: #999999;
+  --color-pearl: #cccccc;
+  --color-bone: #ffffff;
+
+  /* ── Acentos (DESIGN.md) ── */
+  --color-electric-blue: #0099ff;
+  --color-deep-current: #00406b;
+  --color-midnight-tide: #002238;
+  --color-signal-green: #4cd963;
+  --color-alert-red: #ff0022;
+  --color-amber: #ffbb00;
+
+  /* ── Identidad FletesCo (mandan sobre DESIGN.md) ── */
+  --color-cta: #fc850d;              /* acción principal: un solo botón por pantalla */
+  --color-cta-hover: #e47608;
+  --color-cta-text: #1a1f26;         /* texto oscuro: el blanco sobre naranja no pasa AA */
+  --color-brand-navy: #002f5b;       /* superficie atmosférica (reemplaza Midnight Tide) */
+
+  /* ── Estados (FletesCo sí los necesita con color) ──
+     Texto y borde con el color; fondo translúcido al 15 %. El rojo y el gris
+     usan una versión más clara para el texto, que así cumple WCAG AA. */
+  --estado-verde: var(--color-signal-green);
+  --estado-ambar: var(--color-amber);
+  --estado-rojo: var(--color-alert-red);
+  --estado-rojo-texto: #ff6b7d;
+  --estado-azul: var(--color-electric-blue);
+  --estado-gris: var(--color-fog);
+  --estado-gris-texto: var(--color-mist);
+
+  /* ── Semánticos ── */
+  --texto: var(--color-bone);
+  --texto-secundario: var(--color-mist);
+  --texto-suave: var(--color-pearl);
+  --hairline: rgba(255, 255, 255, 0.1);
+  --hairline-fuerte: rgba(255, 255, 255, 0.18);
+  --ghost: rgba(255, 255, 255, 0.15);
+  --ghost-hover: rgba(255, 255, 255, 0.22);
+
+  /* ── Tipografía ──
+     GT Walsheim es de pago: Inter Tight es su sustituto para títulos. */
+  --font-display: 'Inter Tight', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --text-caption: 12px;
+  --text-body-sm: 14px;
+  --text-body: 16px;
+  --text-subheading: 20px;
+  --text-body-lg: 22px;
+  --text-heading: 44px;
+  --text-heading-lg: 54px;
+  --text-display: 68px;
+
+  --tracking-heading: -0.04em;
+  --tracking-display: -0.05em;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ── Espaciado ── */
+  --spacing-4: 4px;
+  --spacing-5: 5px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-10: 10px;
+  --spacing-14: 14px;
+  --spacing-15: 15px;
+  --spacing-20: 20px;
+  --spacing-25: 25px;
+  --spacing-30: 30px;
+  --spacing-40: 40px;
+  --spacing-60: 60px;
+  --spacing-120: 120px;
+
+  /* ── Layout ── */
+  --page-max-width: 1200px;
+  --section-gap: 80px;          /* solo en la landing */
+  --card-padding: 45px;         /* solo en la landing */
+  --card-padding-app: 22px;     /* páginas de trabajo: más densas */
+  --element-gap: 10px;
+
+  /* ── Radios (escala de DESIGN.md: 8, 15, 20, 25, 9999) ── */
+  --radius-inputs: 8px;
+  --radius-icons: 8px;
+  --radius-featurecards: 15px;
+  --radius-nav: 15px;
+  --radius-cards: 20px;
+  --radius-largecards: 25px;
+  --radius-buttons: 9999px;
+  --radius-tags: 9999px;
+
+  /* ── Sombras ── */
+  --shadow-subtle: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+  --shadow-sm: rgba(0, 0, 0, 0.25) 0px 4px 8px 0px;
+  --shadow-sm-2: rgba(0, 0, 0, 0.2) 0px 2px 6px 0px;
+  --shadow-glow: rgba(0, 153, 255, 0.2) 0px 5px 5px 0px;   /* brillo azul */
+
+  /* ── Superficies ── */
+  --surface-void: #000000;
+  --surface-graphite: #111111;
+  --surface-obsidian: #171717;
+  --surface-iron: #1e1e1e;      /* DESIGN.md lo trae mal escrito (#1e1e1) */
+  --surface-slate: #242424;
+  --surface-navy: var(--color-brand-navy);
+
+  /* ── Movimiento: ease, sin rebotes ── */
+  --ease: ease;
+  --duracion: 0.2s;
+  --duracion-lenta: 0.75s;
+
+  color-scheme: dark;
+  font-family: var(--font-body);
+  color: var(--texto);
+  background: var(--surface-void);
+  font-feature-settings: 'cv01', 'cv05', 'cv09', 'cv11';
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-void);
+  color: var(--texto);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-electric-blue);
+  transition: color var(--duracion) var(--ease), opacity var(--duracion) var(--ease);
+}
+
+a:hover {
+  color: var(--color-bone);
+}
+
+::selection {
+  background: rgba(0, 153, 255, 0.35);
+  color: var(--color-bone);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-electric-blue);
+  outline-offset: 2px;
+}
+
+/* Datos técnicos (placas, IDs, precios, citas) en mono. */
+.mono,
+code {
+  font-family: var(--font-mono);
+  font-feature-settings: 'zero', 'tnum';
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

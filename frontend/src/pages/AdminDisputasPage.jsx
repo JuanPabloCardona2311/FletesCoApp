@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import adminClient from '../api/adminClient'
 
@@ -54,13 +55,13 @@ function AdminDisputasPage() {
 
   return (
     <ProfileLayout role="Panel de Administrador" title="Gestión de disputas" subtitle="Revisa y resuelve incidencias reportadas.">
-      <p><Link to="/perfil/admin">Volver al panel</Link></p>
+      <p><Link className="boton-volver" to="/perfil/admin"><IconoVolver />Volver al panel</Link></p>
       <RequestMessage mensaje={mensaje} error={error} />
       {cargando ? <p>Cargando disputas...</p> : (
         <div className="profile-grid">
           {disputas.map((disputa) => (
             <section className="profile-panel" key={disputa.id}>
-              <div className="panel-heading"><h2>Disputa #{disputa.id}</h2><span className="status-chip">{disputa.estado}</span></div>
+              <div className="panel-heading"><h2>Disputa #{disputa.id}</h2><span className={`status-chip status-chip--${disputa.estado?.toLowerCase()}`}>{disputa.estado}</span></div>
               <p><strong>Solicitud:</strong> {disputa.solicitudId}</p>
               <p><strong>Reporta:</strong> {disputa.usuarioReportaNombre}</p>
               <p><strong>Motivo:</strong> {disputa.motivo}</p>

@@ -469,7 +469,7 @@ function PublicarSolicitudPage() {
           )}
 
           {/* ── Enviar ── */}
-          <button type="submit" disabled={cargando}>
+          <button type="submit" className="btn-accion-principal" disabled={cargando}>
             {cargando ? 'Publicando...' : 'Publicar solicitud'}
           </button>
 

@@ -12,6 +12,7 @@ import {
 import { obtenerRutaSugerida } from '../api/routeService'
 
 import 'leaflet/dist/leaflet.css'
+import { IconoCamion } from './Iconos'
 import './RouteMap.css'
 
 function AjustarVista({
@@ -143,7 +144,7 @@ function RouteMap({
                         radius={11}
                         pathOptions={{ color: '#ffffff', weight: 3, fillColor: '#fc850d', fillOpacity: 1 }}
                     >
-                        <Popup>🚚 Conductor</Popup>
+                        <Popup><IconoCamion />Conductor</Popup>
                     </CircleMarker>
                 )}
             </MapContainer>

@@ -1,16 +1,38 @@
+/* Se conservan los tiles de OpenStreetMap; solo se ajusta el marco. */
 .route-map {
   width: 100%;
   height: 420px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--hairline-fuerte);
+  border-radius: var(--radius-featurecards);
   z-index: 0;
+}
+
+/* Popups y controles de Leaflet: fondo claro y texto oscuro para que se lean. */
+.route-map .leaflet-popup-content-wrapper,
+.route-map .leaflet-popup-tip,
+.selector-ruta-map__canvas .leaflet-popup-content-wrapper,
+.selector-ruta-map__canvas .leaflet-popup-tip {
+  background: var(--color-bone);
+  color: var(--surface-void);
+}
+
+.route-map .leaflet-bar a,
+.selector-ruta-map__canvas .leaflet-bar a {
+  background: var(--color-bone);
+  color: var(--surface-void);
+}
+
+.route-map .leaflet-control-attribution a,
+.selector-ruta-map__canvas .leaflet-control-attribution a {
+  color: #0062a3;
 }
 
 .route-map-leyenda {
   display: flex;
+  flex-wrap: wrap;
   gap: 18px;
   margin-top: 10px;
-  color: var(--muted);
+  color: var(--texto-secundario);
   font: 600 0.8rem var(--font-body);
 }
 
@@ -23,9 +45,9 @@
 .route-map-punto {
   width: 12px;
   height: 12px;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--color-bone);
   border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--border);
+  box-shadow: 0 0 0 1px var(--hairline-fuerte);
 }
 
 /* Colores geográficos (origen/destino), independientes de los estados de negocio. */
@@ -38,7 +60,7 @@
 }
 
 .route-map-punto-conductor {
-  background: var(--accent);
+  background: var(--color-cta);
 }
 
 .route-map-stats {
@@ -53,28 +75,29 @@
   flex-direction: column;
   gap: 4px;
   padding: 12px 14px;
-  background: var(--surface-soft);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  background: var(--surface-obsidian);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-inputs);
 }
 
 .route-map-stats span {
-  color: var(--muted);
-  font: 600 0.75rem var(--font-body);
+  color: var(--texto-secundario);
+  font: 600 0.72rem var(--font-body);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .route-map-stats strong {
-  color: var(--ink);
-  font: 700 1.15rem var(--font-body);
+  color: var(--texto);
+  font: 500 1.1rem var(--font-mono);
 }
 
 .route-map-mensaje {
   margin: 12px 0 0;
-  color: var(--muted);
+  color: var(--texto-secundario);
   font: 0.9rem var(--font-body);
 }
 
 .route-map-error {
-  color: var(--error);
+  color: var(--estado-rojo-texto);
 }

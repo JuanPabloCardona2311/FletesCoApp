@@ -8,55 +8,68 @@
   gap: 8px;
   max-width: min(420px, calc(100vw - 32px));
   padding: 10px 14px;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgb(0 47 91 / 18%);
+  border: 1px solid var(--hairline-fuerte);
+  border-radius: var(--radius-inputs);
+  background: var(--surface-obsidian);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   font: 600 0.85rem var(--font-body);
 }
 
 .seguimiento-activo {
-  background: var(--primary);
-  color: #ffffff;
+  border-color: var(--color-electric-blue);
+  box-shadow: var(--shadow-glow);
+  color: var(--texto);
 }
 
 .seguimiento-espera {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--muted);
+  color: var(--texto-secundario);
 }
 
 .seguimiento-error {
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  background: #fef3c7;
-  border: 1px solid #f6dea0;
-  color: #92400e;
+  border-color: color-mix(in srgb, var(--estado-ambar) 55%, transparent);
+  background: color-mix(in srgb, var(--estado-ambar) 12%, var(--surface-obsidian));
+  color: var(--estado-ambar);
 }
 
 .seguimiento-error span {
   font-weight: 500;
 }
 
+/* Pulso suave: solo cambia la opacidad del halo, sin rebote. */
 .seguimiento-pulso {
+  position: relative;
   width: 10px;
   height: 10px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--success);
-  animation: seguimiento-pulso 1.6s ease-out infinite;
+  background: var(--estado-verde);
+}
+
+.seguimiento-pulso::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--estado-verde);
+  opacity: 0;
+  animation: seguimiento-pulso 1.6s ease infinite;
 }
 
 @keyframes seguimiento-pulso {
   0% {
-    box-shadow: 0 0 0 0 rgb(46 158 91 / 70%);
+    opacity: 0.45;
   }
   100% {
-    box-shadow: 0 0 0 10px rgb(46 158 91 / 0%);
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .seguimiento-pulso {
+  .seguimiento-pulso::after {
     animation: none;
   }
 }

@@ -7,12 +7,12 @@
   margin-bottom: 16px;
 }
 
-/* Mapa principal */
+/* Mapa principal (tiles OSM sin cambios) */
 .selector-ruta-map__canvas {
   height: 420px;
   width: 100%;
-  border-radius: 8px;
-  border: 1px solid var(--border, #d8dee4);
+  border-radius: var(--radius-featurecards);
+  border: 1px solid var(--hairline-fuerte);
 }
 
 /* Barra de controles de modo */
@@ -25,27 +25,31 @@
 
 .selector-ruta-map__btn-modo {
   padding: 6px 14px;
-  border: 1px solid var(--border, #d8dee4);
-  border-radius: 20px;
-  background: var(--surface, #fff);
+  border: 1px solid var(--hairline-fuerte);
+  border-radius: var(--radius-buttons);
+  background: var(--surface-obsidian);
+  color: var(--texto-suave);
   cursor: pointer;
   font-size: 0.875rem;
-  transition: background 0.15s, border-color 0.15s;
+  font-weight: 500;
 }
 
-.selector-ruta-map__btn-modo:hover {
-  background: var(--surface-soft, #eef2f5);
+.selector-ruta-map__btn-modo:hover:not(:disabled) {
+  background: var(--surface-slate);
+  color: var(--texto);
 }
 
-.selector-ruta-map__btn-modo--activo {
-  background: var(--primary, #002f5b);
-  color: #fff;
-  border-color: var(--primary, #002f5b);
+.selector-ruta-map__btn-modo--activo,
+.selector-ruta-map__btn-modo--activo:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-electric-blue) 15%, transparent);
+  border-color: var(--color-electric-blue);
+  box-shadow: var(--shadow-glow);
+  color: var(--texto);
 }
 
 .selector-ruta-map__indicador {
   font-size: 0.85rem;
-  color: var(--muted, #5c6670);
+  color: var(--texto-secundario);
   margin-left: auto;
 }
 
@@ -61,10 +65,11 @@
   align-items: center;
   gap: 6px;
   font-size: 0.85rem;
-  background: var(--surface-soft, #eef2f5);
+  color: var(--texto-suave);
+  background: var(--surface-obsidian);
   padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border, #d8dee4);
+  border-radius: var(--radius-tags);
+  border: 1px solid var(--hairline);
 }
 
 .selector-ruta-map__punto-dot {
@@ -75,6 +80,7 @@
   flex-shrink: 0;
 }
 
+/* Colores geográficos (origen/destino). */
 .selector-ruta-map__punto-dot--origen {
   background: #16a34a;
 }
@@ -83,16 +89,17 @@
   background: #ef4444;
 }
 
-.selector-ruta-map__btn-limpiar {
+.selector-ruta-map__btn-limpiar,
+.selector-ruta-map__btn-limpiar:hover:not(:disabled) {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--muted, #5c6670);
+  color: var(--texto-secundario);
   font-size: 0.8rem;
   padding: 0 2px;
   line-height: 1;
 }
 
-.selector-ruta-map__btn-limpiar:hover {
-  color: var(--error, #c0392b);
+.selector-ruta-map__btn-limpiar:hover:not(:disabled) {
+  color: var(--estado-rojo-texto);
 }

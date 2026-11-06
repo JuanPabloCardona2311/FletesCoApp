@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
 import ProfileLayout from '../components/ProfileLayout'
+import { IconoAncla, IconoCaja, IconoCamion, IconoEditar, IconoPeso, IconoTelefono } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import DocumentosConductor from '../components/DocumentosConductor'
 import { avisarViajeActualizado } from '../utils/geolocalizacion'
@@ -296,11 +297,11 @@ function ConductorProfilePage() {
               </ol>
 
               <div className="solicitud-tags">
-                <span className="solicitud-tag">📦 Carga: {viajeActual.tipoCarga}</span>
-                <span className="solicitud-tag">⚖️ Peso: {Number(viajeActual.peso).toLocaleString('es-CO')} t</span>
+                <span className="solicitud-tag"><IconoCaja />Carga: {viajeActual.tipoCarga}</span>
+                <span className="solicitud-tag"><IconoPeso />Peso: {Number(viajeActual.peso).toLocaleString('es-CO')} t</span>
                 {viajeActual.requiereCitaPuerto && (
                   <span className="solicitud-tag solicitud-tag-alerta">
-                    ⚓ Cita en puerto{viajeActual.numeroCita ? ` #${viajeActual.numeroCita}` : ''}
+                    <IconoAncla />Cita en puerto{viajeActual.numeroCita ? ` #${viajeActual.numeroCita}` : ''}
                   </span>
                 )}
               </div>
@@ -309,7 +310,7 @@ function ConductorProfilePage() {
                 <div className="viaje-contacto">
                   <span>Contacto del despachador</span>
                   <strong>{viajeActual.nombreDespachador}</strong>
-                  <a href={`tel:${viajeActual.telefonoDespachador}`}>📞 {viajeActual.telefonoDespachador}</a>
+                  <a href={`tel:${viajeActual.telefonoDespachador}`}><IconoTelefono />{viajeActual.telefonoDespachador}</a>
                 </div>
               )}
 
@@ -329,7 +330,7 @@ function ConductorProfilePage() {
                 >
                   {avanzandoViaje
                     ? 'Actualizando...'
-                    : viajeActual.estado === 'ACEPTADA' ? '🚚 Iniciar viaje' : '✓ Marcar como entregado'}
+                    : viajeActual.estado === 'ACEPTADA' ? <><IconoCamion />Iniciar viaje</> : '✓ Marcar como entregado'}
                 </button>
               </div>
             </section>
@@ -359,7 +360,7 @@ function ConductorProfilePage() {
         <aside className="summary-panel">
           <h2>{perfil.nombre}</h2>
           <p>{perfil.email}</p>
-          <Link className="btn-link" to="/perfil/datos">Editar mis datos</Link>
+          <Link className="boton-panel" to="/perfil/datos"><IconoEditar />Editar mis datos</Link>
 
           <div className="metric-list">
             <div>
@@ -377,8 +378,8 @@ function ConductorProfilePage() {
             <strong>{vehiculoActivo ? `${vehiculoActivo.tipoVehiculo} - ${vehiculoActivo.placa}` : 'Sin vehículo activo'}</strong>
             <small>{vehiculoActivo ? `Capacidad: ${vehiculoActivo.capacidadCarga} t • ${vehiculoActivo.estadoVerificacion || 'PENDIENTE'}` : 'Agrega uno para empezar'}</small>
             {vehiculoActivo && (
-              <button type="button" className="btn-link" onClick={() => abrirFormularioVehiculo('editar')}>
-                Editar vehículo
+              <button type="button" className="boton-panel boton-panel--compacto" onClick={() => abrirFormularioVehiculo('editar')}>
+                <IconoEditar />Editar vehículo
               </button>
             )}
           </div>
@@ -403,7 +404,7 @@ function ConductorProfilePage() {
                   <div key={v.id} className={`vehiculo-item ${v.activo ? 'activo' : ''}`}>
                     <div className="vehiculo-item-info">
                       <strong style={{ fontSize: '0.9rem' }}>{v.placa}</strong>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+                      <span style={{ fontSize: '0.78rem' }}>
                         {v.tipoVehiculo} • {v.capacidadCarga} t
                       </span>
                     </div>
@@ -423,7 +424,7 @@ function ConductorProfilePage() {
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>No tienes vehículos registrados.</p>
+              <p className="vehiculos-vacio">No tienes vehículos registrados.</p>
             )}
 
             {viajeActual && (
