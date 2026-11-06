@@ -13,6 +13,10 @@ Por motivos de seguridad (**E1-11**), el rol `ADMINISTRADOR` no puede ser auto-a
 
 ## 3. Script SQL de Creación en Supabase
 
+Reemplaza `CORREO_DEL_ADMIN`, `CLAVE_SEGURA`, `TELEFONO_DEL_ADMIN` y `DOCUMENTO_DEL_ADMIN` por los valores reales solo en el **SQL Editor**. No guardes esos valores en este documento ni en el repositorio.
+
+Si el correo ya existe, el script deja la cuenta activa como administrador y no cambia su contraseña.
+
 Ejecuta el siguiente script en el **SQL Editor** de Supabase:
 
 ```sql
@@ -32,24 +36,23 @@ INSERT INTO usuarios (
     estado
 ) VALUES (
     'Administrador FleteCo',
-    'admin@fleteco.com',
-    crypt('Admin123456*', gen_salt('bf', 10)), -- Cifra la contraseña con BCrypt (costo 10)
-    '3001234567',
+    'CORREO_DEL_ADMIN',
+    crypt('CLAVE_SEGURA', gen_salt('bf', 10)), -- Cifra la contraseña con BCrypt (costo 10)
+    'TELEFONO_DEL_ADMIN',
     'CC',
-    '1000000001',
+    'DOCUMENTO_DEL_ADMIN',
     'ADMINISTRADOR',
     NOW(),
     'ACTIVO'
 )
 ON CONFLICT (email) DO UPDATE SET
     estado = 'ACTIVO',
-    tipo_usuario = 'ADMINISTRADOR',
-    password_hash = crypt('Admin123456*', gen_salt('bf', 10));
+    tipo_usuario = 'ADMINISTRADOR';
 
 -- 3. Verificar que el usuario fue creado y está activo
 SELECT id, nombre, email, tipo_usuario, estado, fecha_registro 
 FROM usuarios 
-WHERE email = 'admin@fleteco.com';
+WHERE email = 'CORREO_DEL_ADMIN';
 ```
 
 ---
