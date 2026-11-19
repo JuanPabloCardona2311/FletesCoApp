@@ -27,6 +27,23 @@ public class Solicitud {
     @Column(nullable = false, length = 200)
     private String destino;
 
+    // Ids planos (no @ManyToOne): el GraphQL del administrador carga el
+    // despachador y el conductor solo cuando el cliente los pide.
+    @Column(name = "despachador_id", nullable = false)
+    private Long despachadorId;
+
+    @Column(name = "conductor_id")
+    private Long conductorId;
+
+    @Column(name = "tipo_carga", nullable = false, length = 100)
+    private String tipoCarga;
+
+    @Column(name = "tipo_vehiculo_requerido", nullable = false, length = 50)
+    private String tipoVehiculoRequerido;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal peso;
+
     @Column(name = "precio_ofrecido", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioOfrecido;
 
