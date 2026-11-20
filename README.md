@@ -141,7 +141,7 @@ Como todo sale del mismo origen, el frontend se compila con las URL de la API va
 
 1. **Requisitos:** Docker con Compose **2.24 o superior** (`docker compose version`) y nginx (`sudo apt install nginx`).
 
-2. **Crear el `.env`** en la raíz, como en la configuración inicial. Agrega además `APP_RECUPERACION_URLFRONTEND` con la URL pública del frontend (ver `.env.example`), para que el enlace de recuperación de contraseña apunte al servidor y no a `localhost`.
+2. **Crear el `.env`** en la raíz, como en la configuración inicial. Agrega además `APP_RECUPERACION_URLFRONTEND` con la URL pública del frontend (ver `.env.example`), para que el enlace de recuperación de contraseña apunte al servidor y no a `localhost`. Agrega también `APP_CORS_ORIGENES` con esa misma URL pública con `https` (sin `/` final): detrás de un túnel HTTPS el navegador envía un origen `https://...` distinto al `http://` que ve Spring, y sin esta variable los microservicios rechazan las peticiones con 403 por CORS.
 
 3. **Levantar los contenedores** con los dos archivos de Compose. `docker-compose.servidor.yml` publica los puertos solo en `127.0.0.1` y compila el frontend con las URL vacías:
    ```bash
