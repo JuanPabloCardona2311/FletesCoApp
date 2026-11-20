@@ -32,6 +32,25 @@ FletesCoApp/
 | `ms-solicitudes` | 8083 | Publicar, aceptar y seguir solicitudes de flete hasta la confirmación de entrega (`/api/solicitudes`) |
 | `ms-admin-reportes` | 8084 | Administración: usuarios, disputas y reportes (`/api/admin`) |
 
+### GraphQL del administrador
+
+`ms-admin-reportes` ofrece además una API **GraphQL de solo lectura** en `POST /api/admin/graphql`, solo para usuarios **ADMINISTRADOR**. Permite traer en una sola petición una solicitud con su despachador, su conductor y los vehículos del conductor. No hay mutations: los cambios siguen por los endpoints REST.
+
+| Query | Qué devuelve |
+|---|---|
+| `solicitud(id)` | Una solicitud con su despachador, conductor y vehículos |
+| `solicitudes(estado, limite)` | Las últimas solicitudes, con estado opcional (`limite` entre 1 y 50, por defecto 20) |
+| `conductor(id)` | Un conductor con su usuario y sus vehículos |
+
+```bash
+curl -s -X POST http://localhost:8084/api/admin/graphql \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"query":"{ solicitudes(estado: ACEPTADA, limite: 3) { id origen destino conductor { usuario { nombre } vehiculos { placa } } } }"}'
+```
+
+`$TOKEN` es el campo `token` que devuelve `POST /api/auth/login`. Sin token la respuesta es 401; con un token de otro rol la respuesta es 200, pero con `errors` y `data` en `null`. En el servidor Ubuntu, la ruta ya la cubre el `location /api/admin` de `deploy/nginx/fletesco.conf` (PR #23), así que nginx no necesita cambios.
+
 ---
 
 ## ⚙️ Configuración inicial

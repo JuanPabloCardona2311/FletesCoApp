@@ -1,0 +1,62 @@
+# GraphQL de solo lectura para el panel del administrador (ruta /api/admin/graphql).
+# Solo ADMINISTRADOR. No hay mutations: los cambios siguen por los endpoints REST.
+
+type Query {
+  "Una solicitud con su despachador, su conductor y los vehículos del conductor."
+  solicitud(id: ID!): Solicitud
+  "Últimas solicitudes, filtradas por estado opcional. limite entre 1 y 50 (por defecto 20)."
+  solicitudes(estado: EstadoSolicitud, limite: Int = 20): [Solicitud!]!
+  "Un conductor con su usuario y sus vehículos."
+  conductor(id: ID!): Conductor
+}
+
+enum EstadoSolicitud { PUBLICADA ACEPTADA EN_CURSO COMPLETADA CANCELADA EXPIRADA }
+
+type Solicitud {
+  id: ID!
+  origen: String!
+  destino: String!
+  tipoCarga: String
+  tipoVehiculoRequerido: String
+  peso: Float
+  precioOfrecido: Float!
+  estado: EstadoSolicitud!
+  fechaPublicacion: String!
+  fechaRecogida: String!
+  fechaEntregaEstimada: String!
+  despachador: Despachador
+  conductor: Conductor
+}
+
+type Despachador {
+  id: ID!
+  nombreEmpresa: String
+  nit: String
+  usuario: Usuario
+}
+
+type Conductor {
+  id: ID!
+  calificacionPromedio: Float
+  cancelacionesTotales: Int!
+  usuario: Usuario
+  vehiculos: [Vehiculo!]!
+}
+
+type Vehiculo {
+  id: ID!
+  tipoVehiculo: String!
+  placa: String!
+  capacidadCarga: Float!
+  estadoVerificacion: String!
+  activo: Boolean!
+}
+
+# Sin passwordHash ni número de documento.
+type Usuario {
+  id: ID!
+  nombre: String!
+  email: String!
+  telefono: String
+  estado: String!
+}
