@@ -1,0 +1,46 @@
+# Override para el servidor Ubuntu: se usa JUNTO con docker-compose.yml.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.servidor.yml up -d --build
+#
+# En el servidor el navegador solo habla con nginx (puerto 80), que reparte las
+# peticiones a los contenedores. Este archivo cambia dos cosas respecto al
+# desarrollo local; todo lo demás (env_file, restart, etc.) sale de
+# docker-compose.yml. Requiere Docker Compose 2.24 o superior por !override.
+
+services:
+  # Los puertos se publican solo en 127.0.0.1: nginx (en el mismo servidor)
+  # llega a ellos, pero desde fuera solo se ve el puerto 80 de nginx.
+  # !override reemplaza la lista de docker-compose.yml en lugar de sumarse a
+  # ella (sin él, Compose dejaría también "8081:8081" abierto a todas las
+  # interfaces).
+  ms-auth:
+    ports: !override
+      - "127.0.0.1:8081:8081"
+
+  ms-perfil:
+    ports: !override
+      - "127.0.0.1:8082:8082"
+
+  ms-solicitudes:
+    ports: !override
+      - "127.0.0.1:8083:8083"
+
+  ms-admin-reportes:
+    ports: !override
+      - "127.0.0.1:8084:8084"
+
+  frontend:
+    build:
+      # URLs vacías: el frontend llama a /api/... en el mismo origen y nginx
+      # las reenvía. Vite las incrusta al compilar, por eso van como args de
+      # build. Deben ser "" (cadena vacía) y no quedar sin valor, que Compose
+      # interpretaría como "tomar la variable del entorno".
+      args:
+        VITE_AUTH_URL: ""
+        VITE_PERFIL_URL: ""
+        VITE_SOLICITUDES_URL: ""
+        VITE_ADMIN_URL: ""
+    # El contenedor del frontend sirve los archivos en su puerto 80; nginx del
+    # servidor le llega por 127.0.0.1:5173.
+    ports: !override
+      - "127.0.0.1:5173:80"

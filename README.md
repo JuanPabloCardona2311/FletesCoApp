@@ -17,8 +17,10 @@ FletesCoApp/
 ├── ms-admin-reportes/   Microservicio de administración        (puerto 8084)
 ├── frontend/            Aplicación web en React + Vite         (puerto 5173 con Docker)
 ├── docs/                Documentación del proyecto
+├── deploy/nginx/        Sitio de nginx para el servidor Ubuntu
 ├── backend/             Monolito antiguo (puerto 8080), en desuso: se retirará
-└── docker-compose.yml   Levanta los 4 microservicios y el frontend
+├── docker-compose.yml           Levanta los 4 microservicios y el frontend
+└── docker-compose.servidor.yml  Ajustes para el servidor (se usa junto al anterior)
 ```
 
 ### Microservicios
@@ -101,3 +103,38 @@ http://localhost:5173
    npm run dev
    ```
    La aplicación queda disponible en `http://localhost:5173`.
+
+---
+
+## 🚀 Despliegue en Ubuntu Server
+
+En el servidor, el navegador solo habla con **nginx** (puerto 80), instalado con `apt`. nginx reparte cada petición según la ruta hacia los contenedores, que solo escuchan en `127.0.0.1`, y los microservicios se conectan a Supabase:
+
+```text
+Navegador ──► nginx :80 ─┬─ /api/auth        ──► 127.0.0.1:8081  ms-auth           ─┐
+                         ├─ /api/perfiles    ──► 127.0.0.1:8082  ms-perfil         ─┤
+                         ├─ /api/solicitudes ──► 127.0.0.1:8083  ms-solicitudes    ─┼─► Supabase
+                         ├─ /api/admin       ──► 127.0.0.1:8084  ms-admin-reportes ─┘
+                         └─ /                ──► 127.0.0.1:5173  frontend
+```
+
+Como todo sale del mismo origen, el frontend se compila con las URL de la API vacías y llama a `/api/...` directamente.
+
+1. **Requisitos:** Docker con Compose **2.24 o superior** (`docker compose version`) y nginx (`sudo apt install nginx`).
+
+2. **Crear el `.env`** en la raíz, como en la configuración inicial. Agrega además `APP_RECUPERACION_URLFRONTEND` con la URL pública del frontend (ver `.env.example`), para que el enlace de recuperación de contraseña apunte al servidor y no a `localhost`.
+
+3. **Levantar los contenedores** con los dos archivos de Compose. `docker-compose.servidor.yml` publica los puertos solo en `127.0.0.1` y compila el frontend con las URL vacías:
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.servidor.yml up -d --build
+   ```
+
+4. **Instalar el sitio de nginx:**
+   ```bash
+   sudo cp deploy/nginx/fletesco.conf /etc/nginx/sites-available/fletesco
+   sudo ln -s /etc/nginx/sites-available/fletesco /etc/nginx/sites-enabled/fletesco
+   sudo rm /etc/nginx/sites-enabled/default   # el sitio por defecto también usa el puerto 80
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+> **Ubicación del conductor:** el navegador solo permite usar la ubicación en HTTPS o en `localhost`. Si se entra al servidor por `http://` con una IP o un dominio, el conductor no podrá compartir su ubicación al aceptar un flete hasta que el sitio tenga HTTPS.
