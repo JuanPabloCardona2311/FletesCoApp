@@ -58,7 +58,10 @@ El panel de reportes del administrador y las pantallas de conductores y despacha
 ```text
 ms-solicitudes --(ws interno /internal/ws/eventos)--> ms-admin-reportes --(ws /api/admin/ws)--> navegador admin
 ms-solicitudes --(ws /api/solicitudes/ws)--> navegador de conductor y despachador
+ms-perfil --(ws interno /internal/ws/eventos, UBICACION_ACTUALIZADA)--> ms-solicitudes --(ws /api/solicitudes/ws)--> despachador
 ```
+
+**Ubicación en vivo:** cada vez que el conductor guarda su GPS en ms-perfil (cada 20 s), ms-perfil la publica después del commit por el canal interno de ms-solicitudes, con su propio token de servicio. ms-solicitudes la reenvía solo al despachador dueño del viaje, y solo si el viaje está `ACEPTADA` o `EN_CURSO`, con los mismos campos del detalle (`conductorLat`, `conductorLng`, `ubicacionActualizadaEn`). Así el marcador se mueve sin pedir nada por REST. Si el enlace cae, la ubicación se guarda igual y el despachador la ve con el refresco de respaldo. ms-perfil usa la misma variable `APP_EVENTOS_SOLICITUDES_URL` (en Docker, ya en `docker-compose.yml`), y nginx no necesita cambios: el enlace interno no pasa por nginx.
 
 **El socket avisa, el REST trae los datos.** El navegador recibe solo `{tipo, solicitudId, estado}` y vuelve a pedir la información por los endpoints REST de siempre, que validan permisos. Si el socket se cae, cada pantalla sigue refrescando por REST cada 20 s y, al reconectar, se pone al día; conectada, hace solo un refresco de seguridad cada 60 s.
 

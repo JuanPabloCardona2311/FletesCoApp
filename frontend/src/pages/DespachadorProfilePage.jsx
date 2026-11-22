@@ -113,6 +113,18 @@ function DespachadorProfilePage() {
   const estadoCanal = useAvisosSolicitudes({
     recargar: recargarFletes,
     alEvento: (aviso) => {
+      // La ubicación llega completa: se mezcla en ese flete sin pedir nada por REST.
+      if (aviso.tipo === 'UBICACION_ACTUALIZADA') {
+        setFletes((actuales) => actuales.map((flete) => (flete.id === aviso.solicitudId
+          ? {
+            ...flete,
+            conductorLat: aviso.conductorLat,
+            conductorLng: aviso.conductorLng,
+            ubicacionActualizadaEn: aviso.ubicacionActualizadaEn,
+          }
+          : flete)))
+        return
+      }
       if (aviso.tipo === 'SOLICITUD_ACEPTADA') {
         setMensaje(`¡Un conductor aceptó tu solicitud #${aviso.solicitudId}!`)
       }
