@@ -51,6 +51,20 @@ curl -s -X POST http://localhost:8084/api/admin/graphql \
 
 `$TOKEN` es el campo `token` que devuelve `POST /api/auth/login`. Sin token la respuesta es 401; con un token de otro rol la respuesta es 200, pero con `errors` y `data` en `null`. En el servidor Ubuntu, la ruta ya la cubre el `location /api/admin` de `deploy/nginx/fletesco.conf` (PR #23), así que nginx no necesita cambios.
 
+### WebSockets
+
+El panel de reportes del administrador se actualiza en vivo, sin recargar:
+
+```text
+ms-solicitudes --(ws interno /internal/ws/eventos)--> ms-admin-reportes --(ws /api/admin/ws)--> navegador admin
+```
+
+- **Eventos:** `SOLICITUD_CREADA`, `SOLICITUD_ACEPTADA`, `VIAJE_INICIADO`, `ENTREGA_MARCADA` y `PAGO_LIBERADO`. Solo llevan ids y estados, sin datos personales, y se envían después del commit.
+- **La base de datos sigue siendo la fuente de verdad:** el evento solo avisa; el panel vuelve a pedir el resumen por HTTP. Si `ms-solicitudes` está caído, `ms-admin-reportes` funciona igual y se reconecta solo (espera de 2 s a 30 s); si `ms-admin-reportes` está caído, las solicitudes se publican y aceptan igual.
+- **Canal interno:** `/internal/ws/eventos` se autentica con un token de servicio en el header `X-Token-Servicio`. No empieza por `/api`, así que nginx no lo expone.
+- **Variable:** `APP_EVENTOS_SOLICITUDES_URL` indica a `ms-admin-reportes` dónde está el canal (por defecto `ws://localhost:8083/internal/ws/eventos`; en Docker, `ws://ms-solicitudes:8083/internal/ws/eventos`, ya en `docker-compose.yml`).
+- **Navegador:** `/api/admin/ws` exige un token de ADMINISTRADOR activo en `?token=` y uno de los orígenes de `APP_CORS_ORIGENES`. En el servidor, nginx necesita la `location /api/admin/ws` con los headers `Upgrade` y `Connection`, que ya está en `deploy/nginx/fletesco.conf`.
+
 ---
 
 ## ⚙️ Configuración inicial
