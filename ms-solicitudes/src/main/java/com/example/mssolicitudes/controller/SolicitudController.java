@@ -44,7 +44,9 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudService.listarFletesDespachador());
     }
 
-    @GetMapping("/{id}") @PreAuthorize("hasRole('DESPACHADOR') or hasRole('CONDUCTOR')")
+    // Solo ids numéricos: si no, esta ruta atrapa /api/solicitudes/ws (el WebSocket) antes
+    // que el handler de WebSocket, porque Spring MVC evalúa primero los controladores.
+    @GetMapping("/{id:\\d+}") @PreAuthorize("hasRole('DESPACHADOR') or hasRole('CONDUCTOR')")
     public ResponseEntity<SolicitudDetalleResponse> obtenerSolicitudPorId(@PathVariable Long id) {
         return ResponseEntity.ok(solicitudService.obtenerSolicitudPorId(id));
     }

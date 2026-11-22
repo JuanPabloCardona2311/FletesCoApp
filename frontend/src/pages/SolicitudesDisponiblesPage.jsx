@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import solicitudesClient from '../api/solicitudesClient'
@@ -14,7 +14,11 @@ import {
   IconoVolver,
 } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
+import IndicadorEnVivo from '../components/IndicadorEnVivo'
 import { obtenerUbicacionActual } from '../utils/geolocalizacion'
+import { useAvisosSolicitudes } from '../utils/tiempoReal'
+
+const DURACION_AVISO_MS = 5000
 
 const emptyProfile = {
   vehiculos: [],
@@ -39,6 +43,8 @@ function SolicitudesDisponiblesPage() {
   const [aceptandoId, setAceptandoId] = useState(null)
   const [errorAceptar, setErrorAceptar] = useState({ id: null, mensaje: '' })
   const [etapaAceptar, setEtapaAceptar] = useState('')
+  const [aviso, setAviso] = useState('')
+  const temporizadorAviso = useRef(null)
 
   const cerrarSesionSiExpiro = useCallback((requestError) => {
     if (requestError.response?.status === 401) {
@@ -85,6 +91,40 @@ function SolicitudesDisponiblesPage() {
 
     cargarSolicitudes()
   }, [cerrarSesionSiExpiro])
+
+  useEffect(() => () => clearTimeout(temporizadorAviso.current), [])
+
+  // Recarga silenciosa (sin spinner). Una solicitud que otro conductor aceptó
+  // simplemente deja de venir en la lista. Devuelve la lista nueva, o null si falló.
+  const recargarSolicitudes = useCallback(async () => {
+    try {
+      const response = await solicitudesClient.get('/api/solicitudes/disponibles')
+      const lista = response.data || []
+      setSolicitudes(lista)
+      return lista
+    } catch (requestError) {
+      cerrarSesionSiExpiro(requestError)
+      return null
+    }
+  }, [cerrarSesionSiExpiro])
+
+  const mostrarAviso = (texto) => {
+    setAviso(texto)
+    clearTimeout(temporizadorAviso.current)
+    temporizadorAviso.current = setTimeout(() => setAviso(''), DURACION_AVISO_MS)
+  }
+
+  const estadoCanal = useAvisosSolicitudes({
+    recargar: recargarSolicitudes,
+    alEvento: async (evento) => {
+      if (evento.tipo !== 'SOLICITUD_CREADA' && evento.tipo !== 'SOLICITUD_ACEPTADA') return
+      const lista = await recargarSolicitudes()
+      // Solo se avisa si la nueva solicitud es compatible con su vehículo (viene en la lista).
+      if (evento.tipo === 'SOLICITUD_CREADA' && lista?.some((s) => s.id === evento.solicitudId)) {
+        mostrarAviso('Nueva solicitud disponible')
+      }
+    },
+  })
 
   const handleAceptarSolicitud = async (solicitudId) => {
     setAceptandoId(solicitudId)
@@ -133,7 +173,7 @@ function SolicitudesDisponiblesPage() {
     >
       <div className="profile-grid">
         <main className="conductor-main">
-          <RequestMessage mensaje="" error={error} />
+          <RequestMessage mensaje={aviso} error={error} />
 
           <section className="profile-panel">
             <div className="panel-heading solicitudes-heading">
@@ -145,6 +185,7 @@ function SolicitudesDisponiblesPage() {
                     : ''}
                 </small>
               </div>
+              <IndicadorEnVivo estado={estadoCanal} />
               <button
                 type="button"
                 className="btn-actualizar"

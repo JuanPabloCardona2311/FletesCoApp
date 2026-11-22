@@ -25,6 +25,11 @@ public class CorsConfig {
                 .toList();
     }
 
+    // Los mismos orígenes limitan quién puede abrir el WebSocket de /api/solicitudes/ws.
+    public List<String> getOrigenes() {
+        return origenes;
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
