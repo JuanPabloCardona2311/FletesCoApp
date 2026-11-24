@@ -13,6 +13,9 @@
   width: 100%;
   border-radius: var(--radius-featurecards);
   border: 1px solid var(--hairline-fuerte);
+  /* Encierra los z-index internos de Leaflet: así la lista del buscador de
+     direcciones queda por encima de los controles del mapa. */
+  z-index: 0;
 }
 
 /* Barra de controles de modo */
@@ -102,4 +105,24 @@
 
 .selector-ruta-map__btn-limpiar:hover:not(:disabled) {
   color: var(--estado-rojo-texto);
+}
+
+/* Pines arrastrables (divIcon de Leaflet). Colores geográficos de origen y destino. */
+.selector-ruta-map__pin {
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.45);
+  cursor: grab;
+}
+
+.selector-ruta-map__pin:active {
+  cursor: grabbing;
+}
+
+.selector-ruta-map__pin--origen {
+  background: #16a34a;
+}
+
+.selector-ruta-map__pin--destino {
+  background: #ef4444;
 }

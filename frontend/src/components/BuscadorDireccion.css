@@ -1,0 +1,51 @@
+/* ── BuscadorDireccion: campo con sugerencias (tema oscuro) ── */
+
+.buscador-direccion {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.buscador-direccion__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  margin-top: 4px;
+  background: var(--surface-obsidian);
+  border: 1px solid var(--hairline-fuerte);
+  border-radius: var(--radius-inputs);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.buscador-direccion__lista {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.buscador-direccion__opcion {
+  padding: 9px 12px;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.buscador-direccion__opcion--activa {
+  background: color-mix(in srgb, var(--color-electric-blue) 15%, transparent);
+  color: var(--texto);
+}
+
+.buscador-direccion__estado {
+  margin: 0;
+  padding: 10px 12px;
+  color: var(--texto-secundario);
+  font-size: 0.85rem;
+}
+
+.buscador-direccion__estado--error {
+  color: var(--estado-rojo-texto);
+}

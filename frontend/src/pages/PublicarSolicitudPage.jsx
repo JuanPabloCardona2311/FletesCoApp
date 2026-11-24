@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import solicitudesClient from '../api/solicitudesClient'
+import { geocodificarInverso } from '../api/geocoderService'
+import BuscadorDireccion from '../components/BuscadorDireccion'
 import ProfileLayout from '../components/ProfileLayout'
 import RequestMessage from '../components/RequestMessage'
 import RouteMap from '../components/RouteMap'
@@ -18,20 +20,6 @@ const initialForm = {
   fechaEntregaEstimada: '',
   requiereCitaPuerto: false,
   numeroCita: '',
-}
-
-// --- geocodificación inversa con Nominatim ---
-async function geocodificarInverso(lat, lng, signal) {
-  const url =
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2` +
-    `&lat=${lat}&lon=${lng}&accept-language=es`
-  const res = await fetch(url, {
-    headers: { 'Accept-Language': 'es' },
-    signal,
-  })
-  if (!res.ok) throw new Error('Nominatim no disponible')
-  const data = await res.json()
-  return data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`
 }
 
 function PublicarSolicitudPage() {
@@ -64,14 +52,16 @@ function PublicarSolicitudPage() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }))
   }
 
-  // ---------- handler del mapa ----------
+  // ---------- handler del mapa y del buscador ----------
   // Fija el punto de inmediato con las coordenadas como texto,
   // luego actualiza en segundo plano cuando responda Nominatim.
   // Descarta respuestas obsoletas comparando el contador de secuencia.
+  // Si llega textoElegido (una sugerencia del buscador), se usa ese texto y no se
+  // pide el reverse: la dirección elegida no se sobrescribe.
 
-  const handleSeleccionar = (tipo, lat, lng) => {
-    // 1. Fija el punto y el texto de coordenadas de inmediato
-    const textoInicial = `${lat.toFixed(5)}, ${lng.toFixed(5)}`
+  const handleSeleccionar = (tipo, lat, lng, textoElegido) => {
+    // 1. Fija el punto y el texto (elegido o de coordenadas) de inmediato
+    const textoInicial = textoElegido ?? `${lat.toFixed(5)}, ${lng.toFixed(5)}`
 
     if (tipo === 'ORIGEN') {
       setPuntoOrigen({ lat, lng })
@@ -90,9 +80,11 @@ function PublicarSolicitudPage() {
       clearTimeout(geoTimeoutRef.current[tipo])
     }
 
-    // 3. Incrementa el contador de secuencia para este tipo
+    // 3. Incrementa el contador de secuencia para este tipo (también invalida un
+    //    reverse que ya esté en vuelo)
     geoSeqRef.current[tipo] += 1
     const miSeq = geoSeqRef.current[tipo]
+    if (textoElegido !== undefined) return
 
     // 4. Programa la llamada a Nominatim con 1000 ms de retardo (throttle)
     geoTimeoutRef.current[tipo] = setTimeout(() => {
@@ -110,6 +102,13 @@ function PublicarSolicitudPage() {
           // fallo silencioso; el texto de coordenadas ya está puesto
         })
     }, 1000)
+  }
+
+  // El usuario escribe en el buscador: solo cambia el texto; el pin cambia al elegir
+  // una sugerencia o al marcar en el mapa.
+  const handleTextoDireccion = (campo, texto) => {
+    setForm((prev) => ({ ...prev, [campo]: texto }))
+    if (errors[campo]) setErrors((prev) => ({ ...prev, [campo]: undefined }))
   }
 
   // Limpia timeouts pendientes al desmontar el componente
@@ -143,8 +142,8 @@ function PublicarSolicitudPage() {
     if (!form.destino.trim()) e.destino = 'El destino es obligatorio.'
     else if (form.destino.length > 200) e.destino = 'Máximo 200 caracteres.'
 
-    if (!puntoOrigen) e.puntoOrigen = 'Marca el origen en el mapa.'
-    if (!puntoDestino) e.puntoDestino = 'Marca el destino en el mapa.'
+    if (!puntoOrigen) e.puntoOrigen = 'Elige una dirección de origen de la lista o márcala en el mapa.'
+    if (!puntoDestino) e.puntoDestino = 'Elige una dirección de destino de la lista o márcala en el mapa.'
 
     if (!form.tipoCarga.trim()) e.tipoCarga = 'El tipo de carga es obligatorio.'
     else if (form.tipoCarga.length > 100) e.tipoCarga = 'Máximo 100 caracteres.'
@@ -277,8 +276,31 @@ function PublicarSolicitudPage() {
       <div className="profile-panel">
         <form onSubmit={handleSubmit} noValidate>
 
-          {/* ── Sección: Mapa de selección ── */}
-          <h2>Selecciona origen y destino en el mapa</h2>
+          {/* ── Sección: Origen y destino (buscador + mapa) ── */}
+          <h2>Origen y destino</h2>
+
+          <div className="two-columns">
+            <BuscadorDireccion
+              etiqueta="Origen"
+              valor={form.origen}
+              onCambiarTexto={(texto) => handleTextoDireccion('origen', texto)}
+              onElegir={(sugerencia) => handleSeleccionar('ORIGEN', sugerencia.lat, sugerencia.lng, sugerencia.label)}
+              placeholder="Ej. carrera 65 E #39-45, Medellín"
+              error={errors.origen}
+            />
+            <BuscadorDireccion
+              etiqueta="Destino"
+              valor={form.destino}
+              onCambiarTexto={(texto) => handleTextoDireccion('destino', texto)}
+              onElegir={(sugerencia) => handleSeleccionar('DESTINO', sugerencia.lat, sugerencia.lng, sugerencia.label)}
+              placeholder="Ej. calle 112 B #64D-05, Medellín"
+              error={errors.destino}
+            />
+          </div>
+
+          <p className="aviso-ubicacion">
+            Escribe la dirección o marca el punto en el mapa. Si el pin no queda exacto, arrástralo o haz clic en el lugar correcto.
+          </p>
 
           <SelectorRutaMap
             origen={puntoOrigen}
@@ -295,37 +317,6 @@ function PublicarSolicitudPage() {
           {errors.puntoDestino && (
             <span className="field-error" role="alert">{errors.puntoDestino}</span>
           )}
-
-          {/* ── Sección: Textos de origen y destino ── */}
-          <div className="two-columns">
-            <label>
-              Origen
-              <input
-                name="origen"
-                value={form.origen}
-                onChange={handleChange}
-                placeholder="Ciudad o dirección de recogida"
-                maxLength="200"
-              />
-              {errors.origen && (
-                <span className="field-error" role="alert">{errors.origen}</span>
-              )}
-            </label>
-
-            <label>
-              Destino
-              <input
-                name="destino"
-                value={form.destino}
-                onChange={handleChange}
-                placeholder="Ciudad o dirección de entrega"
-                maxLength="200"
-              />
-              {errors.destino && (
-                <span className="field-error" role="alert">{errors.destino}</span>
-              )}
-            </label>
-          </div>
 
           {/* ── Vista previa de ruta ── */}
           {ambosPuntosListos && (
