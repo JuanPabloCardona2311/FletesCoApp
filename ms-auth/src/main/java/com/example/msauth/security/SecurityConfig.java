@@ -1,5 +1,6 @@
 package com.example.msauth.security;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -35,8 +36,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> {})
+                // CSRF deshabilitado a propósito: la cookie del JWT es SameSite=Lax, así que el
+                // navegador no la envía en POST/PUT/PATCH/DELETE iniciados desde otros sitios, y CORS
+                // solo acepta los orígenes de APP_CORS_ORIGENES. Por eso no se usan tokens CSRF.
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // /me necesita sesión; el resto de /api/auth (login, registro, logout,
+                        // recuperación) es público. Va antes de /api/auth/** porque gana la primera regla.
+                        .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .anyRequest().authenticated()
@@ -64,5 +71,15 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    // El filtro JWT es un @Component, y Spring Boot registra todo Filter como filtro de
+    // servlet además de la cadena de Spring Security. Se desactiva ese registro para que
+    // corra una sola vez, solo dentro de la cadena (antes de las reglas de autorización).
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration() {
+        FilterRegistrationBean<JwtAuthenticationFilter> registro = new FilterRegistrationBean<>(jwtAuthenticationFilter);
+        registro.setEnabled(false);
+        return registro;
     }
 }

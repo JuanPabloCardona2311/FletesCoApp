@@ -5,21 +5,26 @@ import com.example.msauth.dto.request.RecuperarPasswordRequest;
 import com.example.msauth.dto.request.RegisterRequest;
 import com.example.msauth.dto.request.RestablecerPasswordRequest;
 import com.example.msauth.dto.response.AuthResponse;
+import com.example.msauth.dto.response.UsuarioActualResponse;
 import com.example.msauth.entity.Conductor;
 import com.example.msauth.entity.Despachador;
 import com.example.msauth.entity.Usuario;
 import com.example.msauth.repository.ConductorRepository;
 import com.example.msauth.repository.DespachadorRepository;
 import com.example.msauth.repository.UsuarioRepository;
+import com.example.msauth.security.CookieJwtUtil;
 import com.example.msauth.security.JwtService;
 import com.example.msauth.service.RecuperacionPasswordService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +47,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RecuperacionPasswordService recuperacionPasswordService;
+    private final CookieJwtUtil cookieJwtUtil;
 
     public AuthController(
             UsuarioRepository usuarioRepository,
@@ -50,7 +56,8 @@ public class AuthController {
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             JwtService jwtService,
-            RecuperacionPasswordService recuperacionPasswordService
+            RecuperacionPasswordService recuperacionPasswordService,
+            CookieJwtUtil cookieJwtUtil
     ) {
         this.usuarioRepository = usuarioRepository;
         this.conductorRepository = conductorRepository;
@@ -59,6 +66,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.recuperacionPasswordService = recuperacionPasswordService;
+        this.cookieJwtUtil = cookieJwtUtil;
     }
 
     @PostMapping("/register")
@@ -107,7 +115,11 @@ public class AuthController {
                 java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuarioGuardado.getTipoUsuario().name()))
         ));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        // El token va en la cookie HttpOnly y, por compatibilidad con el frontend actual,
+        // también en el body (se quita en la parte 2).
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookieJwtUtil.crear(token).toString())
+                .body(
                 new AuthResponse(token, usuarioGuardado.getTipoUsuario().name(), usuarioGuardado.getEmail(), usuarioGuardado.getNombre())
         );
     }
@@ -128,10 +140,31 @@ public class AuthController {
                     java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuario.getTipoUsuario().name()))
             ));
 
-            return ResponseEntity.ok(new AuthResponse(token, usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
+            // Cookie HttpOnly + token en el body por compatibilidad (se quita en la parte 2).
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookieJwtUtil.crear(token).toString())
+                    .body(new AuthResponse(token, usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+    }
+
+    // Usuario de la sesión (cookie FLETESCO_TOKEN o header Bearer). Lo usa el frontend para
+    // saber quién está conectado sin guardar datos en localStorage.
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioActualResponse> me(Authentication authentication) {
+        Usuario usuario = usuarioRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        return ResponseEntity.ok(new UsuarioActualResponse(
+                usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
+    }
+
+    // Cierra la sesión borrando la cookie. Es público: funciona aunque el token ya venció.
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cookieJwtUtil.borrar().toString())
+                .build();
     }
 
     /**

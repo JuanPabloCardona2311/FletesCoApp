@@ -30,6 +30,11 @@ public class JwtService {
                 .compact();
     }
 
+    // Duración del JWT en milisegundos; la cookie FLETESCO_TOKEN usa la misma.
+    public long getJwtExpiration() {
+        return jwtExpiration;
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
