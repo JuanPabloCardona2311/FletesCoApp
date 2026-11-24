@@ -43,7 +43,20 @@ function DetalleSolicitudPage() {
     activo: tipoUsuario === 'CONDUCTOR' || tipoUsuario === 'DESPACHADOR',
     recargar: recargarSolicitud,
     alEvento: (aviso) => {
-      if (String(aviso.solicitudId) === String(id)) recargarSolicitud()
+      if (String(aviso.solicitudId) !== String(id)) return
+      // La ubicación llega completa: se mezcla sin pedir nada por REST y el marcador se mueve.
+      if (aviso.tipo === 'UBICACION_ACTUALIZADA') {
+        setSolicitud((actual) => (actual
+          ? {
+            ...actual,
+            conductorLat: aviso.conductorLat,
+            conductorLng: aviso.conductorLng,
+            ubicacionActualizadaEn: aviso.ubicacionActualizadaEn,
+          }
+          : actual))
+        return
+      }
+      recargarSolicitud()
     },
   })
 

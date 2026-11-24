@@ -3,6 +3,7 @@ package com.example.msperfil.service.impl;
 import com.example.msperfil.dto.request.*;
 import com.example.msperfil.dto.response.*;
 import com.example.msperfil.entity.*;
+import com.example.msperfil.evento.UbicacionActualizada;
 import com.example.msperfil.repository.*;
 import com.example.msperfil.service.PerfilService;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +23,20 @@ public class PerfilServiceImpl implements PerfilService {
     private final DespachadorRepository despachadorRepository;
     private final VehiculoRepository vehiculoRepository;
     private final SolicitudRepository solicitudRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public PerfilServiceImpl(UsuarioRepository usuarioRepository,
             ConductorRepository conductorRepository,
             DespachadorRepository despachadorRepository,
             VehiculoRepository vehiculoRepository,
-            SolicitudRepository solicitudRepository) {
+            SolicitudRepository solicitudRepository,
+            ApplicationEventPublisher eventPublisher) {
         this.usuarioRepository = usuarioRepository;
         this.conductorRepository = conductorRepository;
         this.despachadorRepository = despachadorRepository;
         this.vehiculoRepository = vehiculoRepository;
         this.solicitudRepository = solicitudRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -148,6 +153,9 @@ public class PerfilServiceImpl implements PerfilService {
         conductor.setUbicacionLng(request.getLongitud());
         conductor.setUbicacionActualizadaEn(LocalDateTime.now());
         conductorRepository.save(conductor);
+        // Se envía por WebSocket a ms-solicitudes después del commit (OyenteUbicacion).
+        eventPublisher.publishEvent(new UbicacionActualizada(conductor.getId(), conductor.getUbicacionLat(),
+                conductor.getUbicacionLng(), conductor.getUbicacionActualizadaEn()));
     }
 
     @Override

@@ -21,6 +21,17 @@ public class JwtService {
                 .signWith(getSigningKey()).compact();
     }
 
+    private static final String NOMBRE_SERVICIO = "ms-perfil";
+    private static final long VIGENCIA_TOKEN_SERVICIO_MS = 5 * 60 * 1000;
+
+    // Token corto para conectarse al canal de eventos de ms-solicitudes. Se genera uno
+    // nuevo en cada intento de conexión; viaja en X-Token-Servicio, nunca en Authorization.
+    public String generarTokenServicio() {
+        return Jwts.builder().subject(NOMBRE_SERVICIO).claim("tipo", "SERVICIO").issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + VIGENCIA_TOKEN_SERVICIO_MS))
+                .signWith(getSigningKey()).compact();
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
