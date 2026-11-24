@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import authClient from '../api/authClient'
 import AuthLayout from '../components/AuthLayout'
 import RequestMessage from '../components/RequestMessage'
+import { useSesion } from '../context/useSesion'
 
 const initialForm = {
   nombre: '',
@@ -16,6 +17,7 @@ const initialForm = {
 
 function RegisterPage() {
   const navigate = useNavigate()
+  const { iniciarSesion } = useSesion()
   const [form, setForm] = useState(initialForm)
   const [errors, setErrors] = useState({})
   const [mensaje, setMensaje] = useState('')
@@ -98,17 +100,20 @@ function RegisterPage() {
     setCargando(true)
 
     try {
-      const response = await authClient.post('/api/auth/register', form)
-      const data = response.data
+      await authClient.post('/api/auth/register', form)
 
-      // E1-13: Autenticación automática y redirección
-      localStorage.setItem('fleteco_token', data.token)
-      localStorage.setItem('fleteco_tipo_usuario', data.tipoUsuario)
+      // E1-13: autenticación automática. El backend ya dejó la cookie HttpOnly; se
+      // consulta /api/auth/me para cargar la sesión y redirigir según el rol.
+      const usuario = await iniciarSesion()
+      if (!usuario) {
+        setError('Tu cuenta se creó, pero no se pudo iniciar la sesión. Inicia sesión manualmente.')
+        return
+      }
 
-      setMensaje(`Registro exitoso. Bienvenido, ${data.nombre || form.nombre}.`)
+      setMensaje(`Registro exitoso. Bienvenido, ${usuario.nombre || form.nombre}.`)
       setForm(initialForm)
 
-      navigate(data.tipoUsuario === 'DESPACHADOR' ? '/perfil/despachador' : '/perfil/conductor')
+      navigate(usuario.tipoUsuario === 'DESPACHADOR' ? '/perfil/despachador' : '/perfil/conductor')
     } catch (requestError) {
       if (requestError.response?.status === 409) {
         setError('El email ya está registrado.')

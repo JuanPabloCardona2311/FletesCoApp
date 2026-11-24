@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/internal/ws/**")
                         .permitAll()
                         // WebSocket del navegador: lo autentica JwtNavegadorInterceptor con el
-                        // token de la cookie o de ?token= (el navegador no puede enviar headers en un WebSocket).
+                        // token de la cookie FLETESCO_TOKEN (el navegador no puede enviar headers en un WebSocket).
                         .requestMatchers("/api/solicitudes/ws")
                         .permitAll()
                         .anyRequest()

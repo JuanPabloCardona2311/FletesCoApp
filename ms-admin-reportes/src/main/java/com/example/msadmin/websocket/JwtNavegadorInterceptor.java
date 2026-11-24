@@ -14,16 +14,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 // Autentica el WebSocket del panel admin. El navegador no puede enviar headers al abrir
-// un WebSocket: el token llega en la cookie HttpOnly FLETESCO_TOKEN o, por compatibilidad,
-// como ?token=... Nunca se escribe en el log.
+// un WebSocket: el token llega en la cookie HttpOnly FLETESCO_TOKEN. Nunca se escribe en el log.
 @Component
 public class JwtNavegadorInterceptor implements HandshakeInterceptor {
 
@@ -71,21 +67,9 @@ public class JwtNavegadorInterceptor implements HandshakeInterceptor {
         // Nada que hacer después del handshake.
     }
 
-    // Token del handshake: primero la cookie HttpOnly FLETESCO_TOKEN (el navegador la envía
-    // sola al abrir el WebSocket); si no viene, ?token= como antes (compatibilidad).
+    // Token del handshake: solo la cookie HttpOnly FLETESCO_TOKEN, que el navegador envía
+    // sola al abrir el WebSocket. Ya no se acepta ?token= (el token nunca va en la URL).
     private static String extraerToken(ServerHttpRequest request) {
-        String deCookie = tokenDeCookie(request);
-        if (deCookie != null) {
-            return deCookie;
-        }
-        String valor = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams().getFirst("token");
-        if (valor == null || valor.isBlank()) {
-            return null;
-        }
-        return URLDecoder.decode(valor, StandardCharsets.UTF_8);
-    }
-
-    private static String tokenDeCookie(ServerHttpRequest request) {
         List<String> cabeceras = request.getHeaders().get(HttpHeaders.COOKIE);
         if (cabeceras == null) {
             return null;

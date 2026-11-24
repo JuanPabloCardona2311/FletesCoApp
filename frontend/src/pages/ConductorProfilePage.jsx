@@ -57,9 +57,7 @@ function ConductorProfilePage() {
 
   const cerrarSesionSiExpiro = (requestError) => {
     if (requestError.response?.status === 401) {
-      localStorage.removeItem('fleteco_token')
-      localStorage.removeItem('fleteco_tipo_usuario')
-      navigate('/')
+      // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       return true
     }
     return false
@@ -72,9 +70,7 @@ function ConductorProfilePage() {
         setPerfil(response.data)
       } catch (requestError) {
         if (requestError.response?.status === 401) {
-          localStorage.removeItem('fleteco_token')
-          localStorage.removeItem('fleteco_tipo_usuario')
-          navigate('/')
+          // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
         } else {
           setError('No fue posible cargar el perfil de conductor.')
         }
@@ -91,9 +87,7 @@ function ConductorProfilePage() {
         setViajeActual(response.data)
       } catch (requestError) {
         if (requestError.response?.status === 401) {
-          localStorage.removeItem('fleteco_token')
-          localStorage.removeItem('fleteco_tipo_usuario')
-          navigate('/')
+          // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
         } else {
           setViajeActual(null)
         }

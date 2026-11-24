@@ -16,17 +16,23 @@ import AdminDisputasPage from './pages/AdminDisputasPage'
 import AdminReportesPage from './pages/AdminReportesPage'
 import SeguimientoUbicacion from './components/SeguimientoUbicacion'
 import DatosPersonalesPage from './pages/DatosPersonalesPage'
+import { SesionProvider } from './context/SesionContext'
+import { useSesion } from './context/useSesion'
 
 function ProtectedRoute({ children, allowedRole }) {
-  const token = localStorage.getItem('fleteco_token')
-  const userRole = localStorage.getItem('fleteco_tipo_usuario')
+  const { usuario, cargando } = useSesion()
 
-  if (!token) {
+  // Mientras /api/auth/me responde no se redirige: la sesión puede estar en la cookie.
+  if (cargando) {
+    return <p className="sesion-cargando" role="status">Cargando…</p>
+  }
+
+  if (!usuario) {
     return <Navigate to="/login" replace />
   }
 
   const rolesPermitidos = Array.isArray(allowedRole) ? allowedRole : [allowedRole]
-  if (allowedRole && !rolesPermitidos.includes(userRole)) {
+  if (allowedRole && !rolesPermitidos.includes(usuario.tipoUsuario)) {
     return <Navigate to="/perfil" replace />
   }
 
@@ -35,7 +41,7 @@ function ProtectedRoute({ children, allowedRole }) {
 
 function App() {
   return (
-    <>
+    <SesionProvider>
     <SeguimientoUbicacion />
     <Routes>
       <Route path="/" element={<LandingPage />} />
@@ -132,7 +138,7 @@ function App() {
         )}
       />
     </Routes>
-    </>
+    </SesionProvider>
   )
 }
 

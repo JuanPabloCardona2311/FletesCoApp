@@ -48,9 +48,7 @@ function SolicitudesDisponiblesPage() {
 
   const cerrarSesionSiExpiro = useCallback((requestError) => {
     if (requestError.response?.status === 401) {
-      localStorage.removeItem('fleteco_token')
-      localStorage.removeItem('fleteco_tipo_usuario')
-      navigate('/')
+      // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       return true
     }
     return false

@@ -38,7 +38,7 @@ public class SecurityConfig {
                 // solo acepta los orígenes de APP_CORS_ORIGENES. Por eso no se usan tokens CSRF.
                 .csrf(AbstractHttpConfigurer::disable)
                 // El WebSocket del panel lo autentica JwtNavegadorInterceptor: el navegador
-                // no puede enviar headers en un WebSocket: el token llega en la cookie o en ?token=.
+                // no puede enviar headers en un WebSocket: el token llega en la cookie FLETESCO_TOKEN.
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/ws").permitAll()
                         .anyRequest().authenticated())

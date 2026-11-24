@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
 import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
@@ -31,7 +31,6 @@ function describirEvento(evento) {
 }
 
 function AdminReportesPage() {
-  const navigate = useNavigate()
   const [resumen, setResumen] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [descargando, setDescargando] = useState(false)
@@ -47,16 +46,14 @@ function AdminReportesPage() {
       setResumen(response.data)
     } catch (requestError) {
       if (requestError.response?.status === 401) {
-        localStorage.removeItem('fleteco_token')
-        localStorage.removeItem('fleteco_tipo_usuario')
-        navigate('/')
+        // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       } else {
         setError(requestError.response?.data?.error || 'No fue posible cargar el resumen.')
       }
     } finally {
       setCargando(false)
     }
-  }, [navigate])
+  }, [])
 
   useEffect(() => {
     cargarResumen()
@@ -112,9 +109,7 @@ function AdminReportesPage() {
       URL.revokeObjectURL(url)
     } catch (requestError) {
       if (requestError.response?.status === 401) {
-        localStorage.removeItem('fleteco_token')
-        localStorage.removeItem('fleteco_tipo_usuario')
-        navigate('/')
+        // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       } else {
         setError('No fue posible descargar el reporte.')
       }

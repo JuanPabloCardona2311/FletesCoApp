@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import authClient from '../api/authClient'
 import AuthLayout from '../components/AuthLayout'
 import RequestMessage from '../components/RequestMessage'
+import { useSesion } from '../context/useSesion'
 
 const initialForm = { email: '', password: '' }
 
 function LoginPage() {
   const navigate = useNavigate()
+  const { iniciarSesion } = useSesion()
   const [form, setForm] = useState(initialForm)
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
@@ -20,18 +22,20 @@ function LoginPage() {
     setCargando(true)
 
     try {
-      const response = await authClient.post('/api/auth/login', form)
-      localStorage.setItem('fleteco_token', response.data.token)
-      localStorage.setItem('fleteco_tipo_usuario', response.data.tipoUsuario)
-      if (response.data.email) localStorage.setItem('fleteco_email', response.data.email)
-      if (response.data.nombre) localStorage.setItem('fleteco_nombre', response.data.nombre)
+      // El backend deja el token en la cookie HttpOnly; aquí no se guarda nada.
+      await authClient.post('/api/auth/login', form)
+      const usuario = await iniciarSesion()
+      if (!usuario) {
+        setError('No fue posible iniciar la sesión. Revisa que el navegador acepte cookies.')
+        return
+      }
 
-      setMensaje(`Bienvenido. Rol: ${response.data.tipoUsuario.toLowerCase()}.`)
+      setMensaje(`Bienvenido. Rol: ${usuario.tipoUsuario.toLowerCase()}.`)
       setForm(initialForm)
 
-      if (response.data.tipoUsuario === 'ADMINISTRADOR') {
+      if (usuario.tipoUsuario === 'ADMINISTRADOR') {
         navigate('/perfil/admin')
-      } else if (response.data.tipoUsuario === 'DESPACHADOR') {
+      } else if (usuario.tipoUsuario === 'DESPACHADOR') {
         navigate('/perfil/despachador')
       } else {
         navigate('/perfil/conductor')

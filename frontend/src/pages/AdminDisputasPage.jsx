@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
 import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import adminClient from '../api/adminClient'
 
 function AdminDisputasPage() {
-  const navigate = useNavigate()
   const [disputas, setDisputas] = useState([])
   const [resoluciones, setResoluciones] = useState({})
   const [cargando, setCargando] = useState(true)
@@ -20,9 +19,7 @@ function AdminDisputasPage() {
       setDisputas(response.data)
     } catch (requestError) {
       if (requestError.response?.status === 401) {
-        localStorage.removeItem('fleteco_token')
-        localStorage.removeItem('fleteco_tipo_usuario')
-        navigate('/')
+        // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       } else {
         setError(requestError.response?.data?.error || 'No fue posible cargar las disputas.')
       }
@@ -44,9 +41,7 @@ function AdminDisputasPage() {
       await cargarDisputas()
     } catch (requestError) {
       if (requestError.response?.status === 401) {
-        localStorage.removeItem('fleteco_token')
-        localStorage.removeItem('fleteco_tipo_usuario')
-        navigate('/')
+        // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       } else {
         setError(requestError.response?.data?.error || 'No fue posible resolver la disputa.')
       }
