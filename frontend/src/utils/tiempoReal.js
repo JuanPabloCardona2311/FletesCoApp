@@ -1,6 +1,8 @@
 // Canales WebSocket con reconexión automática, compartidos entre componentes.
 // El WebSocket solo avisa que algo cambió: los datos siempre se vuelven a pedir por HTTP.
 
+import { useEffect, useRef, useState } from 'react'
+
 const ESPERA_INICIAL_MS = 1000
 const ESPERA_MAXIMA_MS = 30000
 // Cloudflare corta las conexiones inactivas a los ~100 s: un PING cada 25 s las mantiene.
@@ -117,4 +119,65 @@ function nuevoCanal(baseHttp, ruta) {
       return () => oyentesEstado.delete(callback)
     },
   }
+}
+
+// Canal único de avisos de ms-solicitudes para conductores y despachadores: todos los
+// componentes (SeguimientoUbicacion y la página abierta) comparten esta conexión.
+export function canalSolicitudes() {
+  return crearCanal(import.meta.env.VITE_SOLICITUDES_URL ?? 'http://localhost:8083', '/api/solicitudes/ws')
+}
+
+const RESPALDO_SIN_CONEXION_MS = 20000
+const RESPALDO_CONECTADO_MS = 60000
+
+// Escucha los avisos de solicitudes y aplica la misma regla en todas las pantallas:
+// - con cada aviso, alEvento decide si recarga por REST;
+// - al volver a conectar tras una desconexión, recarga una vez (pudo perder avisos);
+// - respaldo: mientras reconecta, recarga cada 20 s para no quedarse congelada; ya
+//   conectada, solo un refresco de seguridad cada 60 s.
+// Devuelve el estado del canal ('conectado' | 'reconectando') para el indicador.
+export function useAvisosSolicitudes({
+  alEvento,
+  recargar,
+  activo = true,
+  respaldoSinConexionMs = RESPALDO_SIN_CONEXION_MS,
+  respaldoConectadoMs = RESPALDO_CONECTADO_MS,
+}) {
+  const [estado, setEstado] = useState('reconectando')
+  const alEventoRef = useRef(alEvento)
+  const recargarRef = useRef(recargar)
+
+  useEffect(() => {
+    alEventoRef.current = alEvento
+    recargarRef.current = recargar
+  })
+
+  useEffect(() => {
+    if (!activo) return undefined
+    const canal = canalSolicitudes()
+    let yaConecto = false
+    const dejarDeOirEstado = canal.alCambiarEstado((nuevo) => {
+      setEstado(nuevo)
+      if (nuevo === 'conectado') {
+        if (yaConecto) recargarRef.current?.()
+        yaConecto = true
+      }
+    })
+    const dejarDeEscuchar = canal.escuchar((mensaje) => alEventoRef.current?.(mensaje))
+    return () => {
+      dejarDeEscuchar()
+      dejarDeOirEstado()
+    }
+  }, [activo])
+
+  useEffect(() => {
+    if (!activo) return undefined
+    const intervalo = setInterval(
+      () => recargarRef.current?.(),
+      estado === 'conectado' ? respaldoConectadoMs : respaldoSinConexionMs,
+    )
+    return () => clearInterval(intervalo)
+  }, [activo, estado, respaldoConectadoMs, respaldoSinConexionMs])
+
+  return estado
 }

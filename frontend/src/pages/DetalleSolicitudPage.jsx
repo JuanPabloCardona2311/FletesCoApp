@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import solicitudesClient from '../api/solicitudesClient'
 import RouteMap from '../components/RouteMap'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
 import { IconoAncla, IconoCaja, IconoCalendario, IconoMapa, IconoUbicacion } from '../components/Iconos'
+import IndicadorEnVivo from '../components/IndicadorEnVivo'
 import {
-  INTERVALO_ENVIO_MS,
   avisarViajeActualizado,
   obtenerUbicacionActual,
 } from '../utils/geolocalizacion'
+import { useAvisosSolicitudes } from '../utils/tiempoReal'
 
 const ESTADOS_CON_SEGUIMIENTO = ['ACEPTADA', 'EN_CURSO']
 
@@ -26,21 +27,25 @@ function DetalleSolicitudPage() {
   const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
   const viajeActivo = ESTADOS_CON_SEGUIMIENTO.includes(solicitud?.estado)
 
-  // Mientras el viaje está activo, se refresca la ubicación del conductor al mismo ritmo en que la envía.
-  useEffect(() => {
-    if (!viajeActivo) return undefined
+  // Recarga silenciosa (sin spinner) cuando llega un aviso o toca el refresco de respaldo.
+  const recargarSolicitud = useCallback(async () => {
+    try {
+      const response = await solicitudesClient.get(`/api/solicitudes/${id}`)
+      setSolicitud(response.data)
+    } catch {
+      // Se conserva la última información; el siguiente aviso o respaldo vuelve a consultar.
+    }
+  }, [id])
 
-    const intervalo = setInterval(async () => {
-      try {
-        const response = await solicitudesClient.get(`/api/solicitudes/${id}`)
-        setSolicitud(response.data)
-      } catch {
-        // Se conserva la última información; el siguiente intento vuelve a consultar.
-      }
-    }, INTERVALO_ENVIO_MS)
-
-    return () => clearInterval(intervalo)
-  }, [id, viajeActivo])
+  // Solo los avisos de esta solicitud la recargan; el WebSocket no trae los datos.
+  const estadoCanal = useAvisosSolicitudes({
+    // El canal es solo para conductores y despachadores (rechaza otros roles).
+    activo: tipoUsuario === 'CONDUCTOR' || tipoUsuario === 'DESPACHADOR',
+    recargar: recargarSolicitud,
+    alEvento: (aviso) => {
+      if (String(aviso.solicitudId) === String(id)) recargarSolicitud()
+    },
+  })
 
   useEffect(() => {
     async function cargarSolicitud() {
@@ -147,6 +152,7 @@ function DetalleSolicitudPage() {
               ● {solicitud.estado}
             </span>
             <span>Publicada el {formatearFecha(solicitud.fechaPublicacion)}</span>
+            <IndicadorEnVivo estado={estadoCanal} />
           </div>
         </div>
 

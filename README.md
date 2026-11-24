@@ -53,11 +53,22 @@ curl -s -X POST http://localhost:8084/api/admin/graphql \
 
 ### WebSockets
 
-El panel de reportes del administrador se actualiza en vivo, sin recargar:
+El panel de reportes del administrador y las pantallas de conductores y despachadores se actualizan en vivo, sin recargar:
 
 ```text
 ms-solicitudes --(ws interno /internal/ws/eventos)--> ms-admin-reportes --(ws /api/admin/ws)--> navegador admin
+ms-solicitudes --(ws /api/solicitudes/ws)--> navegador de conductor y despachador
 ```
+
+**El socket avisa, el REST trae los datos.** El navegador recibe solo `{tipo, solicitudId, estado}` y vuelve a pedir la información por los endpoints REST de siempre, que validan permisos. Si el socket se cae, cada pantalla sigue refrescando por REST cada 20 s y, al reconectar, se pone al día; conectada, hace solo un refresco de seguridad cada 60 s.
+
+| Evento | Navegadores que lo reciben |
+|---|---|
+| `SOLICITUD_CREADA` | Todos los conductores conectados (cada uno recarga `/disponibles`, que filtra por su vehículo) |
+| `SOLICITUD_ACEPTADA` | Todos los conductores (para que desaparezca de su lista) y el despachador dueño |
+| `VIAJE_INICIADO`, `ENTREGA_MARCADA`, `PAGO_LIBERADO` | El despachador dueño y el conductor asignado |
+
+`/api/solicitudes/ws` exige un token de DESPACHADOR o CONDUCTOR activo en `?token=` y uno de los orígenes de `APP_CORS_ORIGENES`; en el servidor, nginx lo reenvía con la `location /api/solicitudes/ws` de `deploy/nginx/fletesco.conf`.
 
 - **Eventos:** `SOLICITUD_CREADA`, `SOLICITUD_ACEPTADA`, `VIAJE_INICIADO`, `ENTREGA_MARCADA` y `PAGO_LIBERADO`. Solo llevan ids y estados, sin datos personales, y se envían después del commit.
 - **La base de datos sigue siendo la fuente de verdad:** el evento solo avisa; el panel vuelve a pedir el resumen por HTTP. Si `ms-solicitudes` está caído, `ms-admin-reportes` funciona igual y se reconecta solo (espera de 2 s a 30 s); si `ms-admin-reportes` está caído, las solicitudes se publican y aceptan igual.

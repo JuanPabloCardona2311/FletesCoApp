@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
 import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
+import IndicadorEnVivo from '../components/IndicadorEnVivo'
 import adminClient from '../api/adminClient'
 import { crearCanal } from '../utils/tiempoReal'
 
@@ -134,21 +135,13 @@ function AdminReportesPage() {
   )
 
   const enVivo = estadoCanal === 'conectado'
-  // Gris: el navegador no está conectado. Amarillo: conectado al panel, pero sin enlace
-  // con ms-solicitudes (no llegan eventos). Verde: todo en vivo.
-  const indicador = !enVivo
-    ? { clase: 'estado-gris', texto: 'Reconectando…' }
-    : enlaceCaido
-      ? { clase: 'estado-ambar', texto: 'Sin eventos' }
-      : { clase: 'estado-verde', texto: 'En vivo' }
 
   return (
     <ProfileLayout role="Panel de Administrador" title="Reportes" subtitle="Consulta indicadores consolidados de la plataforma.">
       <div className="reportes-barra">
         <Link className="boton-volver" to="/perfil/admin"><IconoVolver />Volver al panel</Link>
-        <span className={`status-chip ${indicador.clase}`} role="status">
-          ● {indicador.texto}
-        </span>
+        {/* Amarillo "Sin eventos" cuando no hay enlace con ms-solicitudes. */}
+        <IndicadorEnVivo estado={estadoCanal} sinEventos={enlaceCaido} />
       </div>
       {avisoEnlaceVisible(enVivo, enlaceCaido) && (
         <p className="viaje-aviso reportes-aviso" role="status">

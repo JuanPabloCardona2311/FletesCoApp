@@ -40,6 +40,10 @@ public class SecurityConfig {
                         // con el header X-Token-Servicio (no es un usuario ni lleva Authorization).
                         .requestMatchers("/internal/ws/**")
                         .permitAll()
+                        // WebSocket del navegador: lo autentica JwtNavegadorInterceptor con el
+                        // token en ?token= (el navegador no puede enviar headers en un WebSocket).
+                        .requestMatchers("/api/solicitudes/ws")
+                        .permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session

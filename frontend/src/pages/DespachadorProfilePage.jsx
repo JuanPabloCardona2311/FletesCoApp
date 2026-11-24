@@ -6,7 +6,8 @@ import ProfileLayout from '../components/ProfileLayout'
 import { IconoEditar, IconoMapa, IconoMas, IconoTelefono } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import EstadoUbicacionConductor from '../components/EstadoUbicacionConductor'
-import { INTERVALO_ENVIO_MS } from '../utils/geolocalizacion'
+import IndicadorEnVivo from '../components/IndicadorEnVivo'
+import { useAvisosSolicitudes } from '../utils/tiempoReal'
 
 const initialForm = {
   nombreEmpresa: '',
@@ -98,22 +99,26 @@ function DespachadorProfilePage() {
     cargarFletes()
   }, [cargarFletes])
 
-  // Refresco silencioso para seguir la ubicación y el estado de los fletes activos.
-  const hayViajesActivos = fletes.some((f) => ['ACEPTADA', 'EN_CURSO'].includes(f.estado))
-  useEffect(() => {
-    if (!hayViajesActivos) return undefined
+  // Recarga silenciosa (sin spinner) cuando llega un aviso o toca el refresco de respaldo.
+  const recargarFletes = useCallback(async () => {
+    try {
+      const response = await solicitudesClient.get('/api/solicitudes/mis-fletes')
+      setFletes(response.data || [])
+    } catch {
+      // Se conserva la última información; el siguiente aviso o respaldo vuelve a consultar.
+    }
+  }, [])
 
-    const intervalo = setInterval(async () => {
-      try {
-        const response = await solicitudesClient.get('/api/solicitudes/mis-fletes')
-        setFletes(response.data || [])
-      } catch {
-        // Se conserva la última información; el siguiente intento vuelve a consultar.
+  // Cualquier aviso sobre sus fletes recarga la lista; el WebSocket no trae los datos.
+  const estadoCanal = useAvisosSolicitudes({
+    recargar: recargarFletes,
+    alEvento: (aviso) => {
+      if (aviso.tipo === 'SOLICITUD_ACEPTADA') {
+        setMensaje(`¡Un conductor aceptó tu solicitud #${aviso.solicitudId}!`)
       }
-    }, INTERVALO_ENVIO_MS)
-
-    return () => clearInterval(intervalo)
-  }, [hayViajesActivos])
+      recargarFletes()
+    },
+  })
 
   const abrirEdicionEmpresa = () => {
     setForm({
@@ -217,6 +222,7 @@ function DespachadorProfilePage() {
                     : 'Publicados, en proceso o pendientes de confirmar'}
                 </small>
               </div>
+              <IndicadorEnVivo estado={estadoCanal} />
               <button
                 type="button"
                 className="btn-actualizar"
