@@ -1,7 +1,9 @@
 import { Navigate } from 'react-router-dom'
+import { useSesion } from '../context/useSesion'
 
 function ProfileRedirect() {
-  const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
+  const { usuario } = useSesion()
+  const tipoUsuario = usuario?.tipoUsuario
 
   if (tipoUsuario === 'DESPACHADOR') {
     return <Navigate to="/perfil/despachador" replace />
@@ -15,8 +17,6 @@ function ProfileRedirect() {
     return <Navigate to="/perfil/admin" replace />
   }
 
-  localStorage.removeItem('fleteco_token')
-  localStorage.removeItem('fleteco_tipo_usuario')
   return <Navigate to="/" replace />
 }
 

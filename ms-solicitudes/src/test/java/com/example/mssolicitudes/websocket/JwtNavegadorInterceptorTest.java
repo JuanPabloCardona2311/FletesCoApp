@@ -93,17 +93,17 @@ class JwtNavegadorInterceptorTest {
     }
 
     @Test
-    void conductorConCookieSinQueryAcepta() {
+    void tokenEnLaUrlYaNoSeAcepta() {
         conUsuario(Usuario.TipoUsuario.CONDUCTOR, true);
-        request.setQueryString(null);
-        request.addHeader("Cookie", "otra=valor; FLETESCO_TOKEN=" + TOKEN);
+        request.removeHeader("Cookie");
+        request.setQueryString("token=" + TOKEN);
 
-        assertThat(handshake()).isTrue();
-        assertThat(atributos).containsEntry(JwtNavegadorInterceptor.ATRIBUTO_ROL, "CONDUCTOR");
+        assertThat(handshake()).isFalse();
+        assertThat(response.getStatus()).isEqualTo(401);
     }
 
     private void conUsuario(Usuario.TipoUsuario tipo, boolean activo) {
-        request.setQueryString("token=" + TOKEN);
+        request.addHeader("Cookie", "otra=valor; FLETESCO_TOKEN=" + TOKEN);
         when(userDetailsService.loadUserByUsername(CORREO)).thenReturn(User.withUsername(CORREO).password("x")
                 .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + tipo.name()))).disabled(!activo).build());
         when(usuarioRepository.findByEmail(CORREO)).thenReturn(Optional.of(Usuario.builder().id(5L).email(CORREO)

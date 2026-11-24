@@ -1,32 +1,15 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
+import { useSesion } from '../context/useSesion'
 
 function AdminProfilePage() {
-  const navigate = useNavigate()
-  const [adminInfo, setAdminInfo] = useState({
-    nombre: '',
-    email: '',
-    tipoUsuario: '',
-  })
-
-  useEffect(() => {
-    const token = localStorage.getItem('fleteco_token')
-    const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
-    const email = localStorage.getItem('fleteco_email') || 'admin@fleteco.com'
-    const nombre = localStorage.getItem('fleteco_nombre') || 'Administrador FletesCo'
-
-    if (!token || tipoUsuario !== 'ADMINISTRADOR') {
-      navigate('/')
-      return
-    }
-
-    setAdminInfo({
-      nombre,
-      email,
-      tipoUsuario,
-    })
-  }, [navigate])
+  // La ruta ya exige rol ADMINISTRADOR; los datos salen de la sesión (/api/auth/me).
+  const { usuario } = useSesion()
+  const adminInfo = {
+    nombre: usuario?.nombre || 'Administrador FletesCo',
+    email: usuario?.email || '',
+    tipoUsuario: usuario?.tipoUsuario || '',
+  }
 
   return (
     <ProfileLayout

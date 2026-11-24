@@ -1,13 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useSesion } from '../context/useSesion'
 import Logo from './Logo'
 
 function ProfileLayout({ role, title, subtitle, children }) {
-  const navigate = useNavigate()
+  const { cerrarSesion } = useSesion()
 
+  // POST /api/auth/logout borra la cookie; luego se limpia la sesión y se va a /login.
   const handleLogout = () => {
-    localStorage.removeItem('fleteco_token')
-    localStorage.removeItem('fleteco_tipo_usuario')
-    navigate('/')
+    cerrarSesion()
   }
 
   return (

@@ -1566,3 +1566,10 @@ td button {
   font: 500 0.8rem var(--font-mono);
   white-space: nowrap;
 }
+
+/* Mientras se consulta la sesión (/api/auth/me) al cargar una ruta protegida. */
+.sesion-cargando {
+  padding: 48px 16px;
+  color: var(--texto-secundario);
+  text-align: center;
+}

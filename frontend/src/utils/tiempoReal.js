@@ -10,13 +10,15 @@ const INTERVALO_PING_MS = 25000
 
 const canales = new Map()
 
-// Convierte la base HTTP de un microservicio en la URL del WebSocket, con el token.
+// Convierte la base HTTP de un microservicio en la URL del WebSocket.
 // Base vacía (servidor): mismo origen de la página, http: -> ws: y https: -> wss:.
+// El token no va en la URL: el navegador envía la cookie HttpOnly FLETESCO_TOKEN en el
+// handshake. En local, localhost:5173 y localhost:8083/8084 comparten la cookie (no
+// distinguen puerto); en el servidor es el mismo origen por nginx.
 export function urlWebSocket(baseHttp, ruta) {
   const base = baseHttp === '' ? window.location.origin : baseHttp
   const baseWs = base.replace(/^http(s?):/, 'ws$1:')
-  const token = localStorage.getItem('fleteco_token') ?? ''
-  return `${baseWs}${ruta}?token=${encodeURIComponent(token)}`
+  return `${baseWs}${ruta}`
 }
 
 // Devuelve el canal de esa URL; varios componentes comparten una sola conexión.
@@ -53,9 +55,9 @@ function nuevoCanal(baseHttp, ruta) {
   }
 
   const conectar = () => {
+    // Los canales solo se usan con sesión iniciada (rutas protegidas y SeguimientoUbicacion,
+    // que se apaga al cerrar sesión); sin oyentes no se conecta.
     if (socket || oyentes.size === 0) return
-    // Sin sesión no se conecta (por ejemplo, después de cerrar sesión).
-    if (!localStorage.getItem('fleteco_token')) return
 
     socket = new WebSocket(urlWebSocket(baseHttp, ruta))
     socket.onopen = () => {

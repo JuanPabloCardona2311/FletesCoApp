@@ -10,6 +10,7 @@ import {
   obtenerUbicacionActual,
 } from '../utils/geolocalizacion'
 import { useAvisosSolicitudes } from '../utils/tiempoReal'
+import { useSesion } from '../context/useSesion'
 
 const ESTADOS_CON_SEGUIMIENTO = ['ACEPTADA', 'EN_CURSO']
 
@@ -24,7 +25,8 @@ function DetalleSolicitudPage() {
   const [aceptando, setAceptando] = useState(false)
   const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false)
 
-  const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
+  const { usuario } = useSesion()
+  const tipoUsuario = usuario?.tipoUsuario
   const viajeActivo = ESTADOS_CON_SEGUIMIENTO.includes(solicitud?.estado)
 
   // Recarga silenciosa (sin spinner) cuando llega un aviso o toca el refresco de respaldo.

@@ -115,12 +115,11 @@ public class AuthController {
                 java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuarioGuardado.getTipoUsuario().name()))
         ));
 
-        // El token va en la cookie HttpOnly y, por compatibilidad con el frontend actual,
-        // también en el body (se quita en la parte 2).
+        // El token va solo en la cookie HttpOnly; el body trae los datos del usuario.
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, cookieJwtUtil.crear(token).toString())
                 .body(
-                new AuthResponse(token, usuarioGuardado.getTipoUsuario().name(), usuarioGuardado.getEmail(), usuarioGuardado.getNombre())
+                new AuthResponse(usuarioGuardado.getTipoUsuario().name(), usuarioGuardado.getEmail(), usuarioGuardado.getNombre())
         );
     }
 
@@ -140,10 +139,10 @@ public class AuthController {
                     java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + usuario.getTipoUsuario().name()))
             ));
 
-            // Cookie HttpOnly + token en el body por compatibilidad (se quita en la parte 2).
+            // El token va solo en la cookie HttpOnly; el body trae los datos del usuario.
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookieJwtUtil.crear(token).toString())
-                    .body(new AuthResponse(token, usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
+                    .body(new AuthResponse(usuario.getTipoUsuario().name(), usuario.getEmail(), usuario.getNombre()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");

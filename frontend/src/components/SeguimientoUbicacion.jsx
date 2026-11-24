@@ -12,6 +12,7 @@ import {
   verificarSoporteGeolocalizacion,
 } from '../utils/geolocalizacion'
 import { useAvisosSolicitudes } from '../utils/tiempoReal'
+import { useSesion } from '../context/useSesion'
 import { IconoAlerta, IconoReloj } from './Iconos'
 import './SeguimientoUbicacion.css'
 
@@ -21,8 +22,8 @@ const AVISOS_DEL_VIAJE = ['SOLICITUD_ACEPTADA', 'VIAJE_INICIADO', 'ENTREGA_MARCA
 // Envía la ubicación del conductor mientras tiene un viaje activo, en cualquier página de la app.
 function SeguimientoUbicacion() {
   const location = useLocation()
-  const esConductor = Boolean(localStorage.getItem('fleteco_token'))
-    && localStorage.getItem('fleteco_tipo_usuario') === 'CONDUCTOR'
+  const { usuario } = useSesion()
+  const esConductor = usuario?.tipoUsuario === 'CONDUCTOR'
 
   const [viaje, setViaje] = useState(null)
   const [errorGps, setErrorGps] = useState('')

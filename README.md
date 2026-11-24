@@ -43,13 +43,16 @@ FletesCoApp/
 | `conductor(id)` | Un conductor con su usuario y sus vehículos |
 
 ```bash
-curl -s -X POST http://localhost:8084/api/admin/graphql \
+# 1. Login: el JWT queda en la cookie HttpOnly FLETESCO_TOKEN (se guarda en cookies.txt).
+curl -s -c cookies.txt -X POST http://localhost:8081/api/auth/login \
+  -H "Content-Type: application/json" -d '{"email":"<correo>","password":"<contraseña>"}'
+# 2. Consulta: curl envía la cookie.
+curl -s -b cookies.txt -X POST http://localhost:8084/api/admin/graphql \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
   -d '{"query":"{ solicitudes(estado: ACEPTADA, limite: 3) { id origen destino conductor { usuario { nombre } vehiculos { placa } } } }"}'
 ```
 
-`$TOKEN` es el campo `token` que devuelve `POST /api/auth/login`. Sin token la respuesta es 401; con un token de otro rol la respuesta es 200, pero con `errors` y `data` en `null`. En el servidor Ubuntu, la ruta ya la cubre el `location /api/admin` de `deploy/nginx/fletesco.conf` (PR #23), así que nginx no necesita cambios.
+**Con Postman:** el token ya no viene en el body del login. Haz `POST http://localhost:8081/api/auth/login` y Postman guarda la cookie `FLETESCO_TOKEN` automáticamente; las siguientes peticiones a `localhost` (cualquier puerto) la envían solas. El header `Authorization: Bearer <token>` sigue funcionando en los cuatro microservicios si lo prefieres. Sin sesión la respuesta es 401; con la sesión de otro rol la respuesta es 200, pero con `errors` y `data` en `null`. En el servidor Ubuntu, la ruta ya la cubre el `location /api/admin` de `deploy/nginx/fletesco.conf` (PR #23), así que nginx no necesita cambios.
 
 ### WebSockets
 
@@ -71,13 +74,13 @@ ms-perfil --(ws interno /internal/ws/eventos, UBICACION_ACTUALIZADA)--> ms-solic
 | `SOLICITUD_ACEPTADA` | Todos los conductores (para que desaparezca de su lista) y el despachador dueño |
 | `VIAJE_INICIADO`, `ENTREGA_MARCADA`, `PAGO_LIBERADO` | El despachador dueño y el conductor asignado |
 
-`/api/solicitudes/ws` exige un token de DESPACHADOR o CONDUCTOR activo en `?token=` y uno de los orígenes de `APP_CORS_ORIGENES`; en el servidor, nginx lo reenvía con la `location /api/solicitudes/ws` de `deploy/nginx/fletesco.conf`.
+`/api/solicitudes/ws` exige la cookie de sesión `FLETESCO_TOKEN` de un DESPACHADOR o CONDUCTOR activo (el navegador la envía sola en el handshake; el token nunca va en la URL) y uno de los orígenes de `APP_CORS_ORIGENES`; en el servidor, nginx lo reenvía con la `location /api/solicitudes/ws` de `deploy/nginx/fletesco.conf`.
 
 - **Eventos:** `SOLICITUD_CREADA`, `SOLICITUD_ACEPTADA`, `VIAJE_INICIADO`, `ENTREGA_MARCADA` y `PAGO_LIBERADO`. Solo llevan ids y estados, sin datos personales, y se envían después del commit.
 - **La base de datos sigue siendo la fuente de verdad:** el evento solo avisa; el panel vuelve a pedir el resumen por HTTP. Si `ms-solicitudes` está caído, `ms-admin-reportes` funciona igual y se reconecta solo (espera de 2 s a 30 s); si `ms-admin-reportes` está caído, las solicitudes se publican y aceptan igual.
 - **Canal interno:** `/internal/ws/eventos` se autentica con un token de servicio en el header `X-Token-Servicio`. No empieza por `/api`, así que nginx no lo expone.
 - **Variable:** `APP_EVENTOS_SOLICITUDES_URL` indica a `ms-admin-reportes` dónde está el canal (por defecto `ws://localhost:8083/internal/ws/eventos`; en Docker, `ws://ms-solicitudes:8083/internal/ws/eventos`, ya en `docker-compose.yml`).
-- **Navegador:** `/api/admin/ws` exige un token de ADMINISTRADOR activo en `?token=` y uno de los orígenes de `APP_CORS_ORIGENES`. En el servidor, nginx necesita la `location /api/admin/ws` con los headers `Upgrade` y `Connection`, que ya está en `deploy/nginx/fletesco.conf`.
+- **Navegador:** `/api/admin/ws` exige la cookie de sesión `FLETESCO_TOKEN` de un ADMINISTRADOR activo y uno de los orígenes de `APP_CORS_ORIGENES`. En el servidor, nginx necesita la `location /api/admin/ws` con los headers `Upgrade` y `Connection`, que ya está en `deploy/nginx/fletesco.conf`.
 
 ---
 

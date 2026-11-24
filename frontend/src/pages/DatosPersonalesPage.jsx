@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import perfilClient from '../api/perfilClient'
 import ProfileLayout from '../components/ProfileLayout'
 import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
+import { useSesion } from '../context/useSesion'
 
 const initialForm = {
   nombre: '',
@@ -11,8 +12,8 @@ const initialForm = {
 }
 
 function DatosPersonalesPage() {
-  const navigate = useNavigate()
-  const tipoUsuario = localStorage.getItem('fleteco_tipo_usuario')
+  const { usuario, actualizarNombre } = useSesion()
+  const tipoUsuario = usuario?.tipoUsuario
   const role = tipoUsuario === 'DESPACHADOR' ? 'Perfil de despachador' : 'Perfil de conductor'
   const [form, setForm] = useState(initialForm)
   const [email, setEmail] = useState('')
@@ -23,9 +24,7 @@ function DatosPersonalesPage() {
 
   const cerrarSesionSiExpiro = (requestError) => {
     if (requestError.response?.status === 401) {
-      localStorage.removeItem('fleteco_token')
-      localStorage.removeItem('fleteco_tipo_usuario')
-      navigate('/')
+      // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       return true
     }
     return false
@@ -48,7 +47,7 @@ function DatosPersonalesPage() {
     }
 
     cargarDatos()
-  }, [navigate])
+  }, [])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -97,9 +96,8 @@ function DatosPersonalesPage() {
       })
       setEmail(response.data.email || '')
       setMensaje('Datos actualizados correctamente')
-      if (localStorage.getItem('fleteco_nombre')) {
-        localStorage.setItem('fleteco_nombre', response.data.nombre)
-      }
+      // El nombre nuevo se refleja en la sesión en memoria (no en localStorage).
+      actualizarNombre(response.data.nombre)
     } catch (requestError) {
       if (cerrarSesionSiExpiro(requestError)) return
       if (requestError.response?.data?.errores) {

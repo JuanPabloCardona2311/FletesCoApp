@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ProfileLayout from '../components/ProfileLayout'
 import { IconoVolver } from '../components/Iconos'
 import RequestMessage from '../components/RequestMessage'
 import adminClient from '../api/adminClient'
+import { useSesion } from '../context/useSesion'
 
 function AdminUsuariosPage() {
-  const navigate = useNavigate()
+  const { usuario: usuarioSesion } = useSesion()
   const [usuarios, setUsuarios] = useState([])
   const [tipo, setTipo] = useState('')
   const [estado, setEstado] = useState('')
@@ -16,9 +17,7 @@ function AdminUsuariosPage() {
 
   const handleUnauthorized = (requestError) => {
     if (requestError.response?.status === 401) {
-      localStorage.removeItem('fleteco_token')
-      localStorage.removeItem('fleteco_tipo_usuario')
-      navigate('/')
+      // Sesión vencida: el interceptor de la API ya la cerró y lleva a /login.
       return true
     }
     return false
@@ -58,7 +57,8 @@ function AdminUsuariosPage() {
     }
   }
 
-  const emailAdministrador = localStorage.getItem('fleteco_email')
+  // El administrador no puede inactivarse a sí mismo.
+  const emailAdministrador = usuarioSesion?.email
 
   return (
     <ProfileLayout role="Panel de Administrador" title="Gestión de usuarios" subtitle="Administra el acceso de las cuentas registradas.">

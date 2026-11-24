@@ -76,7 +76,7 @@ class AuthCookieWebTest {
     }
 
     @Test
-    void loginPoneLaCookieHttpOnlyYSigueDevolviendoElToken() throws Exception {
+    void loginPoneLaCookieHttpOnlyYNoDevuelveElToken() throws Exception {
         when(authenticationManager.authenticate(any()))
                 .thenReturn(new UsernamePasswordAuthenticationToken(CORREO, null, List.of()));
         when(jwtService.generateToken(any())).thenReturn(TOKEN);
@@ -85,7 +85,8 @@ class AuthCookieWebTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"" + CORREO + "\",\"password\":\"clave-de-prueba\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value(TOKEN))
+                .andExpect(jsonPath("$.token").doesNotExist())
+                .andExpect(jsonPath("$.tipoUsuario").value("DESPACHADOR"))
                 .andReturn();
 
         String cookie = resultado.getResponse().getHeader(HttpHeaders.SET_COOKIE);
