@@ -1,5 +1,6 @@
 package com.example.msperfil.security;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,6 +78,46 @@ class JwtAuthenticationFilterTest {
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verifyNoInteractions(jwtService, userDetailsService);
+        verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    void tokenEnLaCookieSinHeaderQuedaAutenticado() throws Exception {
+        UserDetails detalles = usuario("cookie@fletesco.test", false);
+        request.setCookies(new Cookie("FLETESCO_TOKEN", TOKEN));
+        when(jwtService.extractUsername(TOKEN)).thenReturn("cookie@fletesco.test");
+        when(userDetailsService.loadUserByUsername("cookie@fletesco.test")).thenReturn(detalles);
+        when(jwtService.isTokenValid(TOKEN, detalles)).thenReturn(true);
+
+        filtro.doFilter(request, response, filterChain);
+
+        Authentication autenticacion = SecurityContextHolder.getContext().getAuthentication();
+        assertThat(autenticacion).isNotNull();
+        assertThat(autenticacion.getName()).isEqualTo("cookie@fletesco.test");
+        verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    void elHeaderBearerTienePrioridadSobreLaCookie() throws Exception {
+        prepararToken("header@fletesco.test", usuario("header@fletesco.test", false));
+        request.setCookies(new Cookie("FLETESCO_TOKEN", "otro-token-de-cookie"));
+
+        filtro.doFilter(request, response, filterChain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("header@fletesco.test");
+        verify(jwtService, never()).extractUsername("otro-token-de-cookie");
+    }
+
+    @Test
+    void cookieDeUnUsuarioQueYaNoExisteNoAutenticaNiLanza() throws Exception {
+        request.setCookies(new Cookie("FLETESCO_TOKEN", TOKEN));
+        when(jwtService.extractUsername(TOKEN)).thenReturn("borrado@fletesco.test");
+        when(userDetailsService.loadUserByUsername("borrado@fletesco.test"))
+                .thenThrow(new UsernameNotFoundException("no existe"));
+
+        filtro.doFilter(request, response, filterChain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(filterChain).doFilter(request, response);
     }
 

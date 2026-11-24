@@ -31,6 +31,9 @@ public class CorsConfig {
         configuration.setAllowedOrigins(origenes);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        // Permite que el navegador envíe la cookie HttpOnly FLETESCO_TOKEN. Exige orígenes
+        // explícitos (APP_CORS_ORIGENES): con credenciales no se puede usar "*".
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

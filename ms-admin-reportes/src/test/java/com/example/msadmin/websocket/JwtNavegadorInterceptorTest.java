@@ -75,6 +75,15 @@ class JwtNavegadorInterceptorTest {
         assertThat(handshake()).isTrue();
     }
 
+    @Test
+    void administradorConCookieSinQueryAcepta() {
+        conToken(usuario("ROLE_ADMINISTRADOR", true));
+        request.setQueryString(null);
+        request.addHeader("Cookie", "otra=valor; FLETESCO_TOKEN=" + TOKEN);
+
+        assertThat(handshake()).isTrue();
+    }
+
     private void conToken(UserDetails usuario) {
         request.setQueryString("token=" + TOKEN);
         when(userDetailsService.loadUserByUsername(CORREO)).thenReturn(usuario);

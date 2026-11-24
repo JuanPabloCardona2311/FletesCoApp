@@ -92,6 +92,16 @@ class JwtNavegadorInterceptorTest {
                 .doesNotContainKey(JwtNavegadorInterceptor.ATRIBUTO_DESPACHADOR_ID);
     }
 
+    @Test
+    void conductorConCookieSinQueryAcepta() {
+        conUsuario(Usuario.TipoUsuario.CONDUCTOR, true);
+        request.setQueryString(null);
+        request.addHeader("Cookie", "otra=valor; FLETESCO_TOKEN=" + TOKEN);
+
+        assertThat(handshake()).isTrue();
+        assertThat(atributos).containsEntry(JwtNavegadorInterceptor.ATRIBUTO_ROL, "CONDUCTOR");
+    }
+
     private void conUsuario(Usuario.TipoUsuario tipo, boolean activo) {
         request.setQueryString("token=" + TOKEN);
         when(userDetailsService.loadUserByUsername(CORREO)).thenReturn(User.withUsername(CORREO).password("x")
