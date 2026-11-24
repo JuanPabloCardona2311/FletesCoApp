@@ -36,6 +36,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/public/**")
                         .permitAll()
+                        // Canal WebSocket entre servicios: lo autentica TokenServicioInterceptor
+                        // con el header X-Token-Servicio (no es un usuario ni lleva Authorization).
+                        .requestMatchers("/internal/ws/**")
+                        .permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session

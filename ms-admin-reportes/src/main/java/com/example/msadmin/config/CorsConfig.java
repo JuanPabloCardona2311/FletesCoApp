@@ -25,6 +25,11 @@ public class CorsConfig {
                 .toList();
     }
 
+    // Los mismos orígenes limitan quién puede abrir el WebSocket del panel admin.
+    public List<String> getOrigenes() {
+        return origenes;
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

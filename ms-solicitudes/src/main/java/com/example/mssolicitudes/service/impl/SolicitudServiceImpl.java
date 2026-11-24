@@ -3,13 +3,16 @@ package com.example.mssolicitudes.service.impl;
 import com.example.mssolicitudes.dto.request.*;
 import com.example.mssolicitudes.dto.response.*;
 import com.example.mssolicitudes.entity.*;
+import com.example.mssolicitudes.evento.EventoSolicitud;
 import com.example.mssolicitudes.repository.*;
 import com.example.mssolicitudes.service.SolicitudService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,13 @@ public class SolicitudServiceImpl implements SolicitudService {
     private final VehiculoRepository vehiculoRepository;
     private final PagoRepository pagoRepository;
     private final HistorialEstadoSolicitudRepository historialEstadoSolicitudRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SolicitudServiceImpl(SolicitudRepository solicitudRepository, UsuarioRepository usuarioRepository,
             DespachadorRepository despachadorRepository, ConductorRepository conductorRepository,
             VehiculoRepository vehiculoRepository, PagoRepository pagoRepository,
-            HistorialEstadoSolicitudRepository historialEstadoSolicitudRepository) {
+            HistorialEstadoSolicitudRepository historialEstadoSolicitudRepository,
+            ApplicationEventPublisher eventPublisher) {
         this.solicitudRepository = solicitudRepository;
         this.usuarioRepository = usuarioRepository;
         this.despachadorRepository = despachadorRepository;
@@ -37,6 +42,7 @@ public class SolicitudServiceImpl implements SolicitudService {
         this.vehiculoRepository = vehiculoRepository;
         this.pagoRepository = pagoRepository;
         this.historialEstadoSolicitudRepository = historialEstadoSolicitudRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override @Transactional
@@ -52,6 +58,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                 .requiereCitaPuerto(request.getRequiereCitaPuerto()).numeroCita(request.getNumeroCita()).estado(Solicitud.EstadoSolicitud.PUBLICADA).build();
         Solicitud guardada = solicitudRepository.save(solicitud);
         registrarHistorial(guardada, "NINGUNO", Solicitud.EstadoSolicitud.PUBLICADA.name());
+        publicarEvento(EventoSolicitud.SOLICITUD_CREADA, guardada, null, Solicitud.EstadoSolicitud.PUBLICADA.name());
         return new SolicitudPublicadaResponse(guardada.getId(), guardada.getOrigen(), guardada.getDestino(), guardada.getTipoCarga(), guardada.getTipoVehiculoRequerido(), guardada.getPeso(), guardada.getPrecioOfrecido(), guardada.getFechaRecogida(), guardada.getFechaEntregaEstimada(), guardada.getRequiereCitaPuerto(), guardada.getEstado().name(), guardada.getFechaPublicacion(), guardada.getDespachador().getId());
     }
 
@@ -89,6 +96,7 @@ public class SolicitudServiceImpl implements SolicitudService {
         BigDecimal comision = monto.multiply(new BigDecimal("0.10"));
         Pago pago = Pago.builder().solicitud(aceptada).monto(monto).comisionPlataforma(comision).montoNetoConductor(monto.subtract(comision)).estado(Pago.EstadoPago.RETENIDO).fechaLimiteConfirmacion(aceptada.getFechaEntregaEstimada().plusDays(3)).build();
         Pago guardado = pagoRepository.save(pago);
+        publicarEvento(EventoSolicitud.SOLICITUD_ACEPTADA, aceptada, Solicitud.EstadoSolicitud.PUBLICADA.name(), Solicitud.EstadoSolicitud.ACEPTADA.name());
         return new SolicitudAceptadaResponse(guardado.getId(), aceptada.getId(), conductor.getId(), aceptada.getDespachador().getUsuario().getTelefono(), aceptada.getEstado().name(), LocalDateTime.now(), "Solicitud aceptada correctamente");
     }
 
@@ -174,6 +182,7 @@ public class SolicitudServiceImpl implements SolicitudService {
             throw new IllegalStateException("Solo puedes iniciar un viaje que esté ACEPTADO");
         }
         cambiarEstado(solicitud, Solicitud.EstadoSolicitud.EN_CURSO);
+        publicarEvento(EventoSolicitud.VIAJE_INICIADO, solicitud, Solicitud.EstadoSolicitud.ACEPTADA.name(), Solicitud.EstadoSolicitud.EN_CURSO.name());
         return construirDetalle(solicitud);
     }
 
@@ -185,6 +194,7 @@ public class SolicitudServiceImpl implements SolicitudService {
             throw new IllegalStateException("Solo puedes marcar como entregado un viaje EN CURSO");
         }
         cambiarEstado(solicitud, Solicitud.EstadoSolicitud.COMPLETADA);
+        publicarEvento(EventoSolicitud.ENTREGA_MARCADA, solicitud, Solicitud.EstadoSolicitud.EN_CURSO.name(), Solicitud.EstadoSolicitud.COMPLETADA.name());
         return construirDetalle(solicitud);
     }
 
@@ -216,6 +226,8 @@ public class SolicitudServiceImpl implements SolicitudService {
         pago.setEstado(Pago.EstadoPago.LIBERADO);
         pago.setFechaLiberacion(LocalDateTime.now());
         pagoRepository.save(pago);
+        // La solicitud sigue COMPLETADA: lo que cambia es el pago (RETENIDO -> LIBERADO).
+        publicarEvento(EventoSolicitud.PAGO_LIBERADO, solicitud, Solicitud.EstadoSolicitud.COMPLETADA.name(), Solicitud.EstadoSolicitud.COMPLETADA.name());
         return construirDetalle(solicitud);
     }
 
@@ -246,6 +258,16 @@ public class SolicitudServiceImpl implements SolicitudService {
         solicitud.setEstado(nuevoEstado);
         solicitudRepository.save(solicitud);
         registrarHistorial(solicitud, estadoAnterior, nuevoEstado.name());
+    }
+
+    // Avisa a los demás servicios que la solicitud cambió. DifusorEventos lo envía por
+    // WebSocket solo después del commit. Los ids se toman aquí, dentro de la transacción.
+    // CANCELADA y EXPIRADA tendrán su evento cuando exista el código que pone esos estados.
+    private void publicarEvento(String tipo, Solicitud solicitud, String estadoAnterior, String estadoNuevo) {
+        Long despachadorId = solicitud.getDespachador() != null ? solicitud.getDespachador().getId() : null;
+        Long conductorId = solicitud.getConductor() != null ? solicitud.getConductor().getId() : null;
+        eventPublisher.publishEvent(new EventoSolicitud(tipo, solicitud.getId(), estadoAnterior, estadoNuevo,
+                despachadorId, conductorId, Instant.now().toString()));
     }
 
     private void registrarHistorial(Solicitud solicitud, String estadoAnterior, String estadoNuevo) {

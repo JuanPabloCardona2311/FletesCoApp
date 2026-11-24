@@ -1525,3 +1525,44 @@ td button {
     font-size: 0.7rem;
   }
 }
+
+/* ── Reportes en vivo (panel admin) ───────────────────────────── */
+
+.reportes-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.reportes-aviso {
+  margin-bottom: 16px;
+}
+
+.actividad-lista {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.actividad-lista li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-obsidian);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-inputs);
+  color: var(--texto);
+  font-size: 0.9rem;
+}
+
+.actividad-lista time {
+  color: var(--texto-secundario);
+  font: 500 0.8rem var(--font-mono);
+  white-space: nowrap;
+}
